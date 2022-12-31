@@ -1,0 +1,168 @@
+{
+ "_comments": "[]",
+ "_liked_by": "[]",
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{YY}_{MM}_{#}_{service_abbr}_{file_type_abbr}",
+ "creation": "2022-12-27 17:26:28.945877",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "customer",
+  "customer_name",
+  "matter_type",
+  "service_type",
+  "service",
+  "service_abbr",
+  "file_type",
+  "file_type_abbr",
+  "column_break_6",
+  "status",
+  "contact_no",
+  "contact_email",
+  "expected_start_date",
+  "expected_end_date",
+  "referred_by",
+  "referral_mobile_no"
+ ],
+ "fields": [
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Customer",
+   "options": "Customer",
+   "reqd": 1
+  },
+  {
+   "fieldname": "matter_type",
+   "fieldtype": "Link",
+   "label": "Matter Type",
+   "options": "Matter Type"
+  },
+  {
+   "fieldname": "service_type",
+   "fieldtype": "Link",
+   "label": "Service Type",
+   "options": "Service Type"
+  },
+  {
+   "fieldname": "service",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Service",
+   "options": "Service"
+  },
+  {
+   "fieldname": "file_type",
+   "fieldtype": "Link",
+   "label": "File Type",
+   "options": "File Type"
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Open\nInProgress\nOverdue\nCompleted\nCancelled"
+  },
+  {
+   "fieldname": "expected_start_date",
+   "fieldtype": "Date",
+   "label": "Expected Start Date"
+  },
+  {
+   "fieldname": "expected_end_date",
+   "fieldtype": "Date",
+   "label": "Expected End Date"
+  },
+  {
+   "fetch_from": "service.abbr",
+   "fieldname": "service_abbr",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Service Abbr"
+  },
+  {
+   "fetch_from": "file_type.abbr",
+   "fieldname": "file_type_abbr",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "File Type Abbr"
+  },
+  {
+   "fieldname": "referred_by",
+   "fieldtype": "Link",
+   "label": "Referred By",
+   "options": "Customer"
+  },
+  {
+   "fetch_from": "referred_by.contact_no",
+   "fieldname": "referral_mobile_no",
+   "fieldtype": "Read Only",
+   "label": "Referral Mobile No",
+   "options": "Phone"
+  },
+  {
+   "fetch_from": "customer.contact_no",
+   "fieldname": "contact_no",
+   "fieldtype": "Read Only",
+   "label": "Contact No",
+   "options": "Phone"
+  },
+  {
+   "fetch_from": "customer.customer_name",
+   "fieldname": "customer_name",
+   "fieldtype": "Read Only",
+   "in_list_view": 1,
+   "label": "Customer Name"
+  },
+  {
+   "fetch_from": "customer.contact_email",
+   "fieldname": "contact_email",
+   "fieldtype": "Read Only",
+   "label": "Contact Email",
+   "options": "Email"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [
+  {
+   "group": "Task",
+   "link_doctype": "Task",
+   "link_fieldname": "matter"
+  }
+ ],
+ "modified": "2022-12-30 19:11:03.753694",
+ "modified_by": "Administrator",
+ "module": "Case Central",
+ "name": "Matter",
+ "name_case": "Title Case",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

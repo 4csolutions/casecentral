@@ -7,6 +7,58 @@ app_description = "Legal Practice Management Application"
 app_email = "info@4csolutions.in"
 app_license = "MIT"
 
+fixtures = [
+    {
+		"doctype": "Custom Field",
+		"filters" : [
+            [
+                "name",
+                "in",
+                [
+                    "Sales Invoice-matter",
+                    "Customer-contact_no",
+                    "Customer-contact_email"
+                ]
+            ]
+        ]
+    },
+    {
+        "doctype": "Property Setter",
+        "filters": [
+            [
+                "name",
+                "in",
+                [
+                    "Customer-naming_series-options",
+                    "Customer-naming_series-default",
+                    "Customer-main-quick_entry",
+                    "Customer-main-search_fields",
+                    "Customer-lead_name-hidden",
+                    "Customer-opportunity_name-hidden",
+                    "Customer-customer_type-default",
+                    "Task-project-hidden",
+                    "Task-issue-hidden",
+                    "Task-task_weight-hidden",
+                    "Task-sb_depends_on-hidden",
+                    "Task-sb_costing-hidden",
+                    "Task-type-hidden"
+                ]
+            ]
+        ]
+    },
+    {
+		"doctype": "Client Script",
+		"filters" : [
+            [
+                "name",
+                "in",
+                [
+                    "Duplicate Contact Check"
+                ]
+            ]
+        ]
+    }
+]
 # Includes in <head>
 # ------------------
 

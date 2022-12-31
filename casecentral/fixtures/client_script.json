@@ -1,0 +1,13 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "Customer",
+  "enabled": 1,
+  "modified": "2022-12-31 19:05:08.240512",
+  "module": "Case Central",
+  "name": "Duplicate Contact Check",
+  "script": "frappe.ui.form.on('Customer', {\n\trefresh(frm) {\n\t\t// your code here\n\t},\n\tvalidate: async (frm) => {\n\t    if (!frm.is_new())\n\t        return;\n\t        \n\t\tlet exist;\n\t\tfrappe.call({\n\t\t\tasync: false,\n\t\t\tmethod: \"frappe.client.get\",\n\t\t\targs: {\n\t\t\t\t\"doctype\": \"Customer\",\n\t\t\t\t\"filters\": {\"contact_no\": frm.doc.contact_no}\n\t\t\t},\n\t\t\tcallback: function (r) {\n\t\t\t\tif(r.message){\n\t\t\t\t    console.log(r.message);\n\t\t\t\t    exist = true;\n\t\t\t\t}\n\t\t\t}\n\t\t});\n\t\t\n\t\tif (exist) {\n\t\t    let prompt = new Promise((resolve, reject) => {\n                frappe.confirm('Duplicate contact no. Do you want to continue?',\n                    () => resolve(),\n                    () => reject()\n                );\n            });\n            await prompt.then(\n                () => frappe.show_alert(\"Customer Created\"),\n                () => {\n                    frappe.validated = false;\n                }\n            );\n\t\t}\n\t},\n});",
+  "view": "Form"
+ }
+]
