@@ -11,21 +11,22 @@
  "field_order": [
   "customer",
   "customer_name",
+  "contact_no",
+  "contact_email",
+  "column_break_6",
+  "status",
+  "expected_start_date",
+  "expected_end_date",
+  "referred_by",
+  "referral_mobile_no",
+  "amended_from",
+  "column_break_12",
   "matter_type",
   "service_type",
   "service",
   "service_abbr",
   "file_type",
-  "file_type_abbr",
-  "column_break_6",
-  "status",
-  "contact_no",
-  "contact_email",
-  "expected_start_date",
-  "expected_end_date",
-  "referred_by",
-  "referral_mobile_no",
-  "amended_from"
+  "file_type_abbr"
  ],
  "fields": [
   {
@@ -142,6 +143,10 @@
    "options": "Matter",
    "print_hide": 1,
    "read_only": 1
+  },
+  {
+   "fieldname": "column_break_12",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -153,7 +158,7 @@
    "link_fieldname": "matter"
   }
  ],
- "modified": "2022-12-31 23:21:13.700596",
+ "modified": "2022-12-31 23:42:00.237388",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Matter",

@@ -59,7 +59,7 @@
    "type": "Link"
   }
  ],
- "modified": "2022-12-31 19:19:37.967415",
+ "modified": "2022-12-31 23:44:36.154233",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Case Central",
@@ -76,7 +76,7 @@
    "format": "{} Assigned",
    "label": "Matter",
    "link_to": "Matter",
-   "stats_filter": "{\"_assign\":[\"like\",\"%Administrator%\"]}",
+   "stats_filter": "{\"_assign\": [\"like\", '%' + frappe.session.user + '%']}",
    "type": "DocType"
   },
   {
@@ -94,7 +94,7 @@
    "format": "{} Assigned",
    "label": "Task",
    "link_to": "Task",
-   "stats_filter": "{\"_assign\":[\"like\",\"%Administrator%\"]}",
+   "stats_filter": "{\"_assign\": [\"like\", '%' + frappe.session.user + '%']}",
    "type": "DocType"
   }
  ],
