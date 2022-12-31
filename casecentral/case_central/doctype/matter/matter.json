@@ -24,7 +24,8 @@
   "expected_start_date",
   "expected_end_date",
   "referred_by",
-  "referral_mobile_no"
+  "referral_mobile_no",
+  "amended_from"
  ],
  "fields": [
   {
@@ -66,6 +67,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "status",
    "fieldtype": "Select",
    "in_list_view": 1,
@@ -131,9 +133,19 @@
    "fieldtype": "Read Only",
    "label": "Contact Email",
    "options": "Email"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Matter",
+   "print_hide": 1,
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
+ "is_submittable": 1,
  "links": [
   {
    "group": "Task",
@@ -141,7 +153,7 @@
    "link_fieldname": "matter"
   }
  ],
- "modified": "2022-12-31 23:17:53.779819",
+ "modified": "2022-12-31 23:21:13.700596",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Matter",
@@ -150,6 +162,7 @@
  "owner": "Administrator",
  "permissions": [
   {
+   "cancel": 1,
    "create": 1,
    "delete": 1,
    "email": 1,
@@ -159,9 +172,11 @@
    "report": 1,
    "role": "System Manager",
    "share": 1,
+   "submit": 1,
    "write": 1
   },
   {
+   "cancel": 1,
    "create": 1,
    "email": 1,
    "export": 1,
@@ -170,6 +185,7 @@
    "report": 1,
    "role": "Projects User",
    "share": 1,
+   "submit": 1,
    "write": 1
   }
  ],
