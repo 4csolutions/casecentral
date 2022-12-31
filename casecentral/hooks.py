@@ -15,6 +15,7 @@ fixtures = [
                 "name",
                 "in",
                 [
+                    "Task-matter",
                     "Sales Invoice-matter",
                     "Customer-contact_no",
                     "Customer-contact_email"

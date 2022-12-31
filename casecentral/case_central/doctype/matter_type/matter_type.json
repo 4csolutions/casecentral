@@ -36,7 +36,7 @@
    "link_fieldname": "matter_type"
   }
  ],
- "modified": "2022-12-27 17:10:24.429259",
+ "modified": "2022-12-31 22:56:29.954649",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Matter Type",
@@ -55,6 +55,16 @@
    "role": "System Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Projects User",
+   "select": 1,
+   "share": 1
   }
  ],
  "quick_entry": 1,

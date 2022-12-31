@@ -38,7 +38,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-12-29 17:11:08.439178",
+ "modified": "2022-12-31 22:56:05.347220",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Service",
@@ -57,6 +57,16 @@
    "role": "System Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Projects User",
+   "select": 1,
+   "share": 1
   }
  ],
  "quick_entry": 1,
