@@ -163,9 +163,14 @@
    "group": "Task",
    "link_doctype": "Task",
    "link_fieldname": "matter"
+  },
+  {
+   "group": "Invoices",
+   "link_doctype": "Sales Invoice",
+   "link_fieldname": "matter"
   }
  ],
- "modified": "2023-01-01 20:37:16.167336",
+ "modified": "2023-01-01 20:51:55.171461",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Matter",
