@@ -162,6 +162,12 @@ fixtures = [
 #		"on_trash": "method"
 #	}
 # }
+doc_events = {
+    "Task": {
+        "on_update": "casecentral.doc_events.task.update_task_matter",
+        "after_delete": "casecentral.doc_events.task.update_task_matter"
+    }
+}
 
 # Scheduled Tasks
 # ---------------

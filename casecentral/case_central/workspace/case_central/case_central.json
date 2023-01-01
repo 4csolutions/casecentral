@@ -59,7 +59,7 @@
    "type": "Link"
   }
  ],
- "modified": "2022-12-31 23:44:36.154233",
+ "modified": "2023-01-01 20:27:15.788610",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Case Central",
@@ -71,12 +71,12 @@
  "sequence_id": 1.0,
  "shortcuts": [
   {
-   "color": "Blue",
+   "color": "",
    "doc_view": "List",
-   "format": "{} Assigned",
+   "format": "",
    "label": "Matter",
    "link_to": "Matter",
-   "stats_filter": "{\"_assign\": [\"like\", '%' + frappe.session.user + '%']}",
+   "stats_filter": "",
    "type": "DocType"
   },
   {
