@@ -42,7 +42,10 @@ fixtures = [
                     "Task-task_weight-hidden",
                     "Task-sb_depends_on-hidden",
                     "Task-sb_costing-hidden",
-                    "Task-type-hidden"
+                    "Task-type-hidden",
+                    "Task-project-in_list_view",
+                    "Task-project-in_standard_filter",
+                    "Task-is_group-in_list_view"
                 ]
             ]
         ]
