@@ -45,7 +45,8 @@ fixtures = [
                     "Task-type-hidden",
                     "Task-project-in_list_view",
                     "Task-project-in_standard_filter",
-                    "Task-is_group-in_list_view"
+                    "Task-is_group-in_list_view",
+                    "Task-is_milestone-in_list_view"
                 ]
             ]
         ]
