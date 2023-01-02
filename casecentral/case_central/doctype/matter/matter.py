@@ -17,19 +17,42 @@ class Matter(Document):
 			return
 
 		total = frappe.db.count("Task", dict(matter=self.name))
-
-		if not total:
-			self.status = "Open"
-		else:
-			completed = frappe.db.sql(
+		cancelled = frappe.db.sql(
 				"""select count(name) from tabTask where
-				matter=%s and status in ('Cancelled', 'Completed')""",
+				matter=%s and status in ('Cancelled')""",
 				self.name,
 			)[0][0]
-			if flt(completed) < total:
-				self.status = "InProgress"
-			elif flt(completed) == total:
+		
+		if not total:
+			self.status = "Open"
+		elif flt(cancelled) == total:
+			self.status = "Cancelled"
+		else:
+			open = frappe.db.sql(
+				"""select count(name) from tabTask where
+				matter=%s and status in ('Open', 'Cancelled')""",
+				self.name,
+			)[0][0]
+			if flt(open) == total:
+				self.status = "Open"
+			else:
+				self.status = "Working"
+			
+			completed = frappe.db.sql(
+				"""select count(name) from tabTask where
+				matter=%s and status in ('Completed', 'Cancelled')""",
+				self.name,
+			)[0][0]
+			if flt(completed) == total:
 				self.status = "Completed"
+			else:
+				pending = frappe.db.sql(
+					"""select count(name) from tabTask where
+					matter=%s and status in ('Pending Review', 'Cancelled')""",
+					self.name,
+				)[0][0]
+				if flt(pending) == total:
+					self.status = "Pending"
 		
 		self.db_update()
 		self.reload()
