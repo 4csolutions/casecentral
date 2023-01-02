@@ -170,7 +170,7 @@
    "link_fieldname": "matter"
   }
  ],
- "modified": "2023-01-02 20:49:18.960237",
+ "modified": "2023-01-02 22:10:16.002670",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Matter",
@@ -215,7 +215,7 @@
   },
   {
    "color": "Blue",
-   "title": "InProgress"
+   "title": "Working"
   },
   {
    "color": "Green",
@@ -224,6 +224,10 @@
   {
    "color": "Red",
    "title": "Cancelled"
+  },
+  {
+   "color": "Gray",
+   "title": "Pending Review"
   }
  ]
 }
