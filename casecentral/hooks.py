@@ -30,8 +30,6 @@ fixtures = [
                 "name",
                 "in",
                 [
-                    "Customer-naming_series-options",
-                    "Customer-naming_series-default",
                     "Customer-main-quick_entry",
                     "Customer-main-search_fields",
                     "Customer-lead_name-hidden",
