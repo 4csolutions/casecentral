@@ -1,6 +1,11 @@
 {
- "charts": [],
- "content": "[{\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Case Central</span>\",\"col\":12}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Client\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Matter\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Task\",\"col\":3}},{\"type\":\"spacer\",\"data\":{\"col\":12}},{\"type\":\"card\",\"data\":{\"card_name\":\"Setup\",\"col\":4}}]",
+ "charts": [
+  {
+   "chart_name": "Matter Summary",
+   "label": "Matter Summary"
+  }
+ ],
+ "content": "[{\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Case Central</span>\",\"col\":12}},{\"type\":\"chart\",\"data\":{\"chart_name\":\"Matter Summary\",\"col\":12}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Client\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Matter\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Task\",\"col\":3}},{\"type\":\"spacer\",\"data\":{\"col\":12}},{\"type\":\"card\",\"data\":{\"card_name\":\"Setup\",\"col\":4}}]",
  "creation": "2022-12-27 17:17:22.857757",
  "docstatus": 0,
  "doctype": "Workspace",
@@ -59,7 +64,7 @@
    "type": "Link"
   }
  ],
- "modified": "2023-01-06 12:48:18.476244",
+ "modified": "2023-01-06 17:45:33.049683",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Case Central",
