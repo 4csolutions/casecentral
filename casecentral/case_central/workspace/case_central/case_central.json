@@ -1,11 +1,6 @@
 {
- "charts": [
-  {
-   "chart_name": "Matter Summary",
-   "label": "Matter Summary"
-  }
- ],
- "content": "[{\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Case Central</span>\",\"col\":12}},{\"type\":\"chart\",\"data\":{\"chart_name\":\"Matter Summary\",\"col\":12}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Client\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Matter\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Task\",\"col\":3}},{\"type\":\"spacer\",\"data\":{\"col\":12}},{\"type\":\"card\",\"data\":{\"card_name\":\"Setup\",\"col\":4}}]",
+ "charts": [],
+ "content": "[{\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Case Central</span>\",\"col\":12}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Client\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Matter\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Task\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Dashboard\",\"col\":3}},{\"type\":\"spacer\",\"data\":{\"col\":12}},{\"type\":\"card\",\"data\":{\"card_name\":\"Setup\",\"col\":4}}]",
  "creation": "2022-12-27 17:17:22.857757",
  "docstatus": 0,
  "doctype": "Workspace",
@@ -64,7 +59,7 @@
    "type": "Link"
   }
  ],
- "modified": "2023-01-06 17:45:33.049683",
+ "modified": "2023-01-07 15:52:32.363497",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Case Central",
@@ -92,6 +87,13 @@
    "link_to": "Customer",
    "stats_filter": "{\"disabled\":[\"=\",0]}",
    "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Dashboard",
+   "link_to": "Case Central",
+   "type": "Dashboard"
   },
   {
    "color": "Blue",

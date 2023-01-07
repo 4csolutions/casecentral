@@ -1,0 +1,33 @@
+{
+ "cards": [
+  {
+   "card": "Clients"
+  },
+  {
+   "card": "Matter"
+  }
+ ],
+ "chart_options": "",
+ "charts": [
+  {
+   "chart": "Matter Summary",
+   "width": "Half"
+  },
+  {
+   "chart": "Task Summary",
+   "width": "Half"
+  }
+ ],
+ "creation": "2023-01-07 12:16:04.838026",
+ "dashboard_name": "Case Central",
+ "docstatus": 0,
+ "doctype": "Dashboard",
+ "idx": 0,
+ "is_default": 1,
+ "is_standard": 1,
+ "modified": "2023-01-07 15:53:48.056153",
+ "modified_by": "Administrator",
+ "module": "Case Central",
+ "name": "Case Central",
+ "owner": "Administrator"
+}

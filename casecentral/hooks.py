@@ -44,7 +44,13 @@ fixtures = [
                     "Task-project-in_list_view",
                     "Task-project-in_standard_filter",
                     "Task-is_group-in_list_view",
-                    "Task-is_milestone-in_list_view"
+                    "Task-is_milestone-in_list_view",
+                    "Task-main-quick_entry",
+                    "Task-subject-allow_in_quick_entry",
+                    "Task-status-allow_in_quick_entry",
+                    "Task-is_group-bold",
+                    "Task-parent_task-bold",
+                    "Task-priority-allow_in_quick_entry"
                 ]
             ]
         ]
@@ -67,7 +73,7 @@ fixtures = [
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/casecentral/css/casecentral.css"
-# app_include_js = "/assets/casecentral/js/casecentral.js"
+app_include_js = "casecentral.bundle.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/casecentral/css/casecentral.css"
@@ -166,6 +172,7 @@ fixtures = [
 # }
 doc_events = {
     "Task": {
+        "after_insert": "casecentral.doc_events.task.after_insert",
         "on_update": "casecentral.doc_events.task.update_task_matter",
         "after_delete": "casecentral.doc_events.task.update_task_matter"
     }

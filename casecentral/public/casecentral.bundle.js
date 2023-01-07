@@ -1,0 +1,1 @@
+import "./js/task_quick_entry.js";
