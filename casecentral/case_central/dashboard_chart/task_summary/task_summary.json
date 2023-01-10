@@ -12,8 +12,8 @@
  "idx": 0,
  "is_public": 1,
  "is_standard": 1,
- "last_synced_on": "2023-01-07 15:44:52.207562",
- "modified": "2023-01-07 15:48:03.239998",
+ "last_synced_on": "2023-01-10 12:06:35.180645",
+ "modified": "2023-01-10 12:08:32.590532",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Task Summary",
@@ -23,7 +23,7 @@
  "time_interval": "Monthly",
  "timeseries": 0,
  "timespan": "Last Year",
- "type": "Bar",
+ "type": "Donut",
  "use_report_chart": 0,
  "y_axis": []
 }

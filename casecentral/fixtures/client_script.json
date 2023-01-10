@@ -9,5 +9,16 @@
   "name": "Duplicate Contact Check",
   "script": "frappe.ui.form.on('Customer', {\n\trefresh(frm) {\n\t\t// your code here\n\t},\n\tvalidate: async (frm) => {\n\t    if (!frm.is_new())\n\t        return;\n\t        \n\t\tlet exist;\n\t\tfrappe.call({\n\t\t\tasync: false,\n\t\t\tmethod: \"frappe.client.get\",\n\t\t\targs: {\n\t\t\t\t\"doctype\": \"Customer\",\n\t\t\t\t\"filters\": {\"contact_no\": frm.doc.contact_no}\n\t\t\t},\n\t\t\tcallback: function (r) {\n\t\t\t\tif(r.message){\n\t\t\t\t    console.log(r.message);\n\t\t\t\t    exist = true;\n\t\t\t\t}\n\t\t\t}\n\t\t});\n\t\t\n\t\tif (exist) {\n\t\t    let prompt = new Promise((resolve, reject) => {\n                frappe.confirm('Duplicate contact no. Do you want to continue?',\n                    () => resolve(),\n                    () => reject()\n                );\n            });\n            await prompt.then(\n                () => frappe.show_alert(\"Customer Created\"),\n                () => {\n                    frappe.validated = false;\n                }\n            );\n\t\t}\n\t},\n});",
   "view": "Form"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "Matter",
+  "enabled": 1,
+  "modified": "2023-01-10 11:35:47.046557",
+  "module": null,
+  "name": "Remove Referral from Client",
+  "script": "frappe.ui.form.on('Matter', {\n\trefresh(frm) {\n\t\tif(frm.doc.customer == frm.doc.referred_by) {\n\t\t    frm.set_value('referred_by', '');\n\t\t}\n\t}\n});",
+  "view": "Form"
  }
 ]

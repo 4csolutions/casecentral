@@ -62,7 +62,8 @@ fixtures = [
                 "name",
                 "in",
                 [
-                    "Duplicate Contact Check"
+                    "Duplicate Contact Check",
+                    "Remove Referral from Client"
                 ]
             ]
         ]
