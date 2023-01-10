@@ -67,6 +67,18 @@ fixtures = [
                 ]
             ]
         ]
+    },
+    {
+		"doctype": "Server Script",
+		"filters" : [
+            [
+                "name",
+                "in",
+                [
+                    "Task Permissions"
+                ]
+            ]
+        ]
     }
 ]
 # Includes in <head>

@@ -15,10 +15,10 @@
   "doctype": "Client Script",
   "dt": "Matter",
   "enabled": 1,
-  "modified": "2023-01-10 11:35:47.046557",
+  "modified": "2023-01-10 11:40:42.630798",
   "module": null,
   "name": "Remove Referral from Client",
-  "script": "frappe.ui.form.on('Matter', {\n\trefresh(frm) {\n\t\tif(frm.doc.customer == frm.doc.referred_by) {\n\t\t    frm.set_value('referred_by', '');\n\t\t}\n\t}\n});",
+  "script": "frappe.ui.form.on('Matter', {\n\trefresh(frm) {\n\t\tif(frm.doc.client == frm.doc.referred_by) {\n\t\t    frm.set_value('referred_by', '');\n\t\t}\n\t}\n})",
   "view": "Form"
  }
 ]
