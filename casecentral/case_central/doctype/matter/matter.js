@@ -3,13 +3,19 @@
 
 frappe.ui.form.on('Matter', {
 	refresh: function(frm) {
-		frm.set_query('service_type', () => { 
+		frm.set_query('service_type', () => {
 			if (frm.doc.matter_type) {
 				return {
 					filters: {
 						'matter_type': frm.doc.matter_type
 					}
 				};
+			} else {
+				frappe.msgprint({
+					title: __('Notification'),
+					indicator: 'red',
+					message: __('Please choose matter type first')
+				});
 			}
 		});
 		frm.set_query('service', () => { 
@@ -19,7 +25,16 @@ frappe.ui.form.on('Matter', {
 						'service_type': frm.doc.service_type
 					}
 				};
+			} else {
+				frappe.msgprint({
+					title: __('Notification'),
+					indicator: 'red',
+					message: __('Please choose service type first')
+				});
 			}
 		});
+	},
+	service_type: function(frm) {
+		frm.toggle_display(['fee_details_section'], frm.doc.service_type === "Cases");
 	}
 });

@@ -1,6 +1,4 @@
 {
- "_comments": "[]",
- "_liked_by": "[]",
  "actions": [],
  "autoname": "naming_series:",
  "creation": "2022-12-27 17:26:28.945877",
@@ -20,14 +18,20 @@
   "expected_end_date",
   "referred_by",
   "referral_mobile_no",
-  "amended_from",
   "column_break_12",
   "matter_type",
   "service_type",
   "service",
   "service_abbr",
   "file_type",
-  "file_type_abbr"
+  "file_type_abbr",
+  "fee_details_section",
+  "case_fee",
+  "per_hearing_fee",
+  "column_break_22",
+  "per_ia_fee",
+  "per_ia_objection_fee",
+  "amended_from"
  ],
  "fields": [
   {
@@ -154,6 +158,36 @@
    "hidden": 1,
    "label": "Naming Series",
    "options": "MID-.YY.-.###"
+  },
+  {
+   "fieldname": "fee_details_section",
+   "fieldtype": "Section Break",
+   "hidden": 1,
+   "label": "Fee Details"
+  },
+  {
+   "fieldname": "case_fee",
+   "fieldtype": "Currency",
+   "label": "Case Fee"
+  },
+  {
+   "fieldname": "per_hearing_fee",
+   "fieldtype": "Currency",
+   "label": "Per Hearing Fee"
+  },
+  {
+   "fieldname": "per_ia_fee",
+   "fieldtype": "Currency",
+   "label": "Per IA Fee"
+  },
+  {
+   "fieldname": "per_ia_objection_fee",
+   "fieldtype": "Currency",
+   "label": "Per IA Objection Fee"
+  },
+  {
+   "fieldname": "column_break_22",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -170,7 +204,7 @@
    "link_fieldname": "matter"
   }
  ],
- "modified": "2023-01-02 22:10:16.002670",
+ "modified": "2023-01-17 18:08:34.539134",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Matter",
