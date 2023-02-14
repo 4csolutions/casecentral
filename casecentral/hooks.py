@@ -18,7 +18,9 @@ fixtures = [
                     "Task-matter",
                     "Sales Invoice-matter",
                     "Customer-contact_no",
-                    "Customer-contact_email"
+                    "Customer-contact_email",
+                    "Sales Invoice Item-reference_doctype",
+                    "Sales Invoice Item-reference_name"
                 ]
             ]
         ]
@@ -64,18 +66,6 @@ fixtures = [
                 [
                     "Duplicate Contact Check",
                     "Remove Referral from Client"
-                ]
-            ]
-        ]
-    },
-    {
-		"doctype": "Server Script",
-		"filters" : [
-            [
-                "name",
-                "in",
-                [
-                    "Task Permissions"
                 ]
             ]
         ]
@@ -171,6 +161,9 @@ app_include_js = "casecentral.bundle.js"
 # override_doctype_class = {
 #	"ToDo": "custom_app.overrides.CustomToDo"
 # }
+override_doctype_class = {
+	'Sales Invoice': 'casecentral.overrides.CustomSalesInvoice'
+}
 
 # Document Events
 # ---------------
@@ -188,6 +181,10 @@ doc_events = {
         "after_insert": "casecentral.doc_events.task.after_insert",
         "on_update": "casecentral.doc_events.task.update_task_matter",
         "after_delete": "casecentral.doc_events.task.update_task_matter"
+    },
+    "Sales Invoice": {
+        "on_submit": "casecentral.doc_events.sales_invoice.manage_invoice_submit_cancel",
+		"on_cancel": "casecentral.doc_events.sales_invoice.manage_invoice_submit_cancel"
     }
 }
 

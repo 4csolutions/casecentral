@@ -3,6 +3,14 @@
 
 frappe.ui.form.on('Matter', {
 	refresh: function(frm) {
+		frm.set_query('legal_service', 'legal_service_rates', function(doc, cdt, cdn) {
+			// set filter based on some conditions
+			return {
+				filters: {
+					"is_billable": true,
+			  	}
+			};
+		});
 		frm.set_query('service_type', () => {
 			if (frm.doc.matter_type) {
 				return {
@@ -18,7 +26,7 @@ frappe.ui.form.on('Matter', {
 				});
 			}
 		});
-		frm.set_query('service', () => { 
+		frm.set_query('service', () => {
 			if (frm.doc.service_type) {
 				return {
 					filters: {
@@ -33,8 +41,5 @@ frappe.ui.form.on('Matter', {
 				});
 			}
 		});
-	},
-	service_type: function(frm) {
-		frm.toggle_display(['fee_details_section'], frm.doc.service_type === "Cases");
 	}
 });

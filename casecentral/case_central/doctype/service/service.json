@@ -17,7 +17,7 @@
   {
    "fieldname": "service",
    "fieldtype": "Data",
-   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Service",
    "reqd": 1,
    "unique": 1
@@ -26,19 +26,24 @@
    "allow_in_quick_entry": 1,
    "fieldname": "abbr",
    "fieldtype": "Data",
-   "label": "Abbr"
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Abbr",
+   "unique": 1
   },
   {
    "allow_in_quick_entry": 1,
    "fieldname": "service_type",
    "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Service Type",
    "options": "Service Type"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-12-31 22:56:05.347220",
+ "modified": "2023-02-11 18:13:55.498408",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Service",
@@ -71,7 +76,9 @@
  ],
  "quick_entry": 1,
  "search_fields": "service,abbr",
+ "show_title_field_in_link": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "service"
 }

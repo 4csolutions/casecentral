@@ -16,7 +16,7 @@
   {
    "fieldname": "file_type",
    "fieldtype": "Data",
-   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "File type",
    "reqd": 1,
    "unique": 1
@@ -25,12 +25,15 @@
    "allow_in_quick_entry": 1,
    "fieldname": "abbr",
    "fieldtype": "Data",
-   "label": "abbr"
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "abbr",
+   "unique": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-12-31 22:56:44.369173",
+ "modified": "2023-02-11 18:14:10.527614",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "File Type",
@@ -65,5 +68,6 @@
  "search_fields": "file_type,abbr",
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "file_type"
 }

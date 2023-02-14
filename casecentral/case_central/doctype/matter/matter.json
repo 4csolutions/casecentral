@@ -13,6 +13,7 @@
   "contact_no",
   "contact_email",
   "column_break_6",
+  "posting_date",
   "status",
   "expected_start_date",
   "expected_end_date",
@@ -25,12 +26,10 @@
   "service_abbr",
   "file_type",
   "file_type_abbr",
-  "fee_details_section",
-  "case_fee",
-  "per_hearing_fee",
-  "column_break_22",
-  "per_ia_fee",
-  "per_ia_objection_fee",
+  "matter_description_section",
+  "description",
+  "fee_details_tab",
+  "legal_service_rates",
   "amended_from"
  ],
  "fields": [
@@ -60,13 +59,15 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Service",
-   "options": "Service"
+   "options": "Service",
+   "reqd": 1
   },
   {
    "fieldname": "file_type",
    "fieldtype": "Link",
    "label": "File Type",
-   "options": "File Type"
+   "options": "File Type",
+   "reqd": 1
   },
   {
    "fieldname": "column_break_6",
@@ -122,6 +123,7 @@
    "fieldname": "contact_no",
    "fieldtype": "Read Only",
    "in_list_view": 1,
+   "in_preview": 1,
    "label": "Contact No",
    "options": "Phone"
   },
@@ -130,6 +132,7 @@
    "fieldname": "customer_name",
    "fieldtype": "Read Only",
    "in_list_view": 1,
+   "in_preview": 1,
    "label": "Customer Name"
   },
   {
@@ -160,34 +163,34 @@
    "options": "MID-.YY.-.###"
   },
   {
-   "fieldname": "fee_details_section",
+   "fieldname": "matter_description_section",
    "fieldtype": "Section Break",
-   "hidden": 1,
-   "label": "Fee Details"
+   "label": "Matter Description"
   },
   {
-   "fieldname": "case_fee",
-   "fieldtype": "Currency",
-   "label": "Case Fee"
+   "fieldname": "description",
+   "fieldtype": "Text Editor",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Description"
   },
   {
-   "fieldname": "per_hearing_fee",
-   "fieldtype": "Currency",
-   "label": "Per Hearing Fee"
+   "default": "now",
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date"
   },
   {
-   "fieldname": "per_ia_fee",
-   "fieldtype": "Currency",
-   "label": "Per IA Fee"
+   "fieldname": "legal_service_rates",
+   "fieldtype": "Table",
+   "label": "Legal Service Rates",
+   "options": "Legal Service Rate"
   },
   {
-   "fieldname": "per_ia_objection_fee",
-   "fieldtype": "Currency",
-   "label": "Per IA Objection Fee"
-  },
-  {
-   "fieldname": "column_break_22",
-   "fieldtype": "Column Break"
+   "fieldname": "fee_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Fee Details",
+   "permlevel": 1
   }
  ],
  "index_web_pages_for_search": 1,
@@ -199,12 +202,17 @@
    "link_fieldname": "matter"
   },
   {
-   "group": "Invoices",
+   "group": "Sales Invoice",
    "link_doctype": "Sales Invoice",
+   "link_fieldname": "matter"
+  },
+  {
+   "group": "Legal Services Entry",
+   "link_doctype": "Legal Service Entry",
    "link_fieldname": "matter"
   }
  ],
- "modified": "2023-01-17 18:08:34.539134",
+ "modified": "2023-02-11 18:16:06.019446",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Matter",
@@ -238,8 +246,22 @@
    "share": 1,
    "submit": 1,
    "write": 1
+  },
+  {
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "permlevel": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
   }
  ],
+ "show_name_in_global_search": 1,
+ "show_preview_popup": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [
@@ -263,5 +285,6 @@
    "color": "Gray",
    "title": "Pending Review"
   }
- ]
+ ],
+ "track_changes": 1
 }

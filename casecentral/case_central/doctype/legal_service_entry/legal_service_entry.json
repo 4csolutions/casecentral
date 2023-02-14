@@ -1,0 +1,97 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-02-10 21:22:26.976499",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "matter",
+  "legal_service",
+  "description",
+  "column_break_5",
+  "posting_date",
+  "invoiced",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "matter",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Matter",
+   "options": "Matter",
+   "read_only_depends_on": "eval: doc.invoiced",
+   "reqd": 1
+  },
+  {
+   "fieldname": "legal_service",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Legal Service",
+   "options": "Legal Service",
+   "read_only_depends_on": "eval: doc.invoiced",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "legal_service.description",
+   "fieldname": "description",
+   "fieldtype": "Read Only",
+   "label": "Description"
+  },
+  {
+   "fieldname": "column_break_5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "now",
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Posting Date",
+   "read_only_depends_on": "eval: doc.invoiced"
+  },
+  {
+   "default": "0",
+   "fieldname": "invoiced",
+   "fieldtype": "Check",
+   "label": "Invoiced",
+   "read_only": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Legal Service Entry",
+   "print_hide": 1,
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-02-14 12:08:50.278157",
+ "modified_by": "Administrator",
+ "module": "Case Central",
+ "name": "Legal Service Entry",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "matter",
+ "track_changes": 1
+}

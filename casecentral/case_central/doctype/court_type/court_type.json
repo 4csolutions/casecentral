@@ -1,47 +1,29 @@
 {
  "actions": [],
- "allow_import": 1,
  "allow_rename": 1,
- "autoname": "field:matter_type",
- "creation": "2022-12-27 11:55:19.870761",
+ "autoname": "field:court_type",
+ "creation": "2023-01-17 14:33:04.152613",
  "default_view": "List",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "matter_type",
-  "abbr"
+  "court_type"
  ],
  "fields": [
   {
-   "fieldname": "matter_type",
+   "fieldname": "court_type",
    "fieldtype": "Data",
-   "in_standard_filter": 1,
-   "label": "Matter Type",
-   "reqd": 1,
+   "label": "Court Type",
    "unique": 1
-  },
-  {
-   "allow_in_quick_entry": 1,
-   "fieldname": "abbr",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Abbr"
   }
  ],
  "index_web_pages_for_search": 1,
- "links": [
-  {
-   "group": "Service Type",
-   "link_doctype": "Service Type",
-   "link_fieldname": "matter_type"
-  }
- ],
- "modified": "2023-02-11 18:13:19.043125",
+ "links": [],
+ "modified": "2023-02-11 18:12:32.379272",
  "modified_by": "Administrator",
  "module": "Case Central",
- "name": "Matter Type",
+ "name": "Court Type",
  "name_case": "Title Case",
  "naming_rule": "By fieldname",
  "owner": "Administrator",
@@ -70,9 +52,8 @@
   }
  ],
  "quick_entry": 1,
- "search_fields": "matter_type,abbr",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
- "title_field": "matter_type"
+ "title_field": "court_type"
 }
