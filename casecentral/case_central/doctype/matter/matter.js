@@ -3,14 +3,6 @@
 
 frappe.ui.form.on('Matter', {
 	refresh: function(frm) {
-		frm.set_query('legal_service', 'legal_service_rates', function(doc, cdt, cdn) {
-			// set filter based on some conditions
-			return {
-				filters: {
-					"is_billable": true,
-			  	}
-			};
-		});
 		frm.set_query('service_type', () => {
 			if (frm.doc.matter_type) {
 				return {

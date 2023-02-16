@@ -24,11 +24,18 @@ def get_uninvoced_legal_services(matter, company):
             if lse.legal_service == lsr.legal_service:
                 rate = lsr.rate
 
-        services_to_invoice.append({
-            'reference_type': 'Legal Service Entry',
-            'reference_name': lse.name,
-            'service': lse.legal_service,
-            'rate': rate
-        })
+        if rate:
+            services_to_invoice.append({
+                'reference_type': 'Legal Service Entry',
+                'reference_name': lse.name,
+                'service': lse.legal_service,
+                'rate': rate
+            })
+        else:
+            services_to_invoice.append({
+                'reference_type': 'Legal Service Entry',
+                'reference_name': lse.name,
+                'service': lse.legal_service
+            })
     
     return services_to_invoice

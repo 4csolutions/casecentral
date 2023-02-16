@@ -4,7 +4,7 @@
 frappe.ui.form.on('Legal Service', {
 	refresh: function(frm) {
 		frm.set_df_property('item_code', 'read_only', frm.doc.__islocal ? 0 : 1);
-		if (!frm.doc.__islocal && frm.doc.is_billable) {
+		if (!frm.doc.__islocal) {
 			frm.add_custom_button(__('Change Item Code'), function() {
 				change_item_code(cur_frm, frm.doc);
 			});
@@ -14,10 +14,6 @@ frappe.ui.form.on('Legal Service', {
 	legal_service: function(frm) {
 		set_item_details(frm);
 		mark_change_in_item(frm);
-	},
-
-	is_billable: function(frm) {
-		set_item_details(frm);
 	},
 
 	rate: function(frm) {
@@ -30,11 +26,15 @@ frappe.ui.form.on('Legal Service', {
 
 	description: function(frm) {
 		mark_change_in_item(frm);
+	},
+
+	disabled: function(frm) {
+		mark_change_in_item(frm);
 	}
 });
 
 let set_item_details = function(frm) {
-	if (frm.doc.__islocal && frm.doc.is_billable) {
+	if (frm.doc.__islocal) {
 		frm.set_value('item_code', frm.doc.legal_service);
 		frm.set_value('description', frm.doc.legal_service);
 		if (!frm.doc.item_group)

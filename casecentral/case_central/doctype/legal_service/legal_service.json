@@ -11,7 +11,6 @@
  "field_order": [
   "disabled",
   "legal_service",
-  "is_billable",
   "item_details_section",
   "item",
   "item_code",
@@ -38,13 +37,6 @@
    "unique": 1
   },
   {
-   "default": "0",
-   "fieldname": "is_billable",
-   "fieldtype": "Check",
-   "label": "Is Billable"
-  },
-  {
-   "depends_on": "is_billable",
    "fieldname": "item_details_section",
    "fieldtype": "Section Break",
    "label": "Item Details"
@@ -60,21 +52,21 @@
    "fieldname": "item_code",
    "fieldtype": "Data",
    "label": "Item Code",
-   "mandatory_depends_on": "eval: doc.is_billable == 1;"
+   "reqd": 1
   },
   {
    "fieldname": "item_group",
    "fieldtype": "Link",
    "label": "Item Group",
-   "mandatory_depends_on": "eval: doc.is_billable == 1;",
-   "options": "Item Group"
+   "options": "Item Group",
+   "reqd": 1
   },
   {
    "fieldname": "uom",
    "fieldtype": "Link",
    "label": "UOM",
-   "mandatory_depends_on": "eval: doc.is_billable == 1;",
-   "options": "UOM"
+   "options": "UOM",
+   "reqd": 1
   },
   {
    "fieldname": "column_break_9",
@@ -100,7 +92,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-01-24 13:27:12.985841",
+ "modified": "2023-02-16 14:44:13.608255",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Legal Service",

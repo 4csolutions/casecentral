@@ -8,16 +8,14 @@ from frappe.model.document import Document
 from frappe.model.rename_doc import rename_doc
 
 class LegalService(Document):
-	def validate(self):		
-		if self.is_billable:
-			if self.disabled:
-				frappe.db.set_value('Item', self.item, 'disabled', 1)
-			else:
-				frappe.db.set_value('Item', self.item, 'disabled', 0)
+	def validate(self):
+		if self.disabled:
+			frappe.db.set_value('Item', self.item, 'disabled', 1)
+		else:
+			frappe.db.set_value('Item', self.item, 'disabled', 0)
 
 	def after_insert(self):
-		if self.is_billable:
-			create_item(self)
+		create_item(self)
 
 	def on_trash(self):
 		if self.item:
@@ -29,13 +27,13 @@ class LegalService(Document):
 				frappe.throw(_('Not permitted. Please disable the Legal Service'))
 
 	def on_update(self):
-		if self.change_in_item and self.is_billable and self.item:
+		if self.change_in_item and self.item:
 			update_item(self)
 
 			item_price = item_price_exists(self)
 
 			if not item_price:
-				price_list_name = frappe.db.get_value('Price List', {'selling': 1})
+				price_list_name = frappe.db.get_value('Price List', {'selling': True})
 				if self.rate:
 					make_item_price(self.item_code, price_list_name, self.rate)
 				else:
@@ -44,15 +42,13 @@ class LegalService(Document):
 				frappe.db.set_value('Item Price', item_price, 'price_list_rate', self.rate)
 
 			frappe.db.set_value(self.doctype, self.name, 'change_in_item',0)
-		elif not self.is_billable and self.item:
-			frappe.db.set_value('Item', self.item, 'disabled', 1)
 		self.reload()
 
 
 def item_price_exists(doc):
-	item_price = frappe.db.exists({'doctype': 'Item Price', 'item_code': doc.item_code})
-	if len(item_price):
-		return item_price[0][0]
+	item_price = frappe.db.exists('Item Price',{'item_code': doc.item_code, 'selling': True})
+	if item_price:
+		return item_price
 	return False
 
 def create_item(doc):
@@ -92,7 +88,7 @@ def create_item(doc):
 
 		# insert item price
 		# get item price list to insert item price
-		price_list_name = frappe.db.get_value('Price List', {'selling': 1})
+		price_list_name = frappe.db.get_value('Price List', {'selling': True})
 		if doc.rate:
 			make_item_price(item.name, price_list_name, doc.rate)
 			item.standard_rate = doc.rate
@@ -119,11 +115,12 @@ def update_item(doc):
 		item.update({
 			"item_name": doc.legal_service,
 			"item_group": doc.item_group,
-			"disabled": 0,
+			"disabled": doc.disabled,
 			"standard_rate": doc.rate,
 			"description": doc.description
 		})
 		item.db_update()
+		item.reload()
 
 @frappe.whitelist()
 def change_item_code(item, item_code, doc_name):
