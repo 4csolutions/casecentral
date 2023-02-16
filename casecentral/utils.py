@@ -18,6 +18,7 @@ def get_uninvoced_legal_services(matter, company):
         WHERE matter=%s and invoiced = 0
     """,(matter.name), as_dict=True)
 
+    rate = 0.0
     for lse in lse_list:
         for lsr in matter.legal_service_rates:
             if lse.legal_service == lsr.legal_service:
@@ -27,7 +28,7 @@ def get_uninvoced_legal_services(matter, company):
             'reference_type': 'Legal Service Entry',
             'reference_name': lse.name,
             'service': lse.legal_service,
-            'rate': rate or 0.0
+            'rate': rate
         })
     
     return services_to_invoice
