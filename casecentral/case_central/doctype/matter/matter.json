@@ -181,6 +181,7 @@
    "label": "Posting Date"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "legal_service_rates",
    "fieldtype": "Table",
    "label": "Legal Service Rates",
@@ -212,7 +213,7 @@
    "link_fieldname": "matter"
   }
  ],
- "modified": "2023-02-11 18:16:06.019446",
+ "modified": "2023-02-17 20:44:47.869856",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Matter",
