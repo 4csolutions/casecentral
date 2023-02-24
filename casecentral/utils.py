@@ -13,7 +13,7 @@ def get_uninvoced_legal_services(matter, company):
     matter = frappe.get_doc('Matter', matter)
     services_to_invoice = []
     lse_list = frappe.db.sql("""
-        SELECT name, legal_service
+        SELECT name, legal_service, qty
         FROM `tabLegal Service Entry`
         WHERE matter=%s and invoiced = 0
     """,(matter.name), as_dict=True)
@@ -29,13 +29,15 @@ def get_uninvoced_legal_services(matter, company):
                 'reference_type': 'Legal Service Entry',
                 'reference_name': lse.name,
                 'service': lse.legal_service,
+                'qty': lse.qty,
                 'rate': rate
             })
         else:
             services_to_invoice.append({
                 'reference_type': 'Legal Service Entry',
                 'reference_name': lse.name,
-                'service': lse.legal_service
+                'service': lse.legal_service,
+                'qty': lse.qty
             })
     
     return services_to_invoice

@@ -8,14 +8,17 @@
  "field_order": [
   "matter",
   "legal_service",
-  "description",
+  "uom",
+  "qty",
   "column_break_5",
   "posting_date",
+  "description",
   "invoiced",
   "amended_from"
  ],
  "fields": [
   {
+   "allow_in_quick_entry": 1,
    "fieldname": "matter",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -25,6 +28,7 @@
    "reqd": 1
   },
   {
+   "allow_in_quick_entry": 1,
    "fieldname": "legal_service",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -68,11 +72,27 @@
    "options": "Legal Service Entry",
    "print_hide": 1,
    "read_only": 1
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "bold": 1,
+   "fetch_from": "legal_service.uom",
+   "fieldname": "uom",
+   "fieldtype": "Read Only",
+   "label": "UOM"
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "bold": 1,
+   "default": "1.0",
+   "fieldname": "qty",
+   "fieldtype": "Float",
+   "label": "Qty"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-02-14 12:14:34.314159",
+ "modified": "2023-02-24 12:45:00.675346",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Legal Service Entry",
