@@ -129,7 +129,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Case Management",
-   "link_count": 3,
+   "link_count": 4,
    "onboard": 0,
    "type": "Card Break"
   },
@@ -139,6 +139,16 @@
    "label": "Case",
    "link_count": 0,
    "link_to": "Case",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Caveat",
+   "link_count": 0,
+   "link_to": "Caveat",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -164,7 +174,7 @@
    "type": "Link"
   }
  ],
- "modified": "2023-03-31 02:25:31.898407",
+ "modified": "2023-04-01 03:00:52.020072",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Case Central",

@@ -16,6 +16,7 @@ fixtures = [
                 "in",
                 [
                     "Task-matter",
+                    "Task-case",
                     "Sales Invoice-matter",
                     "Customer-contact_no",
                     "Customer-contact_email",
@@ -208,7 +209,11 @@ doc_events = {
 #		"casecentral.tasks.monthly"
 #	],
 # }
-
+scheduler_events = {
+	"daily": [
+		"case_central.case_central.doctype.caveat.caveat.set_expired_status"
+	]
+}
 # Testing
 # -------
 

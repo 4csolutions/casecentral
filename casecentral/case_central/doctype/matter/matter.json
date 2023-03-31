@@ -229,9 +229,14 @@
    "group": "Legal Services Entry",
    "link_doctype": "Legal Service Entry",
    "link_fieldname": "matter"
+  },
+  {
+   "group": "Case",
+   "link_doctype": "Caveat",
+   "link_fieldname": "matter"
   }
  ],
- "modified": "2023-04-01 00:34:45.268706",
+ "modified": "2023-04-01 02:50:50.135446",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Matter",

@@ -1,0 +1,220 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2023-04-01 02:41:31.537930",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "petitioner",
+  "respondent",
+  "caveat_title",
+  "column_break_d2qtx",
+  "status",
+  "service",
+  "service_abbr",
+  "column_break_mjl47",
+  "matter",
+  "customer_name",
+  "contact_no",
+  "file_location",
+  "case_details_section",
+  "cnr",
+  "ecourt",
+  "court",
+  "caveat_no",
+  "caveat_year",
+  "column_break_pop2y",
+  "filing_date",
+  "expiry_date"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Naming Series",
+   "options": "CVT-.YYYY.-"
+  },
+  {
+   "fieldname": "petitioner",
+   "fieldtype": "Data",
+   "label": "Petitioner",
+   "reqd": 1
+  },
+  {
+   "fieldname": "respondent",
+   "fieldtype": "Data",
+   "label": "Respondent",
+   "reqd": 1
+  },
+  {
+   "fieldname": "caveat_title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Caveat Title",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_d2qtx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Caveat Status",
+   "options": "Active\nExpired"
+  },
+  {
+   "fetch_from": "matter.service",
+   "fieldname": "service",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Service",
+   "options": "Service",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "service.abbr",
+   "fieldname": "service_abbr",
+   "fieldtype": "Read Only",
+   "label": "Service Abbr"
+  },
+  {
+   "fieldname": "column_break_mjl47",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "matter",
+   "fieldtype": "Link",
+   "label": "Matter",
+   "options": "Matter",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "matter.customer_name",
+   "fieldname": "customer_name",
+   "fieldtype": "Read Only",
+   "label": "Customer Name"
+  },
+  {
+   "fetch_from": "matter.contact_no",
+   "fieldname": "contact_no",
+   "fieldtype": "Read Only",
+   "label": "Contact No"
+  },
+  {
+   "fieldname": "file_location",
+   "fieldtype": "Data",
+   "label": "File Location"
+  },
+  {
+   "fieldname": "case_details_section",
+   "fieldtype": "Section Break",
+   "label": "Caveat Details"
+  },
+  {
+   "depends_on": "eval: in_list([\"DCCT\", \"HCCT\", \"SCCT\"], doc.service_abbr)",
+   "fieldname": "cnr",
+   "fieldtype": "Data",
+   "label": "CNR",
+   "mandatory_depends_on": "eval: in_list([\"DCCT\", \"HCCT\", \"SCCT\"], doc.service_abbr)",
+   "unique": 1
+  },
+  {
+   "depends_on": "eval: in_list([\"DCCT\", \"HCCT\", \"SCCT\"], doc.service_abbr)",
+   "fieldname": "ecourt",
+   "fieldtype": "Data",
+   "label": "eCourt",
+   "mandatory_depends_on": "eval: in_list([\"DCCT\", \"HCCT\", \"SCCT\"], doc.service_abbr)"
+  },
+  {
+   "depends_on": "eval: !in_list([\"DCCT\", \"HCCT\", \"SCCT\"], doc.service_abbr)",
+   "fieldname": "court",
+   "fieldtype": "Link",
+   "label": "Court",
+   "mandatory_depends_on": "eval: !in_list([\"DCCT\", \"HCCT\", \"SCCT\"], doc.service_abbr)",
+   "options": "Court"
+  },
+  {
+   "fieldname": "caveat_no",
+   "fieldtype": "Data",
+   "label": "Caveat No",
+   "reqd": 1
+  },
+  {
+   "fieldname": "caveat_year",
+   "fieldtype": "Data",
+   "label": "Caveat Year",
+   "mandatory_depends_on": "eval: doc.status!=\"Pending\"",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_pop2y",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "filing_date",
+   "fieldtype": "Date",
+   "label": "Filing Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "expiry_date",
+   "fieldtype": "Date",
+   "label": "Expiry Date"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-04-01 02:55:25.496880",
+ "modified_by": "Administrator",
+ "module": "Case Central",
+ "name": "Caveat",
+ "name_case": "Title Case",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Projects User",
+   "select": 1,
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [
+  {
+   "color": "Green",
+   "title": "Active"
+  },
+  {
+   "color": "Red",
+   "title": "Expired"
+  }
+ ],
+ "title_field": "caveat_title",
+ "track_changes": 1
+}
