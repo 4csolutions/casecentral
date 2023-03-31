@@ -15,7 +15,7 @@
   "column_break_d2qtx",
   "status",
   "service",
-  "service_abbr",
+  "caveat_service_abbr",
   "column_break_mjl47",
   "matter",
   "customer_name",
@@ -77,12 +77,6 @@
    "label": "Service",
    "options": "Service",
    "read_only": 1
-  },
-  {
-   "fetch_from": "service.abbr",
-   "fieldname": "service_abbr",
-   "fieldtype": "Read Only",
-   "label": "Service Abbr"
   },
   {
    "fieldname": "column_break_mjl47",
@@ -167,11 +161,17 @@
    "fieldname": "expiry_date",
    "fieldtype": "Date",
    "label": "Expiry Date"
+  },
+  {
+   "fetch_from": "service.abbr",
+   "fieldname": "caveat_service_abbr",
+   "fieldtype": "Read Only",
+   "label": "Caveat Service Abbr"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-04-01 02:55:25.496880",
+ "modified": "2023-04-01 03:22:51.713192",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Caveat",
