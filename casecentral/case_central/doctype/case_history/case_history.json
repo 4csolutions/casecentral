@@ -1,0 +1,58 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-03-27 14:39:49.455352",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "judge",
+  "business_on_date",
+  "purpose_of_hearing",
+  "business_details",
+  "hearing_date"
+ ],
+ "fields": [
+  {
+   "fieldname": "judge",
+   "fieldtype": "Data",
+   "label": "Judge"
+  },
+  {
+   "fieldname": "business_on_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Business on Date"
+  },
+  {
+   "fieldname": "hearing_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Hearing Date"
+  },
+  {
+   "fieldname": "purpose_of_hearing",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Purpose of Hearing"
+  },
+  {
+   "fieldname": "business_details",
+   "fieldtype": "Text",
+   "in_list_view": 1,
+   "label": "Business Details"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2023-03-28 15:41:40.338136",
+ "modified_by": "Administrator",
+ "module": "Case Central",
+ "name": "Case History",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Case Central</span>\",\"col\":12}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customer\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Matter\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Task\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Dashboard\",\"col\":3}},{\"type\":\"spacer\",\"data\":{\"col\":12}},{\"type\":\"card\",\"data\":{\"card_name\":\"Matter Management\",\"col\":4}},{\"type\":\"card\",\"data\":{\"card_name\":\"Setup\",\"col\":4}},{\"type\":\"card\",\"data\":{\"card_name\":\"Billing Setup\",\"col\":4}}]",
+ "content": "[{\"id\":\"zkQlSSmwUA\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Case Central</span>\",\"col\":12}},{\"id\":\"DWgn1wYllm\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customer\",\"col\":3}},{\"id\":\"PAyPv1xREA\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Matter\",\"col\":3}},{\"id\":\"Bf8EmZW4X1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Case\",\"col\":3}},{\"id\":\"Uk5zrabl7W\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Task\",\"col\":3}},{\"id\":\"8Gw3-JUC-s\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Dashboard\",\"col\":3}},{\"id\":\"CffZAne9zA\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"r84gKKGl3v\",\"type\":\"card\",\"data\":{\"card_name\":\"Matter Management\",\"col\":4}},{\"id\":\"k-bGe7ImE9\",\"type\":\"card\",\"data\":{\"card_name\":\"Setup\",\"col\":4}},{\"id\":\"pGvcbAvNtp\",\"type\":\"card\",\"data\":{\"card_name\":\"Billing Setup\",\"col\":4}},{\"id\":\"IAqlYA_j7W\",\"type\":\"card\",\"data\":{\"card_name\":\"Case Management\",\"col\":4}}]",
  "creation": "2022-12-27 17:17:22.857757",
  "docstatus": 0,
  "doctype": "Workspace",
@@ -124,12 +124,51 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Case Management",
+   "link_count": 3,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Case",
+   "link_count": 0,
+   "link_to": "Case",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Case Type",
+   "link_count": 0,
+   "link_to": "Case Type",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Court",
+   "link_count": 0,
+   "link_to": "Court",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2023-02-14 12:12:59.752798",
+ "modified": "2023-03-31 02:25:31.898407",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Case Central",
+ "number_cards": [],
  "owner": "Administrator",
  "parent_page": "",
  "public": 1,
@@ -153,6 +192,15 @@
    "label": "Customer",
    "link_to": "Customer",
    "stats_filter": "{\"disabled\":[\"=\",0]}",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "format": "{} InProgress",
+   "label": "Case",
+   "link_to": "Case",
+   "stats_filter": "{\"status\":[\"=\",\"InProgress\"]}",
    "type": "DocType"
   },
   {

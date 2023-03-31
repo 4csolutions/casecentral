@@ -28,6 +28,8 @@
   "file_type_abbr",
   "matter_description_section",
   "description",
+  "matter_research_tab",
+  "research_notes",
   "fee_details_tab",
   "legal_service_rates",
   "amended_from"
@@ -192,11 +194,27 @@
    "fieldtype": "Tab Break",
    "label": "Fee Details",
    "permlevel": 1
+  },
+  {
+   "fieldname": "matter_research_tab",
+   "fieldtype": "Tab Break",
+   "label": "Matter Research"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "research_notes",
+   "fieldtype": "Text Editor",
+   "label": "Research Notes"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [
+  {
+   "group": "Case",
+   "link_doctype": "Case",
+   "link_fieldname": "matter"
+  },
   {
    "group": "Task",
    "link_doctype": "Task",
@@ -213,7 +231,7 @@
    "link_fieldname": "matter"
   }
  ],
- "modified": "2023-02-17 20:44:47.869856",
+ "modified": "2023-04-01 00:34:45.268706",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Matter",

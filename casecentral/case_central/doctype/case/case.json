@@ -1,0 +1,390 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2023-03-15 18:41:02.684196",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "petitioner",
+  "respondent",
+  "case_title",
+  "column_break_1mq4i",
+  "status",
+  "scrutiny_status",
+  "service",
+  "service_abbr",
+  "column_break_j8ukp",
+  "matter",
+  "customer_name",
+  "contact_no",
+  "file_location",
+  "case_details_section",
+  "cnr",
+  "ecourt",
+  "court",
+  "filing_number",
+  "filing_year",
+  "column_break_bdsk1",
+  "ecase_type",
+  "case_type",
+  "case_type_abbr",
+  "case_no",
+  "case_year",
+  "column_break_yqzma",
+  "registration_number",
+  "court_number_and_judge",
+  "next_hearing_date",
+  "case_history_details_section",
+  "case_history",
+  "document_details_section",
+  "documents_handover",
+  "collected_by_self",
+  "relationship",
+  "customer",
+  "client_name",
+  "date",
+  "column_break_70rik",
+  "signature"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Naming Series",
+   "options": "CASE-.YYYY.-"
+  },
+  {
+   "depends_on": "eval: in_list([\"DCC\", \"HCC\", \"SCC\"], doc.service_abbr)",
+   "fieldname": "cnr",
+   "fieldtype": "Data",
+   "label": "CNR",
+   "mandatory_depends_on": "eval: in_list([\"DCC\", \"HCC\", \"SCC\"], doc.service_abbr)",
+   "unique": 1
+  },
+  {
+   "fieldname": "case_title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Case Title",
+   "read_only": 1
+  },
+  {
+   "fieldname": "matter",
+   "fieldtype": "Link",
+   "label": "Matter",
+   "options": "Matter",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_1mq4i",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "service.abbr",
+   "fieldname": "service_abbr",
+   "fieldtype": "Read Only",
+   "hidden": 1,
+   "label": "Service Abbr"
+  },
+  {
+   "fieldname": "case_year",
+   "fieldtype": "Data",
+   "label": "Case Year",
+   "mandatory_depends_on": "eval: doc.status!=\"Pending\""
+  },
+  {
+   "fieldname": "case_no",
+   "fieldtype": "Data",
+   "label": "Case No",
+   "mandatory_depends_on": "eval: doc.status!=\"Pending\""
+  },
+  {
+   "fetch_from": "matter.service",
+   "fieldname": "service",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Service",
+   "options": "Service",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "matter.customer_name",
+   "fieldname": "customer_name",
+   "fieldtype": "Read Only",
+   "label": "Customer Name"
+  },
+  {
+   "fetch_from": "matter.contact_no",
+   "fieldname": "contact_no",
+   "fieldtype": "Read Only",
+   "label": "Contact No"
+  },
+  {
+   "fieldname": "petitioner",
+   "fieldtype": "Data",
+   "label": "Petitioner",
+   "reqd": 1
+  },
+  {
+   "fieldname": "respondent",
+   "fieldtype": "Data",
+   "label": "Respondent",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval: doc.status !== \"InProgress\"",
+   "fieldname": "document_details_section",
+   "fieldtype": "Section Break",
+   "label": "Document Details"
+  },
+  {
+   "default": "0",
+   "fieldname": "documents_handover",
+   "fieldtype": "Check",
+   "label": "Documents Handover"
+  },
+  {
+   "depends_on": "documents_handover",
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Date",
+   "mandatory_depends_on": "documents_handover"
+  },
+  {
+   "depends_on": "documents_handover",
+   "fieldname": "signature",
+   "fieldtype": "Signature",
+   "label": "Signature"
+  },
+  {
+   "fieldname": "column_break_70rik",
+   "fieldtype": "Column Break"
+  },
+  {
+   "collapsible": 1,
+   "collapsible_depends_on": "eval: doc.status==\"InProgress\"",
+   "fieldname": "case_history_details_section",
+   "fieldtype": "Section Break",
+   "label": "Case History Details"
+  },
+  {
+   "fieldname": "case_history",
+   "fieldtype": "Table",
+   "label": "Case History",
+   "options": "Case History"
+  },
+  {
+   "collapsible": 1,
+   "collapsible_depends_on": "eval: doc.status==\"InProgress\" || doc.status==\"Pending\"",
+   "fieldname": "case_details_section",
+   "fieldtype": "Section Break",
+   "label": "Case Details"
+  },
+  {
+   "fieldname": "column_break_yqzma",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval: in_list([\"DCC\"], doc.service_abbr)",
+   "fieldname": "court_number_and_judge",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Court Number and Judge",
+   "mandatory_depends_on": "eval: in_list([\"DCC\"], doc.service_abbr)"
+  },
+  {
+   "fieldname": "next_hearing_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Next Hearing Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Case Status",
+   "options": "Pending\nInProgress\nDisposed\nNOC"
+  },
+  {
+   "fieldname": "registration_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Registration Number",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "case_type.case_type_abbr",
+   "fetch_if_empty": 1,
+   "fieldname": "case_type_abbr",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Case Type Abbr"
+  },
+  {
+   "depends_on": "eval: doc.documents_handover && !doc.collected_by_self",
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "mandatory_depends_on": "eval: doc.documents_handover && !doc.collected_by_self",
+   "options": "Customer"
+  },
+  {
+   "fetch_from": "customer.customer_name",
+   "fieldname": "client_name",
+   "fieldtype": "Read Only",
+   "label": "Client Name"
+  },
+  {
+   "depends_on": "eval: in_list([\"DCC\", \"HCC\", \"SCC\"], doc.service_abbr)",
+   "fieldname": "ecourt",
+   "fieldtype": "Data",
+   "label": "eCourt"
+  },
+  {
+   "depends_on": "eval: in_list([\"DCC\", \"HCC\", \"SCC\"], doc.service_abbr)",
+   "fieldname": "ecase_type",
+   "fieldtype": "Data",
+   "label": "eCase Type",
+   "mandatory_depends_on": "eval: in_list([\"DCC\", \"HCC\", \"SCC\"], doc.service_abbr)"
+  },
+  {
+   "depends_on": "eval: !in_list([\"DCC\", \"HCC\", \"SCC\"], doc.service_abbr)",
+   "fieldname": "court",
+   "fieldtype": "Link",
+   "label": "Court",
+   "mandatory_depends_on": "eval: !in_list([\"DCC\", \"HCC\", \"SCC\"], doc.service_abbr)",
+   "options": "Court"
+  },
+  {
+   "depends_on": "eval: !in_list([\"DCC\", \"HCC\", \"SCC\"], doc.service_abbr)",
+   "fieldname": "case_type",
+   "fieldtype": "Link",
+   "label": "Case Type",
+   "mandatory_depends_on": "eval: !in_list([\"DCC\", \"HCC\", \"SCC\"], doc.service_abbr)",
+   "options": "Case Type"
+  },
+  {
+   "default": "0",
+   "depends_on": "documents_handover",
+   "fieldname": "collected_by_self",
+   "fieldtype": "Check",
+   "label": "Collected by Self"
+  },
+  {
+   "depends_on": "eval: doc.documents_handover && !doc.collected_by_self",
+   "fieldname": "relationship",
+   "fieldtype": "Select",
+   "label": "Relationship",
+   "mandatory_depends_on": "eval: doc.documents_handover && !doc.collected_by_self",
+   "options": "\nFamily\nFriend\nOthers"
+  },
+  {
+   "fieldname": "column_break_bdsk1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval: in_list([\"DCC\", \"HCC\", \"SCC\"], doc.service_abbr)",
+   "fieldname": "filing_number",
+   "fieldtype": "Data",
+   "label": "Filing Number",
+   "mandatory_depends_on": "eval: in_list([\"DCC\", \"HCC\", \"SCC\"], doc.service_abbr)"
+  },
+  {
+   "depends_on": "eval: in_list([\"DCC\", \"HCC\", \"SCC\"], doc.service_abbr)",
+   "fieldname": "filing_year",
+   "fieldtype": "Data",
+   "label": "Filing Year",
+   "mandatory_depends_on": "eval: in_list([\"DCC\", \"HCC\", \"SCC\"], doc.service_abbr)"
+  },
+  {
+   "fieldname": "column_break_j8ukp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval: doc.status != \"Pending\"",
+   "fieldname": "scrutiny_status",
+   "fieldtype": "Select",
+   "label": "Scrutiny Status",
+   "options": "Pending\nCompleted"
+  },
+  {
+   "fieldname": "file_location",
+   "fieldtype": "Data",
+   "label": "File Location"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [
+  {
+   "group": "Task",
+   "link_doctype": "Task",
+   "link_fieldname": "case"
+  },
+  {
+   "group": "Legal Service Entry",
+   "link_doctype": "Legal Service Entry",
+   "link_fieldname": "case"
+  }
+ ],
+ "modified": "2023-04-01 01:06:09.260686",
+ "modified_by": "Administrator",
+ "module": "Case Central",
+ "name": "Case",
+ "name_case": "Title Case",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Projects User",
+   "select": 1,
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [
+  {
+   "color": "Yellow",
+   "title": "Pending"
+  },
+  {
+   "color": "Orange",
+   "title": "InProgress"
+  },
+  {
+   "color": "Green",
+   "title": "Disposed"
+  },
+  {
+   "color": "Red",
+   "title": "NOC"
+  }
+ ],
+ "title_field": "case_title",
+ "track_changes": 1
+}

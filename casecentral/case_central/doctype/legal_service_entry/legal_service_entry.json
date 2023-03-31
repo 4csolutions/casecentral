@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "matter",
+  "case",
   "legal_service",
   "uom",
   "qty",
@@ -19,6 +20,8 @@
  "fields": [
   {
    "allow_in_quick_entry": 1,
+   "fetch_from": "case.matter",
+   "fetch_if_empty": 1,
    "fieldname": "matter",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -88,11 +91,17 @@
    "fieldname": "qty",
    "fieldtype": "Float",
    "label": "Qty"
+  },
+  {
+   "fieldname": "case",
+   "fieldtype": "Link",
+   "label": "Case",
+   "options": "Case"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-02-24 12:45:00.675346",
+ "modified": "2023-03-25 15:17:24.473409",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Legal Service Entry",
