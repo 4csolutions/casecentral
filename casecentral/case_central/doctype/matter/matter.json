@@ -211,11 +211,6 @@
  "is_submittable": 1,
  "links": [
   {
-   "group": "Case",
-   "link_doctype": "Case",
-   "link_fieldname": "matter"
-  },
-  {
    "group": "Task",
    "link_doctype": "Task",
    "link_fieldname": "matter"
@@ -232,11 +227,16 @@
   },
   {
    "group": "Case",
+   "link_doctype": "Case",
+   "link_fieldname": "matter"
+  },
+  {
+   "group": "Case",
    "link_doctype": "Caveat",
    "link_fieldname": "matter"
   }
  ],
- "modified": "2023-04-01 02:50:50.135446",
+ "modified": "2023-04-01 15:29:02.459894",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Matter",
