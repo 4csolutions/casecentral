@@ -2,25 +2,15 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Case', {
-	refresh: function(frm) {
-		frm.set_query('matter', () => {
-			return {
-				filters: {
-					'service_type': 'cases'
-				}
-			};
-		});
-		frm.set_query('case_type', () => {
-			return {
-				filters: {
-					'court': frm.doc.court
-				}
-			};
-		});
-	},
+	// refresh: function(frm) {
+		
+	// },
 	after_save: function(frm) {
 		if(frm.doc.status == "Pending" && frm.doc.registration_number) {
 			frm.doc.status = "InProgress";
+		}
+		if(frm.doc.status=="Pending" || frm.doc.status=="InProgress") {
+			frm.doc.documents_handover = 0;
 		}
 	},
 	petitioner: function(frm){
@@ -36,9 +26,6 @@ frappe.ui.form.on('Case', {
 	ecase_type: function(frm){
 		var ct_str = frm.doc.ecase_type.split("-")[0].trim().replace(/\./g, "");
 		frm.set_value("case_type_abbr", ct_str);
-		set_registration_number(frm);
-	},
-	case_type: function(frm){
 		set_registration_number(frm);
 	},
 	case_no: function(frm){

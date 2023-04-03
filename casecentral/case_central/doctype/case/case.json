@@ -12,6 +12,8 @@
   "petitioner",
   "respondent",
   "case_title",
+  "representing",
+  "representation_details",
   "column_break_1mq4i",
   "status",
   "scrutiny_status",
@@ -25,12 +27,10 @@
   "case_details_section",
   "cnr",
   "ecourt",
-  "court",
   "filing_number",
   "filing_year",
   "column_break_bdsk1",
   "ecase_type",
-  "case_type",
   "case_type_abbr",
   "case_no",
   "case_year",
@@ -59,11 +59,10 @@
    "options": "CASE-.YYYY.-"
   },
   {
-   "depends_on": "eval: in_list([\"DCC\", \"HCC\", \"SCC\"], doc.service_abbr)",
    "fieldname": "cnr",
    "fieldtype": "Data",
    "label": "CNR",
-   "mandatory_depends_on": "eval: in_list([\"DCC\", \"HCC\", \"SCC\"], doc.service_abbr)",
+   "length": 16,
    "unique": 1
   },
   {
@@ -107,7 +106,6 @@
    "fetch_from": "matter.service",
    "fieldname": "service",
    "fieldtype": "Link",
-   "in_standard_filter": 1,
    "label": "Service",
    "options": "Service",
    "read_only": 1
@@ -209,6 +207,7 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Case Status",
    "options": "Pending\nInProgress\nDisposed\nNOC"
   },
@@ -216,6 +215,7 @@
    "fieldname": "registration_number",
    "fieldtype": "Data",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Registration Number",
    "read_only": 1
   },
@@ -242,33 +242,14 @@
    "label": "Client Name"
   },
   {
-   "depends_on": "eval: in_list([\"DCC\", \"HCC\", \"SCC\"], doc.service_abbr)",
    "fieldname": "ecourt",
    "fieldtype": "Data",
    "label": "eCourt"
   },
   {
-   "depends_on": "eval: in_list([\"DCC\", \"HCC\", \"SCC\"], doc.service_abbr)",
    "fieldname": "ecase_type",
    "fieldtype": "Data",
-   "label": "eCase Type",
-   "mandatory_depends_on": "eval: in_list([\"DCC\", \"HCC\", \"SCC\"], doc.service_abbr)"
-  },
-  {
-   "depends_on": "eval: !in_list([\"DCC\", \"HCC\", \"SCC\"], doc.service_abbr)",
-   "fieldname": "court",
-   "fieldtype": "Link",
-   "label": "Court",
-   "mandatory_depends_on": "eval: !in_list([\"DCC\", \"HCC\", \"SCC\"], doc.service_abbr)",
-   "options": "Court"
-  },
-  {
-   "depends_on": "eval: !in_list([\"DCC\", \"HCC\", \"SCC\"], doc.service_abbr)",
-   "fieldname": "case_type",
-   "fieldtype": "Link",
-   "label": "Case Type",
-   "mandatory_depends_on": "eval: !in_list([\"DCC\", \"HCC\", \"SCC\"], doc.service_abbr)",
-   "options": "Case Type"
+   "label": "eCase Type"
   },
   {
    "default": "0",
@@ -318,6 +299,19 @@
    "fieldname": "file_location",
    "fieldtype": "Data",
    "label": "File Location"
+  },
+  {
+   "fieldname": "representing",
+   "fieldtype": "Select",
+   "label": "Representing",
+   "options": "Complainant/Plaintiff/Petitioner\nAccused/Defendant/Respondent"
+  },
+  {
+   "depends_on": "eval: doc.representing==\"Accused/Defendant/Respondent\"",
+   "description": "Ex: R1, A1, P1 etc.",
+   "fieldname": "representation_details",
+   "fieldtype": "Data",
+   "label": "Representation Details"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -333,7 +327,7 @@
    "link_fieldname": "case"
   }
  ],
- "modified": "2023-04-01 15:08:30.586439",
+ "modified": "2023-04-03 16:35:01.824793",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Case",

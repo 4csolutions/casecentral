@@ -3,16 +3,6 @@
 
 frappe.ui.form.on('Matter', {
 	refresh: function(frm) {
-		if (frm.doc.service_type == "Cases") {
-			$("[data-doctype='Case']").show();
-		} else {
-			$("[data-doctype='Case']").hide();
-		}
-		if (frm.doc.service_type == "Caveats") {
-			$("[data-doctype='Caveat']").show();
-		} else {
-			$("[data-doctype='Caveat']").hide();
-		}
 		frm.set_query('service_type', () => {
 			if (frm.doc.matter_type) {
 				return {

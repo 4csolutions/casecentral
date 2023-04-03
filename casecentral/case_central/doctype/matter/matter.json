@@ -36,6 +36,7 @@
  ],
  "fields": [
   {
+   "allow_on_submit": 1,
    "fieldname": "customer",
    "fieldtype": "Link",
    "in_standard_filter": 1,
@@ -236,7 +237,7 @@
    "link_fieldname": "matter"
   }
  ],
- "modified": "2023-04-01 15:29:02.459894",
+ "modified": "2023-04-02 14:29:19.028960",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Matter",
