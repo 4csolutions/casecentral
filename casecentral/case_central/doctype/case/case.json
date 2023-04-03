@@ -44,8 +44,8 @@
   "documents_handover",
   "collected_by_self",
   "relationship",
-  "customer",
-  "client_name",
+  "documents_collected_by",
+  "persons_name",
   "date",
   "column_break_70rik",
   "signature"
@@ -228,20 +228,6 @@
    "label": "Case Type Abbr"
   },
   {
-   "depends_on": "eval: doc.documents_handover && !doc.collected_by_self",
-   "fieldname": "customer",
-   "fieldtype": "Link",
-   "label": "Customer",
-   "mandatory_depends_on": "eval: doc.documents_handover && !doc.collected_by_self",
-   "options": "Customer"
-  },
-  {
-   "fetch_from": "customer.customer_name",
-   "fieldname": "client_name",
-   "fieldtype": "Read Only",
-   "label": "Client Name"
-  },
-  {
    "fieldname": "ecourt",
    "fieldtype": "Data",
    "label": "eCourt"
@@ -312,6 +298,20 @@
    "fieldname": "representation_details",
    "fieldtype": "Data",
    "label": "Representation Details"
+  },
+  {
+   "depends_on": "eval: doc.documents_handover && !doc.collected_by_self",
+   "fieldname": "documents_collected_by",
+   "fieldtype": "Link",
+   "label": "Documents Collected By",
+   "mandatory_depends_on": "eval: doc.documents_handover && !doc.collected_by_self",
+   "options": "Customer"
+  },
+  {
+   "fetch_from": "documents_collected_by.customer_name",
+   "fieldname": "persons_name",
+   "fieldtype": "Read Only",
+   "label": "Persons Name"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -327,7 +327,7 @@
    "link_fieldname": "case"
   }
  ],
- "modified": "2023-04-03 16:35:01.824793",
+ "modified": "2023-04-03 18:17:02.045322",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Case",
