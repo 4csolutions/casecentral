@@ -1,0 +1,167 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2023-04-04 00:42:50.203514",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "matter",
+  "case",
+  "customer",
+  "customer_name",
+  "contact_no",
+  "column_break_uwfua",
+  "collected_by_self",
+  "document_no",
+  "relationship",
+  "documents_collected_by",
+  "persons_name",
+  "date",
+  "signature",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Naming Series",
+   "options": "DOC-OUT-.###"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Document Outward",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fetch_from": "case.matter",
+   "fetch_if_empty": 1,
+   "fieldname": "matter",
+   "fieldtype": "Link",
+   "label": "Matter",
+   "options": "Matter"
+  },
+  {
+   "fieldname": "case",
+   "fieldtype": "Link",
+   "label": "Case",
+   "options": "Case"
+  },
+  {
+   "fetch_from": "matter.customer",
+   "fieldname": "customer",
+   "fieldtype": "Read Only",
+   "label": "Customer",
+   "options": "Customer"
+  },
+  {
+   "fetch_from": "matter.customer_name",
+   "fieldname": "customer_name",
+   "fieldtype": "Read Only",
+   "label": "Customer Name"
+  },
+  {
+   "fetch_from": "matter.contact_no",
+   "fieldname": "contact_no",
+   "fieldtype": "Read Only",
+   "label": "Contact No"
+  },
+  {
+   "fieldname": "column_break_uwfua",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "collected_by_self",
+   "fieldtype": "Check",
+   "label": "Collected by Self"
+  },
+  {
+   "depends_on": "eval: !doc.collected_by_self",
+   "fieldname": "relationship",
+   "fieldtype": "Select",
+   "label": "Relationship",
+   "options": "\nFamily\nFriend\nOthers"
+  },
+  {
+   "depends_on": "eval: !doc.collected_by_self",
+   "fieldname": "documents_collected_by",
+   "fieldtype": "Link",
+   "label": "Documents Collected By",
+   "options": "Customer"
+  },
+  {
+   "depends_on": "eval: !doc.collected_by_self",
+   "fetch_from": "documents_collected_by.customer_name",
+   "fieldname": "persons_name",
+   "fieldtype": "Read Only",
+   "label": "Persons Name"
+  },
+  {
+   "default": "now",
+   "fieldname": "date",
+   "fieldtype": "Datetime",
+   "label": "Date"
+  },
+  {
+   "fieldname": "signature",
+   "fieldtype": "Signature",
+   "label": "Signature"
+  },
+  {
+   "depends_on": "eval: !doc.case",
+   "fieldname": "document_no",
+   "fieldtype": "Data",
+   "label": "Document No",
+   "mandatory_depends_on": "eval: !doc.case"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2023-04-04 01:06:49.479770",
+ "modified_by": "Administrator",
+ "module": "Case Central",
+ "name": "Document Outward",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Projects User",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

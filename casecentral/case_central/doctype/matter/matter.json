@@ -235,9 +235,14 @@
    "group": "Case",
    "link_doctype": "Caveat",
    "link_fieldname": "matter"
+  },
+  {
+   "group": "Document Outward",
+   "link_doctype": "Document Outward",
+   "link_fieldname": "matter"
   }
  ],
- "modified": "2023-04-02 14:29:19.028960",
+ "modified": "2023-04-04 00:51:23.197883",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Matter",

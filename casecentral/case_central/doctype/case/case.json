@@ -39,16 +39,7 @@
   "court_number_and_judge",
   "next_hearing_date",
   "case_history_details_section",
-  "case_history",
-  "document_details_section",
-  "documents_handover",
-  "collected_by_self",
-  "relationship",
-  "documents_collected_by",
-  "persons_name",
-  "date",
-  "column_break_70rik",
-  "signature"
+  "case_history"
  ],
  "fields": [
   {
@@ -135,35 +126,6 @@
    "reqd": 1
   },
   {
-   "depends_on": "eval: doc.status !== \"InProgress\"",
-   "fieldname": "document_details_section",
-   "fieldtype": "Section Break",
-   "label": "Document Details"
-  },
-  {
-   "default": "0",
-   "fieldname": "documents_handover",
-   "fieldtype": "Check",
-   "label": "Documents Handover"
-  },
-  {
-   "depends_on": "documents_handover",
-   "fieldname": "date",
-   "fieldtype": "Date",
-   "label": "Date",
-   "mandatory_depends_on": "documents_handover"
-  },
-  {
-   "depends_on": "documents_handover",
-   "fieldname": "signature",
-   "fieldtype": "Signature",
-   "label": "Signature"
-  },
-  {
-   "fieldname": "column_break_70rik",
-   "fieldtype": "Column Break"
-  },
-  {
    "collapsible": 1,
    "collapsible_depends_on": "eval: doc.status==\"InProgress\"",
    "fieldname": "case_history_details_section",
@@ -188,12 +150,10 @@
    "fieldtype": "Column Break"
   },
   {
-   "depends_on": "eval: in_list([\"DCC\"], doc.service_abbr)",
    "fieldname": "court_number_and_judge",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Court Number and Judge",
-   "mandatory_depends_on": "eval: in_list([\"DCC\"], doc.service_abbr)"
+   "label": "Court Number and Judge"
   },
   {
    "fieldname": "next_hearing_date",
@@ -236,21 +196,6 @@
    "fieldname": "ecase_type",
    "fieldtype": "Data",
    "label": "eCase Type"
-  },
-  {
-   "default": "0",
-   "depends_on": "documents_handover",
-   "fieldname": "collected_by_self",
-   "fieldtype": "Check",
-   "label": "Collected by Self"
-  },
-  {
-   "depends_on": "eval: doc.documents_handover && !doc.collected_by_self",
-   "fieldname": "relationship",
-   "fieldtype": "Select",
-   "label": "Relationship",
-   "mandatory_depends_on": "eval: doc.documents_handover && !doc.collected_by_self",
-   "options": "\nFamily\nFriend\nOthers"
   },
   {
    "fieldname": "column_break_bdsk1",
@@ -298,23 +243,10 @@
    "fieldname": "representation_details",
    "fieldtype": "Data",
    "label": "Representation Details"
-  },
-  {
-   "depends_on": "eval: doc.documents_handover && !doc.collected_by_self",
-   "fieldname": "documents_collected_by",
-   "fieldtype": "Link",
-   "label": "Documents Collected By",
-   "mandatory_depends_on": "eval: doc.documents_handover && !doc.collected_by_self",
-   "options": "Customer"
-  },
-  {
-   "fetch_from": "documents_collected_by.customer_name",
-   "fieldname": "persons_name",
-   "fieldtype": "Read Only",
-   "label": "Persons Name"
   }
  ],
  "index_web_pages_for_search": 1,
+ "is_calendar_and_gantt": 1,
  "links": [
   {
    "group": "Task",
@@ -325,9 +257,14 @@
    "group": "Legal Service Entry",
    "link_doctype": "Legal Service Entry",
    "link_fieldname": "case"
+  },
+  {
+   "group": "Document Outward",
+   "link_doctype": "Document Outward",
+   "link_fieldname": "case"
   }
  ],
- "modified": "2023-04-03 18:17:02.045322",
+ "modified": "2023-04-04 01:05:15.760342",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Case",
