@@ -183,6 +183,10 @@ doc_events = {
         "on_update": "casecentral.doc_events.task.update_task_matter",
         "after_delete": "casecentral.doc_events.task.update_task_matter"
     },
+    "Case": {
+        "on_update": "casecentral.doc_events.case.update_case_matter",
+        "after_delete": "casecentral.doc_events.case.update_case_matter"
+    },
     "Sales Invoice": {
         "on_submit": "casecentral.doc_events.sales_invoice.manage_invoice_submit_cancel",
 		"on_cancel": "casecentral.doc_events.sales_invoice.manage_invoice_submit_cancel"
