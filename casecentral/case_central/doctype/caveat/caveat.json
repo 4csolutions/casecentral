@@ -65,6 +65,7 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Caveat Status",
    "options": "Active\nExpired"
   },
@@ -72,7 +73,6 @@
    "fetch_from": "matter.service",
    "fieldname": "service",
    "fieldtype": "Link",
-   "in_standard_filter": 1,
    "label": "Service",
    "options": "Service",
    "read_only": 1
@@ -124,6 +124,7 @@
   {
    "fieldname": "caveat_no",
    "fieldtype": "Data",
+   "in_standard_filter": 1,
    "label": "Caveat No",
    "reqd": 1
   },
@@ -158,7 +159,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-04-07 03:38:08.841784",
+ "modified": "2023-04-09 23:26:54.114071",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Caveat",
