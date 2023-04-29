@@ -223,6 +223,7 @@
    "depends_on": "eval: doc.status != \"Pending\"",
    "fieldname": "scrutiny_status",
    "fieldtype": "Select",
+   "in_standard_filter": 1,
    "label": "Scrutiny Status",
    "options": "Pending\nCompleted"
   },
@@ -264,7 +265,7 @@
    "link_fieldname": "case"
   }
  ],
- "modified": "2023-04-04 01:05:15.760342",
+ "modified": "2023-04-29 16:52:02.648478",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Case",

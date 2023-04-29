@@ -7,7 +7,7 @@ from frappe.model.document import Document
 
 class Matter(Document):
 	def on_cancel(self):
-		self.status = "Cancelled"
+		self.db_set("status", "Cancelled")
 
 		for task in frappe.get_all("Task", dict(matter=self.name)):
 			frappe.db.set_value("Task", task.name, "status", "Cancelled")
