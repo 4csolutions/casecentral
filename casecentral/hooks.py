@@ -21,7 +21,11 @@ fixtures = [
                     "Customer-contact_no",
                     "Customer-contact_email",
                     "Sales Invoice Item-reference_doctype",
-                    "Sales Invoice Item-reference_name"
+                    "Sales Invoice Item-reference_name",
+                    "Employee-employee_schedules",
+                    "Employee-google_calendar",
+                    "Timesheet-matter",
+                    "Timesheet-appointment"
                 ]
             ]
         ]
@@ -190,6 +194,10 @@ doc_events = {
     "Sales Invoice": {
         "on_submit": "casecentral.doc_events.sales_invoice.manage_invoice_submit_cancel",
 		"on_cancel": "casecentral.doc_events.sales_invoice.manage_invoice_submit_cancel"
+    },
+    "Timesheet": {
+        "on_submit": "casecentral.doc_events.timesheet.on_submit",
+        "on_cancel": "casecentral.doc_events.timesheet.on_cancel"
     }
 }
 
