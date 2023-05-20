@@ -1,0 +1,32 @@
+{
+ "actions": [],
+ "creation": "2023-05-20 16:50:28.059557",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "matter"
+ ],
+ "fields": [
+  {
+   "fieldname": "matter",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Matter",
+   "options": "Matter",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2023-05-20 17:00:09.211595",
+ "modified_by": "Administrator",
+ "module": "Case Central",
+ "name": "Linked Matter",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

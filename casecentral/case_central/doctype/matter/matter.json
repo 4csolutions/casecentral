@@ -26,6 +26,7 @@
   "expected_end_date",
   "referred_by",
   "referral_mobile_no",
+  "linked_matters",
   "matter_description_section",
   "description",
   "matter_research_tab",
@@ -206,6 +207,14 @@
    "fieldname": "research_notes",
    "fieldtype": "Text Editor",
    "label": "Research Notes"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "linked_matters",
+   "fieldtype": "Table MultiSelect",
+   "ignore_xss_filter": 1,
+   "label": "Linked Matters",
+   "options": "Linked Matter"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -242,7 +251,7 @@
    "link_fieldname": "matter"
   }
  ],
- "modified": "2023-04-29 16:47:21.361789",
+ "modified": "2023-05-20 16:58:21.380885",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Matter",

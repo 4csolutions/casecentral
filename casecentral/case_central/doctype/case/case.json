@@ -21,6 +21,7 @@
   "service_abbr",
   "column_break_j8ukp",
   "matter",
+  "customer",
   "customer_name",
   "contact_no",
   "file_location",
@@ -225,7 +226,7 @@
    "fieldtype": "Select",
    "in_standard_filter": 1,
    "label": "Scrutiny Status",
-   "options": "Pending\nCompleted"
+   "options": "Complied\nNot Complied"
   },
   {
    "fieldname": "file_location",
@@ -244,6 +245,14 @@
    "fieldname": "representation_details",
    "fieldtype": "Data",
    "label": "Representation Details"
+  },
+  {
+   "fetch_from": "matter.customer",
+   "fieldname": "customer",
+   "fieldtype": "Read Only",
+   "in_standard_filter": 1,
+   "label": "Customer",
+   "options": "Customer"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -265,7 +274,7 @@
    "link_fieldname": "case"
   }
  ],
- "modified": "2023-04-29 16:52:02.648478",
+ "modified": "2023-05-20 17:01:25.318332",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Case",
