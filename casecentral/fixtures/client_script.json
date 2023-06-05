@@ -20,5 +20,16 @@
   "name": "Remove Referral from Client",
   "script": "frappe.ui.form.on('Matter', {\n\trefresh(frm) {\n\t\tif(frm.doc.client == frm.doc.referred_by) {\n\t\t    frm.set_value('referred_by', '');\n\t\t}\n\t}\n})",
   "view": "Form"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "Quality Review",
+  "enabled": 1,
+  "modified": "2023-06-05 17:17:58.829709",
+  "module": null,
+  "name": "Quality Review",
+  "script": "frappe.ui.form.on('Quality Review', {\n\trefresh(frm) {\n\t\tfrm.set_query('goal', () => {\n\t\t    return {\n\t\t\t\tfilters: {\n\t\t\t\t\t'service': frm.doc.service\n\t\t\t\t}\n\t\t\t};\n\t\t});\n\t}\n});",
+  "view": "Form"
  }
 ]

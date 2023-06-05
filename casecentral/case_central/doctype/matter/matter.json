@@ -249,9 +249,15 @@
    "group": "Document Outward",
    "link_doctype": "Document Outward",
    "link_fieldname": "matter"
+  },
+  {
+   "custom": 1,
+   "group": "Quality",
+   "link_doctype": "Quality Review",
+   "link_fieldname": "matter"
   }
  ],
- "modified": "2023-05-20 16:58:21.380885",
+ "modified": "2023-06-05 16:06:09.228751",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Matter",

@@ -249,10 +249,11 @@
   {
    "fetch_from": "matter.customer",
    "fieldname": "customer",
-   "fieldtype": "Read Only",
+   "fieldtype": "Link",
    "in_standard_filter": 1,
    "label": "Customer",
-   "options": "Customer"
+   "options": "Customer",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
@@ -274,7 +275,7 @@
    "link_fieldname": "case"
   }
  ],
- "modified": "2023-05-20 17:01:25.318332",
+ "modified": "2023-06-05 17:12:33.910717",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Case",

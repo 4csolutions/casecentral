@@ -21,7 +21,10 @@ fixtures = [
                     "Customer-contact_no",
                     "Customer-contact_email",
                     "Sales Invoice Item-reference_doctype",
-                    "Sales Invoice Item-reference_name"
+                    "Sales Invoice Item-reference_name",
+                    "Quality Review-matter",
+                    "Quality Review-service",
+                    "Quality Goal-service"
                 ]
             ]
         ]
@@ -66,7 +69,8 @@ fixtures = [
                 "in",
                 [
                     "Duplicate Contact Check",
-                    "Remove Referral from Client"
+                    "Remove Referral from Client",
+                    "Quality Review"
                 ]
             ]
         ]
@@ -98,6 +102,9 @@ app_include_js = "casecentral.bundle.js"
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
+doctype_js = {
+    "Sales Invoice" : "public/js/sales_invoice.js"
+}
 
 # Home Pages
 # ----------
