@@ -257,7 +257,7 @@
    "link_fieldname": "matter"
   }
  ],
- "modified": "2023-06-05 16:06:09.228751",
+ "modified": "2023-06-10 11:59:55.576614",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Matter",
@@ -328,7 +328,7 @@
   },
   {
    "color": "Gray",
-   "title": "Pending Review"
+   "title": "Pending"
   }
  ],
  "track_changes": 1
