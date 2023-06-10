@@ -230,8 +230,9 @@
   },
   {
    "fieldname": "file_location",
-   "fieldtype": "Data",
-   "label": "File Location"
+   "fieldtype": "Link",
+   "label": "File Location",
+   "options": "Warehouse"
   },
   {
    "fieldname": "representing",
@@ -275,7 +276,7 @@
    "link_fieldname": "case"
   }
  ],
- "modified": "2023-06-05 17:12:33.910717",
+ "modified": "2023-06-10 12:46:08.685260",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Case",
