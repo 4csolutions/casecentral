@@ -226,7 +226,7 @@
    "fieldtype": "Select",
    "in_standard_filter": 1,
    "label": "Scrutiny Status",
-   "options": "Complied\nNot Complied"
+   "options": "Not Complied\nComplied"
   },
   {
    "fieldname": "file_location",
@@ -276,7 +276,7 @@
    "link_fieldname": "case"
   }
  ],
- "modified": "2023-06-10 12:46:08.685260",
+ "modified": "2023-06-14 12:24:35.001746",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Case",
@@ -309,6 +309,7 @@
    "write": 1
   }
  ],
+ "show_name_in_global_search": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [
