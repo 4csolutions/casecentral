@@ -221,7 +221,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "depends_on": "eval: doc.status != \"Pending\"",
    "fieldname": "scrutiny_status",
    "fieldtype": "Select",
    "in_standard_filter": 1,
@@ -276,7 +275,7 @@
    "link_fieldname": "case"
   }
  ],
- "modified": "2023-06-14 12:24:35.001746",
+ "modified": "2023-06-17 13:15:11.269579",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Case",
