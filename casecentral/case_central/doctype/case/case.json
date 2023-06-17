@@ -237,11 +237,11 @@
    "fieldname": "representing",
    "fieldtype": "Select",
    "label": "Representing",
-   "options": "Complainant/Plaintiff/Petitioner\nAccused/Defendant/Respondent"
+   "options": "\nAppellant\nComplainant\nDecree Holder\nPetitioner\nPlaintiff\nAccused\nDefendant\nJudgement Debtor\nRespondent"
   },
   {
-   "depends_on": "eval: doc.representing==\"Accused/Defendant/Respondent\"",
-   "description": "Ex: R1, A1, P1 etc.",
+   "depends_on": "eval: in_list([\"Accused\", \"Defendant\", \"Respondent\", \"Judgement Debtor\"], doc.representing)",
+   "description": "Ex: 1, 1 to 4 ",
    "fieldname": "representation_details",
    "fieldtype": "Data",
    "label": "Representation Details"
@@ -275,7 +275,7 @@
    "link_fieldname": "case"
   }
  ],
- "modified": "2023-06-17 13:15:11.269579",
+ "modified": "2023-06-17 14:28:59.988077",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Case",
