@@ -1,0 +1,44 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-06-19 14:34:40.454195",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "create_book_on_purchase_invoice"
+ ],
+ "fields": [
+  {
+   "default": "0",
+   "fieldname": "create_book_on_purchase_invoice",
+   "fieldtype": "Check",
+   "label": "Create Book on Purchase Invoice"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2023-06-20 04:05:43.818860",
+ "modified_by": "Administrator",
+ "module": "Case Central",
+ "name": "Case Central Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
