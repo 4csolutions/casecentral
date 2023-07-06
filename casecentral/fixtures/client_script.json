@@ -31,5 +31,16 @@
   "name": "Quality Review",
   "script": "frappe.ui.form.on('Quality Review', {\n\trefresh(frm) {\n\t\tfrm.set_query('goal', () => {\n\t\t    return {\n\t\t\t\tfilters: {\n\t\t\t\t\t'service': frm.doc.service\n\t\t\t\t}\n\t\t\t};\n\t\t});\n\t}\n});",
   "view": "Form"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "Task",
+  "enabled": 1,
+  "modified": "2023-07-04 14:43:07.678095",
+  "module": null,
+  "name": "Task",
+  "script": "frappe.ui.form.on('Task', {\n\trefresh(frm) {\n        if(frm.doc.matter) {\n            frappe.db.get_value('Matter', frm.doc.matter, 'matter_type', (r) => {\n                frm.set_query('type', () => {\n                    return {\n                        filters: {\n                            'matter_type': r.matter_type\n                        }\n                    };\n                });\n            });   \n        }\n\t},\n\ttype: function(frm) {\n        frappe.db.get_value('Task Type', frm.doc.type, 'description', (r) => {\n            if (r && r.description) {\n                frm.set_value('subject', r.description);\n            }\n        });\n\t}\n});",
+  "view": "Form"
  }
 ]

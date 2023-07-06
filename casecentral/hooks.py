@@ -17,6 +17,8 @@ fixtures = [
                 [
                     "Task-matter",
                     "Task-case",
+                    "Task Type-naming_series",
+                    "Task Type-matter_type",
                     "Sales Invoice-matter",
                     "Customer-contact_no",
                     "Customer-contact_email",
@@ -46,7 +48,6 @@ fixtures = [
                     "Task-task_weight-hidden",
                     "Task-sb_depends_on-hidden",
                     "Task-sb_costing-hidden",
-                    "Task-type-hidden",
                     "Task-project-in_list_view",
                     "Task-project-in_standard_filter",
                     "Task-is_group-in_list_view",
@@ -56,7 +57,11 @@ fixtures = [
                     "Task-status-allow_in_quick_entry",
                     "Task-is_group-bold",
                     "Task-parent_task-bold",
-                    "Task-priority-allow_in_quick_entry"
+                    "Task-priority-allow_in_quick_entry",
+                    "Task Type-main-naming_rule",
+                    "Task Type-main-autoname",
+                    "Task-type-in_standard_filter",
+                    "Task Type-main-search_fields"
                 ]
             ]
         ]
@@ -70,7 +75,8 @@ fixtures = [
                 [
                     "Duplicate Contact Check",
                     "Remove Referral from Client",
-                    "Quality Review"
+                    "Quality Review",
+                    "Task"
                 ]
             ]
         ]
