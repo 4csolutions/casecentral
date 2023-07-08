@@ -19,11 +19,15 @@ frappe.ui.form.on('Book', {
 					isbn: frm.doc.isbn
 				},
 				callback: (r) => {
-					var book_details = r.message;
-					// Update the form fields with fetched book details using frm.set_value()
-					Object.keys(book_details).forEach(function(key){
-						frm.set_value(key, book_details[key]);
-					});					
+					if( r && r.message ) {
+						var book_details = r.message;
+						// Update the form fields with fetched book details using frm.set_value()
+						Object.keys(book_details).forEach(function(key){
+							frm.set_value(key, book_details[key]);
+						});
+					} else {
+						frappe.msgprint(__("The Book details could not be fetched from Google Books"));
+					}	
 				}
 			});
 		}
