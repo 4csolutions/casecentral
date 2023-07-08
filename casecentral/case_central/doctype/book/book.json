@@ -1,0 +1,186 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2023-06-10 14:13:52.597248",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "book_title",
+  "purchase_invoice",
+  "book_location",
+  "column_break_1",
+  "status",
+  "item_code",
+  "item_name",
+  "book_details_section",
+  "isbn",
+  "book_subtitle",
+  "author",
+  "category",
+  "column_break_2",
+  "publisher",
+  "published_date",
+  "page_count",
+  "section_break_1",
+  "preview_link",
+  "description",
+  "book_image"
+ ],
+ "fields": [
+  {
+   "fieldname": "author",
+   "fieldtype": "Data",
+   "label": "Author"
+  },
+  {
+   "fieldname": "publisher",
+   "fieldtype": "Data",
+   "label": "Publisher"
+  },
+  {
+   "fieldname": "isbn",
+   "fieldtype": "Data",
+   "label": "ISBN"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Available\nIssued",
+   "read_only": 1
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Item Code",
+   "options": "Item",
+   "read_only": 1
+  },
+  {
+   "depends_on": "item_code",
+   "fetch_from": "item_code.item_name",
+   "fieldname": "item_name",
+   "fieldtype": "Read Only",
+   "label": "Item Name"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Text Editor",
+   "label": "Description"
+  },
+  {
+   "fieldname": "section_break_1",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Naming Series",
+   "options": "Book-.###"
+  },
+  {
+   "fieldname": "published_date",
+   "fieldtype": "Data",
+   "label": "Published Date"
+  },
+  {
+   "fieldname": "book_image",
+   "fieldtype": "Attach Image",
+   "hidden": 1,
+   "label": "Book Image"
+  },
+  {
+   "fieldname": "book_subtitle",
+   "fieldtype": "Data",
+   "label": "Book Subtitle"
+  },
+  {
+   "fieldname": "book_details_section",
+   "fieldtype": "Section Break",
+   "label": "Book Details"
+  },
+  {
+   "fieldname": "page_count",
+   "fieldtype": "Data",
+   "label": "Page Count"
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "item_code.item_name",
+   "fetch_if_empty": 1,
+   "fieldname": "book_title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Book Title"
+  },
+  {
+   "fieldname": "purchase_invoice",
+   "fieldtype": "Link",
+   "label": "Purchase Invoice",
+   "options": "Purchase Invoice",
+   "read_only": 1
+  },
+  {
+   "fieldname": "category",
+   "fieldtype": "Data",
+   "label": "Category"
+  },
+  {
+   "fieldname": "preview_link",
+   "fieldtype": "Attach",
+   "label": "Preview Link"
+  },
+  {
+   "fieldname": "book_location",
+   "fieldtype": "Link",
+   "label": "Book location",
+   "options": "Warehouse"
+  }
+ ],
+ "image_field": "book_image",
+ "index_web_pages_for_search": 1,
+ "links": [
+  {
+   "group": "Lending",
+   "link_doctype": "Lend Book",
+   "link_fieldname": "book_id"
+  }
+ ],
+ "modified": "2023-07-04 15:01:01.758239",
+ "modified_by": "Administrator",
+ "module": "Case Central",
+ "name": "Book",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

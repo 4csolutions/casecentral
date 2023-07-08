@@ -136,7 +136,7 @@ doctype_js = {
 # ------------
 
 # before_install = "casecentral.install.before_install"
-# after_install = "casecentral.install.after_install"
+after_install = "casecentral.install.after_install"
 
 # Uninstallation
 # ------------
@@ -197,6 +197,9 @@ doc_events = {
     "Sales Invoice": {
         "on_submit": "casecentral.doc_events.sales_invoice.manage_invoice_submit_cancel",
 		"on_cancel": "casecentral.doc_events.sales_invoice.manage_invoice_submit_cancel"
+    },
+    "Purchase Invoice": {
+        "on_submit": "casecentral.doc_events.purchase_invoice.create_book_on_submit"
     }
 }
 
