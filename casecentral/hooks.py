@@ -58,10 +58,15 @@ fixtures = [
                     "Task-is_group-bold",
                     "Task-parent_task-bold",
                     "Task-priority-allow_in_quick_entry",
+                    "Task-type-allow_in_quick_entry",
+                    "Task-type-in_standard_filter",
                     "Task Type-main-naming_rule",
                     "Task Type-main-autoname",
-                    "Task-type-in_standard_filter",
-                    "Task Type-main-search_fields"
+                    "Task Type-main-search_fields",
+                    "Task Type-description-in_list_view",
+                    "Task Type-description-in_standard_filter",
+                    "Task Type-main-title_field",
+                    "Task Type-main-show_title_field_in_link"
                 ]
             ]
         ]
