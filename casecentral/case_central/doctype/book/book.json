@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "naming_series:",
  "creation": "2023-06-10 14:13:52.597248",
@@ -44,7 +45,8 @@
   {
    "fieldname": "isbn",
    "fieldtype": "Data",
-   "label": "ISBN"
+   "label": "ISBN",
+   "options": "Barcode"
   },
   {
    "fieldname": "status",
@@ -160,7 +162,7 @@
    "link_fieldname": "book_id"
   }
  ],
- "modified": "2023-07-04 15:01:01.758239",
+ "modified": "2023-07-12 10:35:03.407288",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Book",
