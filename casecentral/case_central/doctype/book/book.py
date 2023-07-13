@@ -11,7 +11,7 @@ class Book(Document):
 @frappe.whitelist()
 def fetch_book_details(isbn):
     book_doc = {}
-    response = requests.get(f'https://www.googleapis.com/books/v1/volumes?q=isbn={isbn}')
+    response = requests.get(f'https://www.googleapis.com/books/v1/volumes?q=isbn:{isbn}')
     if response.ok:
         data = response.json()
 
