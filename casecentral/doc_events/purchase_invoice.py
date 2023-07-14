@@ -15,6 +15,8 @@ def create_book_on_submit(doc, method):
                     book.item_code = item_code
                     book.purchase_invoice = doc.name
                     book.isbn = frappe.db.get_value('Item', item_code, 'isbn')
+                    book.book_type = frappe.db.get_value('Item', item_code, 'book_type')
+                    book.book_price = item.rate
                     book.insert()
 
                     book_details = fetch_book_details(book.isbn)
@@ -22,5 +24,5 @@ def create_book_on_submit(doc, method):
                         book.update(book_details)
                     book.save()
               
-                frappe.msgprint('Book created successfully!')
+                frappe.msgprint('Books created successfully!')
     

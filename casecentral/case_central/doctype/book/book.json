@@ -28,6 +28,7 @@
   "publisher",
   "published_date",
   "page_count",
+  "book_price",
   "section_break_1",
   "preview_link",
   "description",
@@ -168,6 +169,11 @@
    "fieldtype": "Data",
    "label": "Book Type Abbr",
    "read_only": 1
+  },
+  {
+   "fieldname": "book_price",
+   "fieldtype": "Data",
+   "label": "Book Price"
   }
  ],
  "image_field": "book_image",
@@ -179,7 +185,7 @@
    "link_fieldname": "book_id"
   }
  ],
- "modified": "2023-07-14 16:40:02.098099",
+ "modified": "2023-07-14 17:49:16.306005",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Book",
