@@ -15,6 +15,8 @@
   "book_location",
   "column_break_1",
   "status",
+  "book_type",
+  "book_type_abbr",
   "item_code",
   "item_name",
   "book_details_section",
@@ -88,6 +90,7 @@
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Naming Series",
    "options": "Book-.###"
   },
@@ -151,6 +154,20 @@
    "fieldtype": "Link",
    "label": "Book location",
    "options": "Warehouse"
+  },
+  {
+   "fieldname": "book_type",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Book Type",
+   "options": "Book Type"
+  },
+  {
+   "fetch_from": "book_type.book_type_abbr",
+   "fieldname": "book_type_abbr",
+   "fieldtype": "Data",
+   "label": "Book Type Abbr",
+   "read_only": 1
   }
  ],
  "image_field": "book_image",
@@ -162,7 +179,7 @@
    "link_fieldname": "book_id"
   }
  ],
- "modified": "2023-07-12 10:35:03.407288",
+ "modified": "2023-07-14 16:40:02.098099",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Book",

@@ -242,7 +242,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Books and Journals",
-   "link_count": 2,
+   "link_count": 3,
    "onboard": 0,
    "type": "Card Break"
   },
@@ -259,6 +259,16 @@
   {
    "hidden": 0,
    "is_query_report": 0,
+   "label": "Book Type",
+   "link_count": 0,
+   "link_to": "Book Type",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
    "label": "Lend Book",
    "link_count": 0,
    "link_to": "Lend Book",
@@ -267,7 +277,7 @@
    "type": "Link"
   }
  ],
- "modified": "2023-07-12 10:36:57.957145",
+ "modified": "2023-07-14 16:02:28.177354",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Case Central",
