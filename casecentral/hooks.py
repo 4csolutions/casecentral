@@ -20,8 +20,6 @@ fixtures = [
                     "Task Type-naming_series",
                     "Task Type-matter_type",
                     "Sales Invoice-matter",
-                    "Customer-contact_no",
-                    "Customer-contact_email",
                     "Sales Invoice Item-reference_doctype",
                     "Sales Invoice Item-reference_name",
                     "Quality Review-matter",
