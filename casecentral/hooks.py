@@ -24,7 +24,9 @@ fixtures = [
                     "Sales Invoice Item-reference_name",
                     "Quality Review-matter",
                     "Quality Review-service",
-                    "Quality Goal-service"
+                    "Quality Goal-service",
+                    "Item-isbn",
+                    "Item-book_type"
                 ]
             ]
         ]

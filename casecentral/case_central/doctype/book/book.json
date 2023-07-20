@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "naming_series:",
  "creation": "2023-06-10 14:13:52.597248",
@@ -14,6 +15,8 @@
   "book_location",
   "column_break_1",
   "status",
+  "book_type",
+  "book_type_abbr",
   "item_code",
   "item_name",
   "book_details_section",
@@ -25,6 +28,7 @@
   "publisher",
   "published_date",
   "page_count",
+  "book_price",
   "section_break_1",
   "preview_link",
   "description",
@@ -44,7 +48,8 @@
   {
    "fieldname": "isbn",
    "fieldtype": "Data",
-   "label": "ISBN"
+   "label": "ISBN",
+   "options": "Barcode"
   },
   {
    "fieldname": "status",
@@ -86,6 +91,7 @@
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Naming Series",
    "options": "Book-.###"
   },
@@ -149,6 +155,25 @@
    "fieldtype": "Link",
    "label": "Book location",
    "options": "Warehouse"
+  },
+  {
+   "fieldname": "book_type",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Book Type",
+   "options": "Book Type"
+  },
+  {
+   "fetch_from": "book_type.book_type_abbr",
+   "fieldname": "book_type_abbr",
+   "fieldtype": "Data",
+   "label": "Book Type Abbr",
+   "read_only": 1
+  },
+  {
+   "fieldname": "book_price",
+   "fieldtype": "Data",
+   "label": "Book Price"
   }
  ],
  "image_field": "book_image",
@@ -160,7 +185,7 @@
    "link_fieldname": "book_id"
   }
  ],
- "modified": "2023-07-04 15:01:01.758239",
+ "modified": "2023-07-14 17:49:16.306005",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Book",
