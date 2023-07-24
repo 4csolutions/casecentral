@@ -20,6 +20,7 @@
   "matter",
   "customer_name",
   "contact_no",
+  "contact_email",
   "file_location",
   "case_details_section",
   "cnr",
@@ -98,7 +99,8 @@
    "fetch_from": "matter.contact_no",
    "fieldname": "contact_no",
    "fieldtype": "Read Only",
-   "label": "Contact No"
+   "label": "Contact No",
+   "options": "Phone"
   },
   {
    "fieldname": "file_location",
@@ -155,11 +157,18 @@
    "fieldname": "caveat_service_abbr",
    "fieldtype": "Read Only",
    "label": "Caveat Service Abbr"
+  },
+  {
+   "fetch_from": "matter.contact_email",
+   "fieldname": "contact_email",
+   "fieldtype": "Read Only",
+   "label": "Contact Email",
+   "options": "Email"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-04-09 23:26:54.114071",
+ "modified": "2023-07-24 21:35:14.877957",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Caveat",
