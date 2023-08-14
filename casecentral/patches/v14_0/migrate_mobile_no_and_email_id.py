@@ -6,7 +6,8 @@ def execute():
     for record in x:
         contact_doc = frappe.new_doc('Contact')
         contact_doc.first_name = record.get('customer_name')
-        contact_doc.append('email_ids', {'email_id' : record.get('contact_email'), 'is_primary' : 1})
+        if record.get('contact_email'):
+            contact_doc.append('email_ids', {'email_id' : record.get('contact_email'), 'is_primary' : 1})
         contact_doc.append('phone_nos', {'phone' : record.get('contact_no'), 'is_primary_mobile_no' : 1})
         contact_doc.append('links', {'link_doctype' : 'Customer', 'link_name' : record.get('name')})
         contact_doc.insert()
