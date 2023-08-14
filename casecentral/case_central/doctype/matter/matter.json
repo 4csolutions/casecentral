@@ -116,14 +116,15 @@
    "options": "Customer"
   },
   {
-   "fetch_from": "referred_by.contact_no",
+   "fetch_from": "referred_by.mobile_no",
    "fieldname": "referral_mobile_no",
    "fieldtype": "Read Only",
    "label": "Referral Mobile No",
    "options": "Phone"
   },
   {
-   "fetch_from": "customer.contact_no",
+   "allow_on_submit": 1,
+   "fetch_from": "customer.mobile_no",
    "fieldname": "contact_no",
    "fieldtype": "Read Only",
    "in_list_view": 1,
@@ -140,7 +141,8 @@
    "label": "Customer Name"
   },
   {
-   "fetch_from": "customer.contact_email",
+   "allow_on_submit": 1,
+   "fetch_from": "customer.email_id",
    "fieldname": "contact_email",
    "fieldtype": "Read Only",
    "label": "Contact Email",
@@ -257,7 +259,7 @@
    "link_fieldname": "matter"
   }
  ],
- "modified": "2023-06-10 11:59:55.576614",
+ "modified": "2023-07-20 14:55:13.783197",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Matter",
