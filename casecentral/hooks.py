@@ -30,7 +30,8 @@ fixtures = [
                     "Employee-employee_schedules",
                     "Employee-google_calendar",
                     "Timesheet-matter",
-                    "Timesheet-appointment"
+                    "Timesheet-appointment",
+                    "Timesheet-case"
                 ]
             ]
         ]
