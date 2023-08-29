@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"zkQlSSmwUA\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Case Central</span>\",\"col\":12}},{\"id\":\"DWgn1wYllm\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customer\",\"col\":3}},{\"id\":\"PAyPv1xREA\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Matter\",\"col\":3}},{\"id\":\"Bf8EmZW4X1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Case\",\"col\":3}},{\"id\":\"RfdbBJE5--\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Caveat\",\"col\":3}},{\"id\":\"Uk5zrabl7W\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Task\",\"col\":3}},{\"id\":\"8Gw3-JUC-s\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Dashboard\",\"col\":3}},{\"id\":\"CffZAne9zA\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"r84gKKGl3v\",\"type\":\"card\",\"data\":{\"card_name\":\"Matter Management\",\"col\":4}},{\"id\":\"IAqlYA_j7W\",\"type\":\"card\",\"data\":{\"card_name\":\"Case Management\",\"col\":4}},{\"id\":\"vo9eEh5vWO\",\"type\":\"card\",\"data\":{\"card_name\":\"Operations\",\"col\":4}},{\"id\":\"CLmoYTPsPU\",\"type\":\"card\",\"data\":{\"card_name\":\"Quality Management\",\"col\":4}},{\"id\":\"RQvtolJSLV\",\"type\":\"card\",\"data\":{\"card_name\":\"Books and Journals\",\"col\":4}},{\"id\":\"k-bGe7ImE9\",\"type\":\"card\",\"data\":{\"card_name\":\"Setup\",\"col\":4}},{\"id\":\"pGvcbAvNtp\",\"type\":\"card\",\"data\":{\"card_name\":\"Billing Setup\",\"col\":4}},{\"id\":\"2phxWUdck8\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
+ "content": "[{\"id\":\"zkQlSSmwUA\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Case Central</span>\",\"col\":12}},{\"id\":\"DWgn1wYllm\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customer\",\"col\":3}},{\"id\":\"PAyPv1xREA\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Matter\",\"col\":3}},{\"id\":\"Bf8EmZW4X1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Case\",\"col\":3}},{\"id\":\"RfdbBJE5--\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Caveat\",\"col\":3}},{\"id\":\"Uk5zrabl7W\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Task\",\"col\":3}},{\"id\":\"8Gw3-JUC-s\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Dashboard\",\"col\":3}},{\"id\":\"CffZAne9zA\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"r84gKKGl3v\",\"type\":\"card\",\"data\":{\"card_name\":\"Matter Management\",\"col\":4}},{\"id\":\"IAqlYA_j7W\",\"type\":\"card\",\"data\":{\"card_name\":\"Case Management\",\"col\":4}},{\"id\":\"pGvcbAvNtp\",\"type\":\"card\",\"data\":{\"card_name\":\"Appointments\",\"col\":4}},{\"id\":\"vo9eEh5vWO\",\"type\":\"card\",\"data\":{\"card_name\":\"Operations\",\"col\":4}},{\"id\":\"CLmoYTPsPU\",\"type\":\"card\",\"data\":{\"card_name\":\"Quality Management\",\"col\":4}},{\"id\":\"RQvtolJSLV\",\"type\":\"card\",\"data\":{\"card_name\":\"Books and Journals\",\"col\":4}},{\"id\":\"k-bGe7ImE9\",\"type\":\"card\",\"data\":{\"card_name\":\"Setup\",\"col\":4}},{\"id\":\"2phxWUdck8\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
  "creation": "2022-12-27 17:17:22.857757",
  "custom_blocks": [],
  "docstatus": 0,
@@ -12,24 +12,6 @@
  "is_hidden": 0,
  "label": "Case Central",
  "links": [
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Billing Setup",
-   "link_count": 1,
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Legal Services",
-   "link_count": 0,
-   "link_to": "Legal Service",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
   {
    "hidden": 0,
    "is_query_report": 0,
@@ -99,24 +81,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Operations",
-   "link_count": 1,
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Document Outward",
-   "link_count": 0,
-   "link_to": "Document Outward",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Case Management",
    "link_count": 2,
    "onboard": 0,
@@ -173,6 +137,120 @@
   {
    "hidden": 0,
    "is_query_report": 0,
+   "label": "Books and Journals",
+   "link_count": 3,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Book",
+   "link_count": 0,
+   "link_to": "Book",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Book Type",
+   "link_count": 0,
+   "link_to": "Book Type",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Lend Book",
+   "link_count": 0,
+   "link_to": "Lend Book",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Operations",
+   "link_count": 2,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Document Outward",
+   "link_count": 0,
+   "link_to": "Document Outward",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Legal Service",
+   "link_count": 0,
+   "link_to": "Legal Service",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Appointments",
+   "link_count": 4,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Customer Appointment",
+   "link_count": 0,
+   "link_to": "Customer Appointment",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Timesheet",
+   "link_count": 0,
+   "link_to": "Timesheet",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Meeting Room",
+   "link_count": 0,
+   "link_to": "Meeting Room",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Lawyer Schedule",
+   "link_count": 0,
+   "link_to": "Lawyer Schedule",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
    "label": "Setup",
    "link_count": 6,
    "onboard": 0,
@@ -181,9 +259,9 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Branch",
+   "label": "Case Central Settings",
    "link_count": 0,
-   "link_to": "Branch",
+   "link_to": "Case Central Settings",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -237,47 +315,9 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Books and Journals",
-   "link_count": 3,
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Book",
-   "link_count": 0,
-   "link_to": "Book",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Book Type",
-   "link_count": 0,
-   "link_to": "Book Type",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Lend Book",
-   "link_count": 0,
-   "link_to": "Lend Book",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
   }
  ],
- "modified": "2023-07-14 16:02:28.177354",
+ "modified": "2023-08-28 20:17:13.410916",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Case Central",

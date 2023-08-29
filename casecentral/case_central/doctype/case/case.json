@@ -273,9 +273,19 @@
    "group": "Document Outward",
    "link_doctype": "Document Outward",
    "link_fieldname": "case"
+  },
+  {
+   "group": "Appointment",
+   "link_doctype": "Customer Appointment",
+   "link_fieldname": "case"
+  },
+  {
+   "group": "Appointment",
+   "link_doctype": "Timesheet",
+   "link_fieldname": "case"
   }
  ],
- "modified": "2023-06-17 14:52:35.261131",
+ "modified": "2023-08-26 21:53:30.445512",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Case",
