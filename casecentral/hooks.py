@@ -27,6 +27,7 @@ fixtures = [
                     "Quality Goal-service",
                     "Item-isbn",
                     "Item-book_type",
+                    "Employee-appointments",
                     "Employee-employee_schedules",
                     "Employee-google_calendar",
                     "Timesheet-matter",
