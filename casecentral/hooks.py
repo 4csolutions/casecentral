@@ -26,7 +26,11 @@ fixtures = [
                     "Quality Review-service",
                     "Quality Goal-service",
                     "Item-isbn",
-                    "Item-book_type"
+                    "Item-book_type",
+                    "Employee-employee_schedules",
+                    "Employee-google_calendar",
+                    "Timesheet-matter",
+                    "Timesheet-appointment"
                 ]
             ]
         ]
@@ -211,6 +215,12 @@ doc_events = {
     },
     "Purchase Invoice": {
         "on_submit": "casecentral.doc_events.purchase_invoice.create_book_on_submit"
+    },
+    "Timesheet": {
+        "after_insert": "casecentral.doc_events.timesheet.after_insert",
+        "after_delete": "casecentral.doc_events.timesheet.after_delete",
+        "on_submit": "casecentral.doc_events.timesheet.on_submit",
+        "on_cancel": "casecentral.doc_events.timesheet.on_cancel"
     }
 }
 
