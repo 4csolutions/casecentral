@@ -1,6 +1,22 @@
 [
  {
   "default_value": null,
+  "doc_type": "Customer",
+  "docstatus": 0,
+  "doctype": "Property Setter",
+  "doctype_or_field": "DocType",
+  "field_name": null,
+  "is_system_generated": 0,
+  "modified": "2023-08-26 22:03:37.912035",
+  "module": null,
+  "name": "Customer-main-links_order",
+  "property": "links_order",
+  "property_type": "Small Text",
+  "row_name": null,
+  "value": "[\"88ee178ee8\", \"1c8a73b1a4\", \"053a9d4586\", \"3ae71c15c7\", \"6af6bd30a6\"]"
+ },
+ {
+  "default_value": null,
   "doc_type": "Task Type",
   "docstatus": 0,
   "doctype": "Property Setter",

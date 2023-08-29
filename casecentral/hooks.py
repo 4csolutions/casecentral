@@ -49,6 +49,7 @@ fixtures = [
                     "Customer-lead_name-hidden",
                     "Customer-opportunity_name-hidden",
                     "Customer-customer_type-default",
+                    "Customer-main-links_order",
                     "Task-project-hidden",
                     "Task-issue-hidden",
                     "Task-task_weight-hidden",
@@ -87,7 +88,8 @@ fixtures = [
                     "Duplicate Contact Check",
                     "Remove Referral from Client",
                     "Quality Review",
-                    "Task"
+                    "Task",
+                    "Timsheet"
                 ]
             ]
         ]

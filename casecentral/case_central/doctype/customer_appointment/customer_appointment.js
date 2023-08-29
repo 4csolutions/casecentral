@@ -30,6 +30,14 @@ frappe.ui.form.on('Customer Appointment', {
 			}
 		});
 
+		frm.set_query('case', () => {
+			if (frm.doc.customer) {
+				return {
+					filters: { 'customer': frm.doc.customer }
+				};
+			}
+		});
+
 		if (frm.is_new()) {
 			frm.page.set_primary_action(__('Check Availability'), function() {
 				if (!frm.doc.customer) {
