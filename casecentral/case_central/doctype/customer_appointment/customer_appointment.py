@@ -29,7 +29,6 @@ class CustomerAppointment(Document):
 		self.update_event()
 
 	def after_insert(self):
-		invoice_appointment(self)
 		self.insert_calendar_event()
 
 	def set_title(self):
