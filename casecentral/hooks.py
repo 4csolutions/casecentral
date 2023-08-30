@@ -44,7 +44,6 @@ fixtures = [
                 "name",
                 "in",
                 [
-                    "Customer-main-quick_entry",
                     "Customer-main-search_fields",
                     "Customer-lead_name-hidden",
                     "Customer-opportunity_name-hidden",

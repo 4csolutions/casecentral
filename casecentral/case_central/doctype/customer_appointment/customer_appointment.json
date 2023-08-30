@@ -15,6 +15,7 @@
   "customer",
   "customer_name",
   "contact_no",
+  "contact_email",
   "column_break_1",
   "company",
   "employee",
@@ -82,10 +83,11 @@
    "read_only": 1
   },
   {
-   "fetch_from": "customer.contact_no",
+   "fetch_from": "customer.mobile_no",
    "fieldname": "contact_no",
    "fieldtype": "Data",
    "label": "Contact No",
+   "options": "Phone",
    "reqd": 1
   },
   {
@@ -214,6 +216,13 @@
    "fieldtype": "Link",
    "label": "Case",
    "options": "Case"
+  },
+  {
+   "fetch_from": "customer.email_id",
+   "fieldname": "contact_email",
+   "fieldtype": "Data",
+   "label": "Contact Email",
+   "options": "Email"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -224,7 +233,7 @@
    "link_fieldname": "appointment"
   }
  ],
- "modified": "2023-08-29 11:52:24.662489",
+ "modified": "2023-08-30 17:48:26.487250",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Customer Appointment",
