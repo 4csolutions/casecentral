@@ -33,5 +33,15 @@ frappe.ui.form.on('Matter', {
 				});
 			}
 		});
+		frappe.call({
+			method: 'get_billing_info',
+			doc: frm.doc,
+			callback: function(r) {
+			    frm.dashboard.stats_area_row.empty();
+			    frm.dashboard.add_indicator(__('Total Matter Billing: {0}', [format_currency(r.message.total_billing)]), 'blue');
+                frm.dashboard.add_indicator(__('Total Unpaid: {0}', [format_currency(r.message.total_unpaid)]), 'orange');
+                frm.dashboard.add_indicator(__('Total Matter Advances: {0}', [format_currency(r.message.total_advances)]), 'green');
+			}
+		});
 	}
 });

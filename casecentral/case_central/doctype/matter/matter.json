@@ -228,7 +228,7 @@
    "link_fieldname": "matter"
   },
   {
-   "group": "Sales Invoice",
+   "group": "Billing and Payments",
    "link_doctype": "Sales Invoice",
    "link_fieldname": "matter"
   },
@@ -267,9 +267,14 @@
    "group": "Appointment",
    "link_doctype": "Timesheet",
    "link_fieldname": "matter"
+  },
+  {
+   "group": "Billing and Payments",
+   "link_doctype": "Payment Entry",
+   "link_fieldname": "custom_matter"
   }
  ],
- "modified": "2023-08-26 21:44:36.777802",
+ "modified": "2023-09-29 15:56:19.078637",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Matter",

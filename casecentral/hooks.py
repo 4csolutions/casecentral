@@ -22,6 +22,7 @@ fixtures = [
                     "Sales Invoice-matter",
                     "Sales Invoice Item-reference_doctype",
                     "Sales Invoice Item-reference_name",
+                    "Payment Entry-custom_matter",
                     "Quality Review-matter",
                     "Quality Review-service",
                     "Quality Goal-service",
@@ -121,7 +122,8 @@ app_include_js = "casecentral.bundle.js"
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 doctype_js = {
-    "Sales Invoice" : "public/js/sales_invoice.js"
+    "Sales Invoice" : "public/js/sales_invoice.js",
+    "Payment Entry" : "public/js/payment_entry.js"
 }
 
 # Home Pages
