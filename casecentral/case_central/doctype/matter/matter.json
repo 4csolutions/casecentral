@@ -8,6 +8,7 @@
  "engine": "InnoDB",
  "field_order": [
   "naming_series",
+  "project_template",
   "customer",
   "customer_name",
   "contact_no",
@@ -46,18 +47,24 @@
    "reqd": 1
   },
   {
+   "fetch_from": "project_template.custom_matter_type",
+   "fetch_if_empty": 1,
    "fieldname": "matter_type",
    "fieldtype": "Link",
    "label": "Matter Type",
    "options": "Matter Type"
   },
   {
+   "fetch_from": "project_template.custom_service_type",
+   "fetch_if_empty": 1,
    "fieldname": "service_type",
    "fieldtype": "Link",
    "label": "Service Type",
    "options": "Service Type"
   },
   {
+   "fetch_from": "project_template.custom_service",
+   "fetch_if_empty": 1,
    "fieldname": "service",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -217,6 +224,12 @@
    "ignore_xss_filter": 1,
    "label": "Linked Matters",
    "options": "Linked Matter"
+  },
+  {
+   "fieldname": "project_template",
+   "fieldtype": "Link",
+   "label": "From Template",
+   "options": "Project Template"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -274,7 +287,7 @@
    "link_fieldname": "custom_matter"
   }
  ],
- "modified": "2023-09-29 15:56:19.078637",
+ "modified": "2023-10-01 00:00:50.631436",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Matter",

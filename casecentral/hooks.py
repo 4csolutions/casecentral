@@ -33,7 +33,12 @@ fixtures = [
                     "Employee-google_calendar",
                     "Timesheet-matter",
                     "Timesheet-appointment",
-                    "Timesheet-case"
+                    "Timesheet-case",
+                    "Project Template-custom_section_break_jjuzl",
+                    "Project Template-custom_service",
+                    "Project Template-custom_service_type",
+                    "Project Template-custom_matter_type",
+                    "Project Template-custom_column_break_9mzvp"
                 ]
             ]
         ]
