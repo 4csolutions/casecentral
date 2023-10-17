@@ -14,6 +14,8 @@
   "contact_no",
   "contact_email",
   "column_break_6",
+  "company",
+  "branch",
   "matter_type",
   "service_type",
   "service",
@@ -230,6 +232,19 @@
    "fieldtype": "Link",
    "label": "From Template",
    "options": "Project Template"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -287,7 +302,7 @@
    "link_fieldname": "custom_matter"
   }
  ],
- "modified": "2023-10-01 00:00:50.631436",
+ "modified": "2023-10-17 15:53:23.252985",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Matter",

@@ -15,6 +15,8 @@
   "representing",
   "representation_details",
   "column_break_1mq4i",
+  "company",
+  "branch",
   "status",
   "scrutiny_status",
   "service",
@@ -254,6 +256,22 @@
    "label": "Customer",
    "options": "Customer",
    "read_only": 1
+  },
+  {
+   "fetch_from": "matter.company",
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "matter.branch",
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
@@ -285,7 +303,7 @@
    "link_fieldname": "case"
   }
  ],
- "modified": "2023-08-26 21:53:30.445512",
+ "modified": "2023-10-17 16:02:04.933705",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Case",
