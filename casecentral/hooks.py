@@ -38,7 +38,10 @@ fixtures = [
                     "Project Template-custom_service",
                     "Project Template-custom_service_type",
                     "Project Template-custom_matter_type",
-                    "Project Template-custom_column_break_9mzvp"
+                    "Project Template-custom_column_break_9mzvp",
+                    "Issue-custom_matter",
+                    "Issue-custom_contact_no",
+                    "Issue-custom_service"
                 ]
             ]
         ]
@@ -55,6 +58,7 @@ fixtures = [
                     "Customer-opportunity_name-hidden",
                     "Customer-customer_type-default",
                     "Customer-main-links_order",
+                    "Customer-main-field_order",
                     "Task-project-hidden",
                     "Task-issue-hidden",
                     "Task-task_weight-hidden",
@@ -78,7 +82,10 @@ fixtures = [
                     "Task Type-description-in_list_view",
                     "Task Type-description-in_standard_filter",
                     "Task Type-main-title_field",
-                    "Task Type-main-show_title_field_in_link"
+                    "Task Type-main-show_title_field_in_link",
+                    "Issue-main-field_order",
+                    "Issue-customer-fetch_from",
+                    "Issue-raised_by-fetch_if_empty"
                 ]
             ]
         ]
@@ -94,7 +101,8 @@ fixtures = [
                     "Remove Referral from Client",
                     "Quality Review",
                     "Task",
-                    "Timsheet"
+                    "Timsheet",
+                    "Issue"
                 ]
             ]
         ]

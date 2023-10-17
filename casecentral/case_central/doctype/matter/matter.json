@@ -300,9 +300,14 @@
    "group": "Billing and Payments",
    "link_doctype": "Payment Entry",
    "link_fieldname": "custom_matter"
+  },
+  {
+   "group": "Support",
+   "link_doctype": "Issue",
+   "link_fieldname": "custom_matter"
   }
  ],
- "modified": "2023-10-17 15:53:23.252985",
+ "modified": "2023-10-17 16:30:41.707381",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Matter",

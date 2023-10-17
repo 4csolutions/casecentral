@@ -53,5 +53,16 @@
   "name": "Timsheet",
   "script": "frappe.ui.form.on('Timesheet', {\n\trefresh(frm) {\n\t\tfrm.set_query('matter', () => {\n\t\t\tif (frm.doc.customer) {\n\t\t\t\treturn {\n\t\t\t\t\tfilters: { 'customer': frm.doc.customer }\n\t\t\t\t};\n\t\t\t}\n\t\t});\n\n\t\tfrm.set_query('case', () => {\n\t\t\tif (frm.doc.customer) {\n\t\t\t\treturn {\n\t\t\t\t\tfilters: { 'customer': frm.doc.customer }\n\t\t\t\t};\n\t\t\t}\n\t\t});\n\t}\n});",
   "view": "Form"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "Issue",
+  "enabled": 1,
+  "modified": "2023-10-17 16:46:45.805118",
+  "module": null,
+  "name": "Issue",
+  "script": "frappe.ui.form.on('Issue', {\n\trefresh(frm) {\n\t\tfrm.set_query(\"custom_matter\", () => {\n\t\t    if(frm.doc.customer) {\n\t\t        return {\n\t\t\t\t\tfilters: {\n\t\t\t\t\t\t'customer': frm.doc.customer\n\t\t\t\t\t}\n\t\t\t\t};\n\t\t    }\n\t\t});\n\t},\n\tissue_type: function(frm) {\n        if (!frm.doc.subject) {\n            frm.set_value(\"subject\", frm.doc.issue_type);\n        }\n    }\n});",
+  "view": "Form"
  }
 ]
