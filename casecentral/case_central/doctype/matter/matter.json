@@ -36,6 +36,10 @@
   "research_notes",
   "fee_details_tab",
   "legal_service_rates",
+  "commissions_tab",
+  "sales_partner",
+  "column_break_dw8sb",
+  "commission_rate",
   "amended_from"
  ],
  "fields": [
@@ -200,7 +204,8 @@
    "fieldname": "legal_service_rates",
    "fieldtype": "Table",
    "label": "Legal Service Rates",
-   "options": "Legal Service Rate"
+   "options": "Legal Service Rate",
+   "permlevel": 1
   },
   {
    "fieldname": "fee_details_tab",
@@ -245,6 +250,32 @@
    "fieldtype": "Link",
    "label": "Branch",
    "options": "Branch"
+  },
+  {
+   "fieldname": "commissions_tab",
+   "fieldtype": "Tab Break",
+   "label": "Commissions"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "sales_partner",
+   "fieldtype": "Link",
+   "label": "Sales Partner",
+   "options": "Sales Partner",
+   "permlevel": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fetch_from": "sales_partner.commission_rate",
+   "fetch_if_empty": 1,
+   "fieldname": "commission_rate",
+   "fieldtype": "Float",
+   "label": "Commission Rate (%)",
+   "permlevel": 1
+  },
+  {
+   "fieldname": "column_break_dw8sb",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -307,7 +338,7 @@
    "link_fieldname": "custom_matter"
   }
  ],
- "modified": "2023-10-17 16:30:41.707381",
+ "modified": "2023-10-30 23:01:24.808994",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Matter",
