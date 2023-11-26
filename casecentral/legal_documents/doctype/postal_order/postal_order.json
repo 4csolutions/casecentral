@@ -126,7 +126,7 @@
    "fieldtype": "Select",
    "hidden": 1,
    "label": "Naming Series",
-   "options": ".{po_type}./.DD..MM..YY./.##"
+   "options": "PO-.YY.-.##"
   },
   {
    "default": "Today",
@@ -145,7 +145,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-25 23:22:43.148852",
+ "modified": "2023-11-26 17:35:49.191186",
  "modified_by": "Administrator",
  "module": "Legal Documents",
  "name": "Postal Order",

@@ -34,7 +34,7 @@
    "fieldname": "naming_series",
    "fieldtype": "Select",
    "label": "Naming Series",
-   "options": "SLA/LN/.YY./.##"
+   "options": "LN-.YY.-.##"
   },
   {
    "fieldname": "matter",
@@ -127,7 +127,7 @@
    "link_fieldname": "legal_document"
   }
  ],
- "modified": "2023-11-26 17:21:38.071157",
+ "modified": "2023-11-26 17:35:09.108735",
  "modified_by": "Administrator",
  "module": "Legal Documents",
  "name": "Legal Notice",
