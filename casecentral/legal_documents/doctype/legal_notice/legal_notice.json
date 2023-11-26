@@ -76,6 +76,7 @@
    "options": "By R.P.A.D\nBy Hand"
   },
   {
+   "default": "Today",
    "fieldname": "date",
    "fieldtype": "Date",
    "in_list_view": 1,
@@ -126,7 +127,7 @@
    "link_fieldname": "legal_document"
   }
  ],
- "modified": "2023-11-25 19:06:58.432771",
+ "modified": "2023-11-26 17:21:38.071157",
  "modified_by": "Administrator",
  "module": "Legal Documents",
  "name": "Legal Notice",
