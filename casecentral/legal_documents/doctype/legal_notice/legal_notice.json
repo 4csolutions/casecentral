@@ -1,0 +1,166 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2023-04-29 17:30:47.993979",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "legal_notice_details_section",
+  "naming_series",
+  "matter",
+  "client",
+  "client_name",
+  "contact_no",
+  "column_break_bjtaw",
+  "mode_of_delivery",
+  "date",
+  "place",
+  "column_break_0fo7l",
+  "addressee",
+  "legal_notice_content_section",
+  "legal_notice",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "legal_notice_details_section",
+   "fieldtype": "Section Break",
+   "label": "Legal Notice Details"
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Naming Series",
+   "options": "SLA/LN/.YY./.##"
+  },
+  {
+   "fieldname": "matter",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Matter",
+   "options": "Matter"
+  },
+  {
+   "fetch_from": "matter.customer",
+   "fieldname": "client",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Client",
+   "options": "Customer",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "matter.customer_name",
+   "fieldname": "client_name",
+   "fieldtype": "Read Only",
+   "label": "Client Name"
+  },
+  {
+   "fetch_from": "matter.contact_no",
+   "fieldname": "contact_no",
+   "fieldtype": "Read Only",
+   "label": "Contact No"
+  },
+  {
+   "fieldname": "column_break_bjtaw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "mode_of_delivery",
+   "fieldtype": "Select",
+   "label": "Mode of Delivery",
+   "options": "By R.P.A.D\nBy Hand"
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "place",
+   "fieldtype": "Data",
+   "label": "Place"
+  },
+  {
+   "fieldname": "column_break_0fo7l",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "addressee",
+   "fieldtype": "Table",
+   "label": "Addressee",
+   "options": "Legal Notice Addressee"
+  },
+  {
+   "fieldname": "legal_notice_content_section",
+   "fieldtype": "Section Break",
+   "label": "Legal Notice Content"
+  },
+  {
+   "fieldname": "legal_notice",
+   "fieldtype": "Text Editor",
+   "label": "Legal Notice"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Legal Notice",
+   "print_hide": 1,
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [
+  {
+   "group": "Posts",
+   "link_doctype": "Postal Order",
+   "link_fieldname": "legal_document"
+  }
+ ],
+ "modified": "2023-11-25 19:06:58.432771",
+ "modified_by": "Administrator",
+ "module": "Legal Documents",
+ "name": "Legal Notice",
+ "name_case": "Title Case",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Projects User",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "search_fields": "matter,client,client_name",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

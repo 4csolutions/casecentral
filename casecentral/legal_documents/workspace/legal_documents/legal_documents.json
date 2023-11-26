@@ -1,0 +1,74 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"Q8XqoQhOvk\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Legal Documents</span>\",\"col\":12}},{\"id\":\"QziEb6HUae\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Postal Order\",\"col\":3}},{\"id\":\"DfmI8PnNUD\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"eWRz8Y3A_i\",\"type\":\"card\",\"data\":{\"card_name\":\"Legal Documents\",\"col\":4}},{\"id\":\"39qgbfohKD\",\"type\":\"card\",\"data\":{\"card_name\":\"Inwards / Outwards\",\"col\":4}}]",
+ "creation": "2023-11-25 00:09:03.435925",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "file",
+ "idx": 0,
+ "is_hidden": 0,
+ "label": "Legal Documents",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Legal Documents",
+   "link_count": 1,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Legal Notice",
+   "link_count": 0,
+   "link_to": "Legal Notice",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Inwards / Outwards",
+   "link_count": 1,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Postal Order",
+   "link_count": 0,
+   "link_to": "Postal Order",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2023-11-25 00:14:37.901407",
+ "modified_by": "Administrator",
+ "module": "Legal Documents",
+ "name": "Legal Documents",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "Case Central",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 28.0,
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Postal Order",
+   "link_to": "Postal Order",
+   "stats_filter": "[]",
+   "type": "DocType"
+  }
+ ],
+ "title": "Legal Documents"
+}

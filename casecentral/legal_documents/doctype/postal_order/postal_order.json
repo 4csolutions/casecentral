@@ -1,0 +1,199 @@
+{
+ "actions": [],
+ "autoname": "naming_series:",
+ "creation": "2023-11-24 23:30:28.438119",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "postal_details_section",
+  "po_type",
+  "to",
+  "from",
+  "column_break_ogeng",
+  "date",
+  "legal_document_type",
+  "legal_document",
+  "other_document",
+  "outward_details_section",
+  "status",
+  "rk_no",
+  "ivr_no",
+  "column_break_oqz9c",
+  "posting_date",
+  "delivery__return_date",
+  "is_check_bounce_notice",
+  "naming_series"
+ ],
+ "fields": [
+  {
+   "fieldname": "po_type",
+   "fieldtype": "Select",
+   "in_standard_filter": 1,
+   "label": "PO Type",
+   "options": "Out\nIn"
+  },
+  {
+   "default": "RK",
+   "fieldname": "rk_no",
+   "fieldtype": "Data",
+   "label": "RK No",
+   "mandatory_depends_on": "eval: doc.status == \"Posted\";",
+   "options": "Barcode"
+  },
+  {
+   "depends_on": "eval:doc.po_type == \"Out\"",
+   "fieldname": "to",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "To"
+  },
+  {
+   "depends_on": "eval:doc.po_type == \"In\"",
+   "fieldname": "from",
+   "fieldtype": "Small Text",
+   "label": "From"
+  },
+  {
+   "fieldname": "column_break_ogeng",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "legal_document_type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Legal Document Type",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "legal_document",
+   "fieldtype": "Dynamic Link",
+   "in_list_view": 1,
+   "label": "Legal Document",
+   "options": "legal_document_type"
+  },
+  {
+   "fieldname": "other_document",
+   "fieldtype": "Data",
+   "label": "Other Document"
+  },
+  {
+   "depends_on": "eval:doc.po_type == \"Out\"",
+   "fieldname": "outward_details_section",
+   "fieldtype": "Section Break",
+   "label": "Outward Details"
+  },
+  {
+   "fieldname": "ivr_no",
+   "fieldtype": "Data",
+   "label": "IVR No",
+   "mandatory_depends_on": "eval: doc.status == \"Posted\";"
+  },
+  {
+   "fieldname": "column_break_oqz9c",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "\nPosted\nDelivered RPAD\nDelivered\nUndelivered"
+  },
+  {
+   "fieldname": "postal_details_section",
+   "fieldtype": "Section Break",
+   "label": "Postal Details"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval: doc.legal_document_type == \"Legal Notice\"",
+   "fieldname": "is_check_bounce_notice",
+   "fieldtype": "Check",
+   "label": "Is Check Bounce Notice"
+  },
+  {
+   "depends_on": "eval: in_list ([\"Delivered RPAD\", \"Delivered\", \"Undelivered\"], doc.status);",
+   "fieldname": "delivery__return_date",
+   "fieldtype": "Date",
+   "label": "Delivery / Return Date",
+   "mandatory_depends_on": "eval: in_list ([\"Delivered RPAD\", \"Delivered\", \"Undelivered\"], doc.status);"
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Naming Series",
+   "options": ".{po_type}./.DD..MM..YY./.##"
+  },
+  {
+   "default": "Today",
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Date"
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Posting Date",
+   "mandatory_depends_on": "eval: doc.status == \"Posted\";"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-11-25 23:22:43.148852",
+ "modified_by": "Administrator",
+ "module": "Legal Documents",
+ "name": "Postal Order",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Projects User",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [
+  {
+   "color": "Light Blue",
+   "title": "Posted"
+  },
+  {
+   "color": "Blue",
+   "title": "Delivered"
+  },
+  {
+   "color": "Green",
+   "title": "Delivered RPAD"
+  },
+  {
+   "color": "Red",
+   "title": "Undelivered"
+  }
+ ]
+}
