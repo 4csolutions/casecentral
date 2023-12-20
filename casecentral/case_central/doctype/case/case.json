@@ -26,6 +26,7 @@
   "customer",
   "customer_name",
   "contact_no",
+  "contact_email",
   "file_location",
   "case_details_section",
   "cnr",
@@ -114,7 +115,8 @@
    "fetch_from": "matter.contact_no",
    "fieldname": "contact_no",
    "fieldtype": "Read Only",
-   "label": "Contact No"
+   "label": "Contact No",
+   "options": "Phone"
   },
   {
    "fieldname": "petitioner",
@@ -272,6 +274,13 @@
    "label": "Branch",
    "options": "Branch",
    "read_only": 1
+  },
+  {
+   "fetch_from": "customer.email_id",
+   "fieldname": "contact_email",
+   "fieldtype": "Read Only",
+   "label": "Contact Email",
+   "options": "Email"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -303,7 +312,7 @@
    "link_fieldname": "case"
   }
  ],
- "modified": "2023-10-17 16:02:04.933705",
+ "modified": "2023-12-20 14:57:54.281757",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Case",
