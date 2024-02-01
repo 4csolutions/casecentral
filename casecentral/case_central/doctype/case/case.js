@@ -2,9 +2,17 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Case', {
-	// refresh: function(frm) {
-		
-	// },
+	refresh: function(frm) {
+		frm.set_query('nature_of_case', () => {
+			if (frm.doc.service) {
+				return {
+					filters: {
+						'service': frm.doc.service
+					}
+				};
+			}
+		});
+	},
 	after_save: function(frm) {
 		if(frm.doc.status == "Pending" && frm.doc.registration_number) {
 			frm.doc.status = "InProgress";
