@@ -16,6 +16,7 @@ fixtures = [
                 "in",
                 [
                     "Task-matter",
+                    "Task-custom_matter_type",
                     "Task-case",
                     "Task Type-naming_series",
                     "Task Type-matter_type",
