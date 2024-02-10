@@ -1,6 +1,8 @@
 import frappe
 
 def execute():
+    #To relaod the schema
+    frappe.reload_doc("Projects", "doctype", "Task")
 
     x = frappe.get_list('Task', fields = ['name','matter'], order_by="name asc")
     for record in x:
