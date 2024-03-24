@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"Q8XqoQhOvk\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Legal Documents</span>\",\"col\":12}},{\"id\":\"QziEb6HUae\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Postal Order\",\"col\":3}},{\"id\":\"DfmI8PnNUD\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"eWRz8Y3A_i\",\"type\":\"card\",\"data\":{\"card_name\":\"Legal Documents\",\"col\":4}},{\"id\":\"39qgbfohKD\",\"type\":\"card\",\"data\":{\"card_name\":\"Inwards / Outwards\",\"col\":4}}]",
+ "content": "[{\"id\":\"Q8XqoQhOvk\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Legal Documents</span>\",\"col\":12}},{\"id\":\"QziEb6HUae\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Postal Order\",\"col\":3}},{\"id\":\"DfmI8PnNUD\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"eWRz8Y3A_i\",\"type\":\"card\",\"data\":{\"card_name\":\"Legal Documents\",\"col\":4}},{\"id\":\"39qgbfohKD\",\"type\":\"card\",\"data\":{\"card_name\":\"Inwards / Outwards\",\"col\":4}},{\"id\":\"ZZ0MiwizY1\",\"type\":\"card\",\"data\":{\"card_name\":\"Setup\",\"col\":4}}]",
  "creation": "2023-11-25 00:09:03.435925",
  "custom_blocks": [],
  "docstatus": 0,
@@ -47,9 +47,28 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Setup",
+   "link_count": 1,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Legal Templates",
+   "link_count": 0,
+   "link_to": "Legal Templates",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2023-11-25 00:14:37.901407",
+ "modified": "2024-03-24 23:12:45.400449",
  "modified_by": "Administrator",
  "module": "Legal Documents",
  "name": "Legal Documents",
