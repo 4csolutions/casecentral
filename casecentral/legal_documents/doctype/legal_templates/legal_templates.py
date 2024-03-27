@@ -168,15 +168,16 @@ def generate_document(doctype, docname, legal_template_name):
 	# Render document
 	doc.render(context)
 
+	file_name = f'{docname}.docx'.replace("/","_")
 	# Save rendered document
-	rendered_doc_path = frappe.get_site_path('public', 'files', f'{docname}.docx')
+	rendered_doc_path = frappe.get_site_path('public', 'files', file_name)
 	doc.save(rendered_doc_path)
 
 	# Create a new File document in ERPNext
 	file_doc = frappe.get_doc({
 		'doctype': 'File',
-		'file_url': f'/files/{docname}.docx',
-		'file_name': f'{docname}.docx',
+		'file_url': '/files/' + file_name,
+		'file_name': file_name,
 		'attached_to_doctype': doctype,
 		'attached_to_name': docname,
 		'is_private': 0,
