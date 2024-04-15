@@ -65,7 +65,7 @@ def generate_new_doctype(legal_template_name):
 				"label": variable.replace("_", " ").title(),
 				"fieldtype": "Data",
 				"insert_after": "fieldname"  # Add other field properties as needed
-			} for variable in variables
+			} for variable in variables if variable != "name"
 		],
 		"permissions": [
 			{

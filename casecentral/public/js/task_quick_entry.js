@@ -12,6 +12,25 @@ frappe.ui.form.TaskQuickEntryForm = class TaskQuickEntryForm extends frappe.ui.f
         const taskTypeField = this.dialog.get_field('type');
         const subjectField = this.dialog.get_field('subject');
 
+        if(this.doc.case && !this.doc.matter) {
+            frappe.db.get_value('Case', this.doc.case, 'matter', (r) => {
+                if(r && r.matter) {
+                    this.doc.matter = r.matter;
+                    frappe.db.get_value('Matter', this.doc.matter, 'matter_type', (r) => {
+                        if(r && r.matter_type) {
+                            taskTypeField.df.get_query = () => {
+                                return {
+                                    filters: {
+                                        'matter_type': r.matter_type
+                                    }
+                                };
+                            };
+                        }
+                    });
+                }
+            });
+        }
+
         if(this.doc.matter) {
             frappe.db.get_value('Matter', this.doc.matter, 'matter_type', (r) => {
                 if(r && r.matter_type) {
@@ -23,7 +42,7 @@ frappe.ui.form.TaskQuickEntryForm = class TaskQuickEntryForm extends frappe.ui.f
                         };
                     };
                 }
-            });   
+            });
         }
         
         taskTypeField.df.onchange = () => {
