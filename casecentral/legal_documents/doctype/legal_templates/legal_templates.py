@@ -58,6 +58,7 @@ def generate_new_doctype(legal_template_name):
 		"allow_import": 1,
 		"name_case": "Title Case",
 		"naming_rule": 'By "Naming Series" field',
+		"custom": 1, # Production system needs this check for creating new doctype
 		
 		"fields": fixed_fields + [
 			{

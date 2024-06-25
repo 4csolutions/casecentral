@@ -29,6 +29,9 @@
   "contact_no",
   "contact_email",
   "file_location",
+  "party_information_section",
+  "petitioner_details",
+  "respondent_details",
   "case_details_section",
   "cnr",
   "ecourt",
@@ -315,6 +318,23 @@
    "fieldtype": "Link",
    "label": "Opposition Lawyer",
    "options": "Customer"
+  },
+  {
+   "fieldname": "party_information_section",
+   "fieldtype": "Section Break",
+   "label": "Party Information"
+  },
+  {
+   "fieldname": "petitioner_details",
+   "fieldtype": "Table",
+   "label": "Petitioner Details",
+   "options": "Case Party"
+  },
+  {
+   "fieldname": "respondent_details",
+   "fieldtype": "Table",
+   "label": "Respondent Details",
+   "options": "Case Party"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -346,7 +366,7 @@
    "link_fieldname": "case"
   }
  ],
- "modified": "2024-02-01 17:42:05.072006",
+ "modified": "2024-06-25 15:09:39.348320",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Case",
