@@ -16,9 +16,9 @@ def create_postal_orders(doctype, docname):
 	message = []
 	if addressees:
 		for addressee in addressees:
-			if not frappe.db.exists("Postal Order", {"legal_document": docname, "to": addressee.name1}):
+			if not frappe.db.exists("Postal Order", {"legal_document": docname, "to": addressee.get_address()}):
 				postal_order = frappe.new_doc("Postal Order")
-				postal_order.to = addressee.name1
+				postal_order.to = addressee.get_address()
 				postal_order.legal_document_type = doctype
 				postal_order.legal_document = docname
 				postal_order.save()
