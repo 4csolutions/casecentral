@@ -1,0 +1,46 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-07-10 23:30:32.478667",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "applied_date",
+  "details",
+  "party_applying"
+ ],
+ "fields": [
+  {
+   "fieldname": "applied_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Applied Date"
+  },
+  {
+   "columns": 6,
+   "fieldname": "details",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Details"
+  },
+  {
+   "fieldname": "party_applying",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Party Applying"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-07-11 00:06:57.832838",
+ "modified_by": "Administrator",
+ "module": "Case Central",
+ "name": "Court Form",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

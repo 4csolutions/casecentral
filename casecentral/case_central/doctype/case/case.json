@@ -51,7 +51,25 @@
   "next_hearing_date",
   "date_of_disposal",
   "case_history_details_section",
-  "case_history"
+  "case_history",
+  "form_1_tab",
+  "pleadings__issues_section",
+  "pleadings__issues",
+  "tab_3_tab",
+  "ia_details_section",
+  "ia_details",
+  "evidence_tcr",
+  "evidence__tcr_section",
+  "evidence__tcr",
+  "exhibits_section",
+  "list_of_exhibits_for_plaintiff",
+  "list_of_exhibits_for_defendant",
+  "witnesses_examined_section",
+  "list_of_witnesses_examined_for_the_plaintiff",
+  "list_of_witnesses_examined_for_the_defendant",
+  "form_4_tab",
+  "memos_section",
+  "memos"
  ],
  "fields": [
   {
@@ -335,6 +353,104 @@
    "fieldtype": "Table",
    "label": "Respondent Details",
    "options": "Case Party"
+  },
+  {
+   "fieldname": "form_1_tab",
+   "fieldtype": "Tab Break",
+   "label": "Form 1"
+  },
+  {
+   "fieldname": "pleadings__issues_section",
+   "fieldtype": "Section Break",
+   "label": "Pleadings / Issues"
+  },
+  {
+   "fieldname": "tab_3_tab",
+   "fieldtype": "Tab Break",
+   "label": "Form 2"
+  },
+  {
+   "fieldname": "ia_details",
+   "fieldtype": "Table",
+   "label": "IA Details",
+   "options": "Interim Applications"
+  },
+  {
+   "fieldname": "ia_details_section",
+   "fieldtype": "Section Break",
+   "label": "IA Details"
+  },
+  {
+   "fieldname": "evidence__tcr_section",
+   "fieldtype": "Section Break",
+   "label": "Evidence / TCR"
+  },
+  {
+   "fieldname": "form_4_tab",
+   "fieldtype": "Tab Break",
+   "label": "Form 4"
+  },
+  {
+   "fieldname": "memos_section",
+   "fieldtype": "Section Break",
+   "label": "Memos"
+  },
+  {
+   "fieldname": "pleadings__issues",
+   "fieldtype": "Table",
+   "label": "Pleadings / Issues",
+   "options": "Court Form"
+  },
+  {
+   "fieldname": "evidence_tcr",
+   "fieldtype": "Tab Break",
+   "label": "Form 3"
+  },
+  {
+   "fieldname": "evidence__tcr",
+   "fieldtype": "Table",
+   "label": "Evidence / TCR",
+   "options": "Court Form"
+  },
+  {
+   "fieldname": "memos",
+   "fieldtype": "Table",
+   "label": "Memos",
+   "options": "Court Form"
+  },
+  {
+   "fieldname": "exhibits_section",
+   "fieldtype": "Section Break",
+   "label": "Exhibits"
+  },
+  {
+   "fieldname": "list_of_exhibits_for_plaintiff",
+   "fieldtype": "Table",
+   "label": "List of Exhibits for Plaintiff",
+   "options": "Exhibits"
+  },
+  {
+   "fieldname": "list_of_exhibits_for_defendant",
+   "fieldtype": "Table",
+   "label": "List of Exhibits for Defendant",
+   "options": "Exhibits"
+  },
+  {
+   "fieldname": "witnesses_examined_section",
+   "fieldtype": "Section Break",
+   "label": "Witnesses Examined"
+  },
+  {
+   "fieldname": "list_of_witnesses_examined_for_the_plaintiff",
+   "fieldtype": "Table",
+   "label": "List of Witnesses Examined for the Plaintiff",
+   "options": "Witness Examined"
+  },
+  {
+   "fieldname": "list_of_witnesses_examined_for_the_defendant",
+   "fieldtype": "Table",
+   "label": "List of Witnesses Examined for the Defendant",
+   "options": "Witness Examined"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -366,11 +482,10 @@
    "link_fieldname": "case"
   }
  ],
- "modified": "2024-06-25 15:09:39.348320",
+ "modified": "2024-07-11 00:03:05.748956",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Case",
- "name_case": "Title Case",
  "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
