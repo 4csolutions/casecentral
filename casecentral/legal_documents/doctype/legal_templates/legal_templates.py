@@ -101,6 +101,7 @@ def generate_new_doctype(legal_template_name):
 							label: __('Legal Template'),
 							fieldtype: 'Link',
 							options: 'Legal Templates',
+							filters: {{'related_doctype': '{0}'}},
 							reqd: 1
 						}}
 					], function(values) {{
