@@ -147,10 +147,10 @@ def generate_document(doctype, docname, legal_template_name):
 	doc = frappe.get_doc(doctype, docname)
 	context = {}
 	for field in doc.meta.fields:
-		context[field.fieldname] = doc.get(field.fieldname)
+		context[field.fieldname] = doc.get_formatted(field.fieldname)
 
 	for field in doc.meta.default_fields:
-		context[field] = doc.get(field)
+		context[field] = doc.get_formatted(field)
 		
 	# Get template file from selected "Legal Templates"
 	legal_template_doc = frappe.get_doc('Legal Templates', legal_template_name)
