@@ -69,15 +69,26 @@ frappe.ui.form.on('Customer Appointment', {
 			// let scheduled_datetime = new Date(frm.doc.appointment_datetime);
 			// if (scheduled_datetime.getTime() <= current_datetime.getTime())
 			frm.add_custom_button(__('Start'), function() {
-				frappe.model.open_mapped_doc({
+				frappe.call({
 					method: 'casecentral.case_central.doctype.customer_appointment.customer_appointment.make_timesheet',
-					frm: frm,
-					callback: function(new_doc) {
-						console.log(new_doc)
+					args: {
+						source_name: frm.doc.name
+					},
+					callback: function(response) {
+						var new_doc = response.message;
 						if (new_doc && new_doc.doctype === 'Timesheet') {
-							startTimer(new_doc);
+							// Set up initial conditions for the timer
+							if (!new_doc.time_logs || new_doc.time_logs.length === 0) {
+								new_doc.time_logs = [{
+									activity_type: "Consultation",
+									from_time: null,
+									to_time: null,
+									hours: 0
+								}];
+							}
+							save_and_open_timesheet(new_doc);
 						} else {
-							console.error('cur_frm.doc.doctype is not "Timesheet" or cur_frm is not defined.');
+							console.error('Response is not a Timesheet or message is missing:', response);
 						}
 					}
 				});
@@ -86,18 +97,35 @@ frappe.ui.form.on('Customer Appointment', {
 	}
 });
 
+function save_and_open_timesheet(new_doc) {
+	frappe.call({
+		method: 'frappe.client.save',
+		args: {
+			doc: new_doc
+		},
+		callback: function(response) {
+			var new_doc_saved = response.message;
+			// Redirect to the Timesheet form and start the timer
+			frappe.set_route('Form', 'Timesheet', new_doc_saved.name).then(function() {
+				frappe.ui.form.on('Timesheet', {
+					onload: function(frm) {
+						startTimer(frm);
+					}
+				});
+			});
+		}
+	});
+}
+
 function startTimer(frm) {
-	console.log("startTimer called", frm);
 	var flag = true;
 	$.each(frm.doc.time_logs || [], function (i, row) {
 		// Fetch the row for which from_time is not present
 		if (flag && row.activity_type && !row.from_time) {
-			setTimeout(function() {
-				erpnext.timesheet.timer(frm, row);
-			}, 500);
+			erpnext.timesheet.timer(frm, row);
 			row.from_time = frappe.datetime.now_datetime();
-			frm.refresh_fields("time_logs");
-			frm.save();
+			//frm.refresh_fields("time_logs");
+			//frm.save();
 			flag = false;
 		}
 		// Fetch the row for timer where activity is not completed and from_time is before now_time
@@ -106,17 +134,13 @@ function startTimer(frm) {
 				moment(row.from_time),
 				"seconds"
 			);
-			setTimeout(function() {
-				erpnext.timesheet.timer(frm, row, timestamp);
-			}, 500);
+			erpnext.timesheet.timer(frm, row, timestamp);
 			flag = false;
 		}
 	});
 	// If no activities found to start a timer, create new
 	if (flag) {
-		setTimeout(function() {
-			erpnext.timesheet.timer(frm);
-		}, 500)
+		erpnext.timesheet.timer(frm, row);
 	}
 }
 

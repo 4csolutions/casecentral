@@ -387,7 +387,6 @@ def make_timesheet(source_name, target_doc=None):
 		},
 		target_doc,
 	)
-	print(doc)
 	return doc
 
 
