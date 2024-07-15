@@ -1,6 +1,9 @@
 // Copyright (c) 2023, 4C Solutions and contributors
 // For license information, please see license.txt
 frappe.provide('erpnext.queries');
+frappe.require("/assets/erpnext/js/projects/timer.js", function(){
+	console.log("Timer script loaded.");
+});
 frappe.ui.form.on('Customer Appointment', {
 	setup: function(frm) {
 		frm.custom_make_buttons = {
@@ -65,15 +68,57 @@ frappe.ui.form.on('Customer Appointment', {
 			// let current_datetime = new Date();
 			// let scheduled_datetime = new Date(frm.doc.appointment_datetime);
 			// if (scheduled_datetime.getTime() <= current_datetime.getTime())
-			frm.add_custom_button(__('Timesheet'), function() {
+			frm.add_custom_button(__('Start'), function() {
 				frappe.model.open_mapped_doc({
 					method: 'casecentral.case_central.doctype.customer_appointment.customer_appointment.make_timesheet',
 					frm: frm,
+					callback: function(new_doc) {
+						console.log(new_doc)
+						if (new_doc && new_doc.doctype === 'Timesheet') {
+							startTimer(new_doc);
+						} else {
+							console.error('cur_frm.doc.doctype is not "Timesheet" or cur_frm is not defined.');
+						}
+					}
 				});
-			}, __('Create'));
+			}).addClass("btn-primary");
 		}
-	},
+	}
 });
+
+function startTimer(frm) {
+	console.log("startTimer called", frm);
+	var flag = true;
+	$.each(frm.doc.time_logs || [], function (i, row) {
+		// Fetch the row for which from_time is not present
+		if (flag && row.activity_type && !row.from_time) {
+			setTimeout(function() {
+				erpnext.timesheet.timer(frm, row);
+			}, 500);
+			row.from_time = frappe.datetime.now_datetime();
+			frm.refresh_fields("time_logs");
+			frm.save();
+			flag = false;
+		}
+		// Fetch the row for timer where activity is not completed and from_time is before now_time
+		if (flag && row.from_time <= frappe.datetime.now_datetime() && !row.completed) {
+			let timestamp = moment(frappe.datetime.now_datetime()).diff(
+				moment(row.from_time),
+				"seconds"
+			);
+			setTimeout(function() {
+				erpnext.timesheet.timer(frm, row, timestamp);
+			}, 500);
+			flag = false;
+		}
+	});
+	// If no activities found to start a timer, create new
+	if (flag) {
+		setTimeout(function() {
+			erpnext.timesheet.timer(frm);
+		}, 500)
+	}
+}
 
 let check_and_set_availability = function(frm) {
 	let selected_slot = null;
