@@ -85,7 +85,7 @@ def generate_new_doctype(legal_template_name):
 	legal_template_doc.save()
 
 	script = """frappe.ui.form.on('{0}', {{
-	onload: function(frm) {{
+	refresh: function(frm) {{
 		// Check if any "Legal Templates" doctype exists with "related_doctype" as this doctype
 		frappe.db.get_list('Legal Templates', {{
 			filters: {{'related_doctype': '{0}'}},
