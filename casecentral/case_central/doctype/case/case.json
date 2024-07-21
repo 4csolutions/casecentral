@@ -14,11 +14,11 @@
   "case_title",
   "representing",
   "representation_details",
-  "opposition_lawyer",
   "column_break_1mq4i",
   "company",
   "branch",
   "status",
+  "nature_of_disposal",
   "scrutiny_status",
   "service",
   "service_abbr",
@@ -29,6 +29,8 @@
   "contact_no",
   "contact_email",
   "file_location",
+  "prayer_information_section",
+  "prayer",
   "party_information_section",
   "petitioner_details",
   "respondent_details",
@@ -332,12 +334,6 @@
    "options": "Nature of Case"
   },
   {
-   "fieldname": "opposition_lawyer",
-   "fieldtype": "Link",
-   "label": "Opposition Lawyer",
-   "options": "Customer"
-  },
-  {
    "fieldname": "party_information_section",
    "fieldtype": "Section Break",
    "label": "Party Information"
@@ -353,6 +349,42 @@
    "fieldtype": "Table",
    "label": "Respondent Details",
    "options": "Case Party"
+  },
+  {
+   "depends_on": "eval: doc.status==\"Disposed\"",
+   "fieldname": "nature_of_disposal",
+   "fieldtype": "Link",
+   "label": "Nature of Disposal",
+   "mandatory_depends_on": "eval: doc.status==\"Disposed\"",
+   "options": "Nature of Disposal"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "prayer_information_section",
+   "fieldtype": "Section Break",
+   "label": "Prayer Information"
+  },
+  {
+   "fieldname": "prayer",
+   "fieldtype": "Long Text",
+   "in_global_search": 1,
+   "label": "Prayer"
+  },
+  {
+   "fieldname": "form_1_tab",
+   "fieldtype": "Tab Break",
+   "label": "Form 1"
+  },
+  {
+   "fieldname": "pleadings__issues_section",
+   "fieldtype": "Section Break",
+   "label": "Pleadings / Issues"
+  },
+  {
+   "fieldname": "prayer",
+   "fieldtype": "Long Text",
+   "in_global_search": 1,
+   "label": "Prayer"
   },
   {
    "fieldname": "form_1_tab",
@@ -482,10 +514,11 @@
    "link_fieldname": "case"
   }
  ],
- "modified": "2024-07-11 00:03:05.748956",
+ "modified": "2024-07-21 20:41:55.852774",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Case",
+ "name_case": "Title Case",
  "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
