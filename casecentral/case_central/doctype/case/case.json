@@ -334,6 +334,18 @@
    "options": "Nature of Case"
   },
   {
+   "collapsible": 1,
+   "fieldname": "prayer_information_section",
+   "fieldtype": "Section Break",
+   "label": "Prayer Information"
+  },
+  {
+   "fieldname": "prayer",
+   "fieldtype": "Long Text",
+   "in_global_search": 1,
+   "label": "Prayer"
+  },
+  {
    "fieldname": "party_information_section",
    "fieldtype": "Section Break",
    "label": "Party Information"
@@ -357,18 +369,6 @@
    "label": "Nature of Disposal",
    "mandatory_depends_on": "eval: doc.status==\"Disposed\"",
    "options": "Nature of Disposal"
-  },
-  {
-   "collapsible": 1,
-   "fieldname": "prayer_information_section",
-   "fieldtype": "Section Break",
-   "label": "Prayer Information"
-  },
-  {
-   "fieldname": "prayer",
-   "fieldtype": "Long Text",
-   "in_global_search": 1,
-   "label": "Prayer"
   },
   {
    "fieldname": "form_1_tab",
