@@ -58,6 +58,7 @@ def generate_new_doctype(legal_template_name):
 		"allow_import": 1,
 		"name_case": "Title Case",
 		"naming_rule": 'By "Naming Series" field',
+		"custom": 1, # Production system needs this check for creating new doctype
 		
 		"fields": fixed_fields + [
 			{
@@ -84,7 +85,7 @@ def generate_new_doctype(legal_template_name):
 	legal_template_doc.save()
 
 	script = """frappe.ui.form.on('{0}', {{
-	onload: function(frm) {{
+	refresh: function(frm) {{
 		// Check if any "Legal Templates" doctype exists with "related_doctype" as this doctype
 		frappe.db.get_list('Legal Templates', {{
 			filters: {{'related_doctype': '{0}'}},
@@ -100,6 +101,7 @@ def generate_new_doctype(legal_template_name):
 							label: __('Legal Template'),
 							fieldtype: 'Link',
 							options: 'Legal Templates',
+							filters: {{'related_doctype': '{0}'}},
 							reqd: 1
 						}}
 					], function(values) {{
@@ -145,10 +147,10 @@ def generate_document(doctype, docname, legal_template_name):
 	doc = frappe.get_doc(doctype, docname)
 	context = {}
 	for field in doc.meta.fields:
-		context[field.fieldname] = doc.get(field.fieldname)
+		context[field.fieldname] = doc.get_formatted(field.fieldname)
 
 	for field in doc.meta.default_fields:
-		context[field] = doc.get(field)
+		context[field] = doc.get_formatted(field)
 		
 	# Get template file from selected "Legal Templates"
 	legal_template_doc = frappe.get_doc('Legal Templates', legal_template_name)

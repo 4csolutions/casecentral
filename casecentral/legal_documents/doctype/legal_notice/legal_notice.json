@@ -96,7 +96,7 @@
    "fieldname": "addressee",
    "fieldtype": "Table",
    "label": "Addressee",
-   "options": "Legal Notice Addressee"
+   "options": "Party"
   },
   {
    "fieldname": "legal_notice_content_section",
@@ -127,7 +127,7 @@
    "link_fieldname": "legal_document"
   }
  ],
- "modified": "2023-11-26 17:35:09.108735",
+ "modified": "2024-04-02 02:09:48.604184",
  "modified_by": "Administrator",
  "module": "Legal Documents",
  "name": "Legal Notice",
