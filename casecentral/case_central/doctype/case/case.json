@@ -346,6 +346,7 @@
    "label": "Prayer"
   },
   {
+   "collapsible": 1,
    "fieldname": "party_information_section",
    "fieldtype": "Section Break",
    "label": "Party Information"
@@ -379,12 +380,6 @@
    "fieldname": "pleadings__issues_section",
    "fieldtype": "Section Break",
    "label": "Pleadings / Issues"
-  },
-  {
-   "fieldname": "prayer",
-   "fieldtype": "Long Text",
-   "in_global_search": 1,
-   "label": "Prayer"
   },
   {
    "fieldname": "form_1_tab",
@@ -514,7 +509,7 @@
    "link_fieldname": "case"
   }
  ],
- "modified": "2024-07-21 20:41:55.852774",
+ "modified": "2024-07-24 19:07:57.438270",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Case",
