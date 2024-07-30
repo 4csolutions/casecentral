@@ -65,9 +65,6 @@ frappe.ui.form.on('Customer Appointment', {
 				check_and_set_availability(frm);
 			});
 
-			// let current_datetime = new Date();
-			// let scheduled_datetime = new Date(frm.doc.appointment_datetime);
-			// if (scheduled_datetime.getTime() <= current_datetime.getTime())
 			frm.add_custom_button(__('Start'), function() {
 				frappe.call({
 					method: 'casecentral.case_central.doctype.customer_appointment.customer_appointment.make_timesheet',
@@ -124,8 +121,6 @@ function startTimer(frm) {
 		if (flag && row.activity_type && !row.from_time) {
 			erpnext.timesheet.timer(frm, row);
 			row.from_time = frappe.datetime.now_datetime();
-			//frm.refresh_fields("time_logs");
-			//frm.save();
 			flag = false;
 		}
 		// Fetch the row for timer where activity is not completed and from_time is before now_time
