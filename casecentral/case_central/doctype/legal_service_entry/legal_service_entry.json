@@ -6,12 +6,16 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "reference_section",
+  "doc_type",
+  "docname",
+  "section_break_swvn",
   "matter",
   "case",
   "legal_service",
   "uom",
-  "qty",
   "column_break_5",
+  "qty",
   "posting_date",
   "description",
   "invoiced",
@@ -97,11 +101,33 @@
    "fieldtype": "Link",
    "label": "Case",
    "options": "Case"
+  },
+  {
+   "fieldname": "doc_type",
+   "fieldtype": "Link",
+   "label": "Doc Type",
+   "options": "DocType"
+  },
+  {
+   "fetch_from": ".",
+   "fieldname": "docname",
+   "fieldtype": "Dynamic Link",
+   "label": "Doc Name",
+   "options": "doc_type"
+  },
+  {
+   "fieldname": "reference_section",
+   "fieldtype": "Section Break",
+   "label": "Reference"
+  },
+  {
+   "fieldname": "section_break_swvn",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-03-25 15:17:24.473409",
+ "modified": "2024-08-08 20:06:24.282580",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Legal Service Entry",
