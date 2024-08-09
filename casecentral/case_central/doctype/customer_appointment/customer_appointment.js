@@ -1,6 +1,9 @@
 // Copyright (c) 2023, 4C Solutions and contributors
 // For license information, please see license.txt
 frappe.provide('erpnext.queries');
+frappe.require("/assets/erpnext/js/projects/timer.js", function(){
+	console.log("Timer script loaded.");
+});
 frappe.ui.form.on('Customer Appointment', {
 	setup: function(frm) {
 		frm.custom_make_buttons = {
@@ -62,18 +65,79 @@ frappe.ui.form.on('Customer Appointment', {
 				check_and_set_availability(frm);
 			});
 
-			// let current_datetime = new Date();
-			// let scheduled_datetime = new Date(frm.doc.appointment_datetime);
-			// if (scheduled_datetime.getTime() <= current_datetime.getTime())
-			frm.add_custom_button(__('Timesheet'), function() {
-				frappe.model.open_mapped_doc({
+			frm.add_custom_button(__('Start'), function() {
+				frappe.call({
 					method: 'casecentral.case_central.doctype.customer_appointment.customer_appointment.make_timesheet',
-					frm: frm,
+					args: {
+						source_name: frm.doc.name
+					},
+					callback: function(response) {
+						var new_doc = response.message;
+						if (new_doc && new_doc.doctype === 'Timesheet') {
+							// Set up initial conditions for the timer
+							if (!new_doc.time_logs || new_doc.time_logs.length === 0) {
+								new_doc.time_logs = [{
+									activity_type: "Consultation",
+									from_time: null,
+									to_time: null,
+									hours: 0
+								}];
+							}
+							save_and_open_timesheet(new_doc);
+						} else {
+							console.error('Response is not a Timesheet or message is missing:', response);
+						}
+					}
 				});
-			}, __('Create'));
+			}).addClass("btn-primary");
 		}
-	},
+	}
 });
+
+function save_and_open_timesheet(new_doc) {
+	frappe.call({
+		method: 'frappe.client.save',
+		args: {
+			doc: new_doc
+		},
+		callback: function(response) {
+			var new_doc_saved = response.message;
+			// Redirect to the Timesheet form and start the timer
+			frappe.set_route('Form', 'Timesheet', new_doc_saved.name).then(function() {
+				frappe.ui.form.on('Timesheet', {
+					onload: function(frm) {
+						startTimer(frm);
+					}
+				});
+			});
+		}
+	});
+}
+
+function startTimer(frm) {
+	var flag = true;
+	$.each(frm.doc.time_logs || [], function (i, row) {
+		// Fetch the row for which from_time is not present
+		if (flag && row.activity_type && !row.from_time) {
+			erpnext.timesheet.timer(frm, row);
+			row.from_time = frappe.datetime.now_datetime();
+			flag = false;
+		}
+		// Fetch the row for timer where activity is not completed and from_time is before now_time
+		if (flag && row.from_time <= frappe.datetime.now_datetime() && !row.completed) {
+			let timestamp = moment(frappe.datetime.now_datetime()).diff(
+				moment(row.from_time),
+				"seconds"
+			);
+			erpnext.timesheet.timer(frm, row, timestamp);
+			flag = false;
+		}
+	});
+	// If no activities found to start a timer, create new
+	if (flag) {
+		erpnext.timesheet.timer(frm, row);
+	}
+}
 
 let check_and_set_availability = function(frm) {
 	let selected_slot = null;
