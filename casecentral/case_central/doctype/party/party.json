@@ -15,7 +15,6 @@
   "relationship",
   "relatives_name",
   "column_break_wc2f4",
-  "alias_name",
   "gender",
   "age",
   "year_of_incorporation",
@@ -32,7 +31,6 @@
   "rep_by_relationship",
   "rep_by_relatives_name",
   "column_break_whbt",
-  "rep_by_alias_name",
   "rep_by_gender",
   "rep_by_age",
   "column_break_ldrf",
@@ -49,7 +47,6 @@
   "poa_relationship",
   "poa_relatives_name",
   "column_break_dqpp",
-  "poa_alias_name",
   "poa_gender",
   "poa_age",
   "poa_year_of_incorporation",
@@ -66,7 +63,6 @@
   "poa_rep_by_relationship",
   "poa_rep_by_relatives_name",
   "column_break_fvsy",
-  "poa_rep_by_alias_name",
   "poa_rep_by_gender",
   "poa_rep_by_age",
   "column_break_qayk",
@@ -100,19 +96,12 @@
    "fieldtype": "Column Break"
   },
   {
-   "depends_on": "eval:!doc.organization",
-   "fieldname": "alias_name",
-   "fieldtype": "Data",
-   "label": "Alias Name"
-  },
-  {
    "columns": 1,
    "depends_on": "eval:!doc.organization",
    "fieldname": "mobile_number",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Mobile Number",
-   "mandatory_depends_on": "eval:!doc.organization"
+   "label": "Mobile Number"
   },
   {
    "fieldname": "column_break_9dldj",
@@ -125,7 +114,6 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Relationship",
-   "mandatory_depends_on": "eval:!doc.organization",
    "options": "\nM/G\nS/o\nW/o\nD/o\nH/o\nC/o"
   },
   {
@@ -134,8 +122,7 @@
    "fieldname": "relatives_name",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Relatives Name",
-   "mandatory_depends_on": "eval:!doc.organization"
+   "label": "Relatives Name"
   },
   {
    "columns": 1,
@@ -143,8 +130,7 @@
    "fieldname": "age",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Age",
-   "mandatory_depends_on": "eval:!doc.organization"
+   "label": "Age"
   },
   {
    "columns": 1,
@@ -152,7 +138,6 @@
    "fieldname": "gender",
    "fieldtype": "Link",
    "label": "Gender",
-   "mandatory_depends_on": "eval:!doc.organization",
    "options": "Gender"
   },
   {
@@ -160,15 +145,13 @@
    "fieldname": "id_proof_type",
    "fieldtype": "Select",
    "label": "ID Proof Type",
-   "mandatory_depends_on": "eval:!doc.organization",
    "options": "\nPAN\nPassport\nDriving License\nBank Passbook\nAdhaar No\nBirth Certificate\nVoter ID"
   },
   {
    "depends_on": "eval:!doc.organization",
    "fieldname": "id_no",
    "fieldtype": "Data",
-   "label": "ID No",
-   "mandatory_depends_on": "eval:!doc.organization"
+   "label": "ID No"
   },
   {
    "columns": 1,
@@ -236,11 +219,6 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Relatives Name"
-  },
-  {
-   "fieldname": "rep_by_alias_name",
-   "fieldtype": "Data",
-   "label": "Alias Name"
   },
   {
    "columns": 1,
@@ -369,7 +347,6 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Relationship",
-   "mandatory_depends_on": "eval:!doc.poa_organization",
    "options": "\nM/G\nS/o\nW/o\nD/o\nH/o\nC/o"
   },
   {
@@ -378,14 +355,7 @@
    "fieldname": "poa_relatives_name",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Relatives Name",
-   "mandatory_depends_on": "eval:!doc.poa_organization"
-  },
-  {
-   "depends_on": "eval:!doc.poa_organization",
-   "fieldname": "poa_alias_name",
-   "fieldtype": "Data",
-   "label": "Alias Name"
+   "label": "Relatives Name"
   },
   {
    "columns": 1,
@@ -393,7 +363,6 @@
    "fieldname": "poa_gender",
    "fieldtype": "Link",
    "label": "Gender",
-   "mandatory_depends_on": "eval:!doc.poa_organization",
    "options": "Gender"
   },
   {
@@ -402,8 +371,7 @@
    "fieldname": "poa_age",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Age",
-   "mandatory_depends_on": "eval:!doc.poa_organization"
+   "label": "Age"
   },
   {
    "depends_on": "eval:doc.poa_organization",
@@ -425,23 +393,20 @@
    "fieldname": "poa_mobile_number",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Mobile Number",
-   "mandatory_depends_on": "eval:!doc.poa_organization"
+   "label": "Mobile Number"
   },
   {
    "depends_on": "eval:!doc.poa_organization",
    "fieldname": "poa_id_proof_type",
    "fieldtype": "Select",
    "label": "ID Proof Type",
-   "mandatory_depends_on": "eval:!doc.poa_organization",
    "options": "\nPAN\nPassport\nDriving License\nBank Passbook\nAdhaar No\nBirth Certificate\nVoter ID"
   },
   {
    "depends_on": "eval:!doc.poa_organization",
    "fieldname": "poa_id_no",
    "fieldtype": "Data",
-   "label": "ID No",
-   "mandatory_depends_on": "eval:!doc.poa_organization"
+   "label": "ID No"
   },
   {
    "columns": 1,
@@ -505,11 +470,6 @@
    "label": "Relatives Name"
   },
   {
-   "fieldname": "poa_rep_by_alias_name",
-   "fieldtype": "Data",
-   "label": "Alias Name"
-  },
-  {
    "columns": 1,
    "fieldname": "poa_rep_by_gender",
    "fieldtype": "Link",
@@ -559,7 +519,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-08-18 15:47:30.482892",
+ "modified": "2024-08-21 00:43:48.561337",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Party",
