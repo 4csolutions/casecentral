@@ -265,7 +265,8 @@ doc_events = {
 # }
 scheduler_events = {
 	"daily": [
-		"casecentral.case_central.doctype.caveat.caveat.set_expired_status"
+		"casecentral.case_central.doctype.caveat.caveat.set_expired_status",
+        "casecentral.case_central.doctype.customer_appointment.customer_appointment.update_appointment_status"
 	]
 }
 # Testing

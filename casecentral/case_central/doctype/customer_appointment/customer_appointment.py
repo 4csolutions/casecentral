@@ -371,6 +371,10 @@ def update_status(appointment_id, status):
 
 @frappe.whitelist()
 def make_timesheet(source_name, target_doc=None):
+    # Validate if timesheet already exists
+	if frappe.db.exists("Timesheet", {"appointment": source_name, "status": ["!=", "Cancelled"]}):
+		frappe.throw(_("The timesheet already exists for this customer appointment"))
+        
 	doc = get_mapped_doc(
 		"Customer Appointment",
 		source_name,
