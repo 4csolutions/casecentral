@@ -5,10 +5,6 @@ from erpnext.accounts.report.financial_statements import get_period_list
 import frappe
 from frappe import _
 from frappe.utils import flt
-from frappe.utils import add_days, add_months, cint, cstr, flt, formatdate, get_first_day, getdate
-from erpnext.accounts.utils import get_fiscal_year
-
-
 
 def execute(filters=None):
     period_list = get_period_list(
@@ -31,33 +27,43 @@ def get_chart_data(filters, columns, data):
     labels = [d.get("period") for d in data]
 
     # Prepare datasets for total and completed tasks
-    total_data, completed_data = [], []
+    total_data, pending_total, new_total, completed_data = [], [], [], []
 
     for entry in data:
+        pending_total.append(entry.get("pending", 0))
+        new_total.append(entry.get("new", 0))
         total_data.append(entry.get("total", 0))
         completed_data.append(entry.get("completed", 0))
 
     datasets = []
+    if pending_total:
+        datasets.append({
+            "name": _("Pending ") + filters.report,
+            "values": pending_total,
+        })
+    if new_total:
+        datasets.append({
+            "name": _("New ") + filters.report,
+            "values": new_total,
+        })
     if total_data:
         datasets.append({
-            "name": _("Total Tasks"),
-            "backgroundColor": "#f39c12",
-            "values": total_data
+            "name": _("Total ") + filters.report,
+            "values": total_data,
         })
     if completed_data:
         datasets.append({
-            "name": _("Completed Tasks"),
-            "backgroundColor": "#00a65a",
-            "values": completed_data
+            "name": _("Completed ") + filters.report,
+            "values": completed_data,
         })
 
     chart = {
-        "type": "bar",  # or "line" depending on your needs
+        "type": "line",  # or "line" depending on your needs
         "data": {
             "labels": labels,
             "datasets": datasets
         },
-        
+        "colors": ["#F683AE", "#318AD8", "#F39C12", "#48BB74"],
         "options": {
             "responsive": True,
             "scales": {
@@ -88,16 +94,21 @@ def get_data(filters, period_list):
 def get_task_clearance_data(period_list, company):
     data = []
     for period in period_list:
-        total = get_task_total(period.from_date, period.to_date, company)
+        pending, new = get_task_total(period.from_date, period.to_date, company)
+        total = pending + new
         completed = get_task_completed(period.from_date, period.to_date, company)
-        clearance_rate = (completed / total * 100) if total else 0
+        absolute_clearance_rate = (completed / new * 100) if new else (completed * 100)
+        clearance_rate = (completed / total * 100) if total else (completed * 100)
         data.append({
             "period": period.label,
+            "pending": pending,
+            "new": new,
             "total": total,
             "completed": completed,
-            "clearance_rate": clearance_rate
+            "absolute_clearance_rate": flt(absolute_clearance_rate, 2),
+            "clearance_rate": flt(clearance_rate, 2)
         })
-
+        
     return data
 
 def get_task_total(from_date, to_date, company):
@@ -111,7 +122,7 @@ def get_task_total(from_date, to_date, company):
         'creation': ['between', [from_date, to_date]],
         'company': company
     })
-    return pending_before + created_in_period
+    return pending_before, created_in_period
 
 def get_task_completed(from_date, to_date, company):
     return frappe.db.count("Task", filters={
@@ -124,14 +135,19 @@ def get_task_completed(from_date, to_date, company):
 def get_matter_clearance_data(period_list, company):
     data = []
     for period in period_list:
-        total = get_matter_total(period.from_date, period.to_date, company)
+        pending, new = get_matter_total(period.from_date, period.to_date, company)
+        total = pending + new
         completed = get_matter_completed(period.from_date, period.to_date, company)
-        clearance_rate = (completed / total * 100) if total else 0
+        absolute_clearance_rate = (completed / new * 100) if new else (completed * 100)
+        clearance_rate = (completed / total * 100) if total else (completed * 100)
         data.append({
             "period": period.label,
+            "pending": pending,
+            "new": new,
             "total": total,
             "completed": completed,
-            "clearance_rate": clearance_rate
+            "absolute_clearance_rate": flt(absolute_clearance_rate, 2),
+            "clearance_rate": flt(clearance_rate, 2)
         })
 
     return data
@@ -147,7 +163,7 @@ def get_matter_total(from_date, to_date, company):
         'creation': ['between', [from_date, to_date]],
         'company': company
     })
-    return pending_before + created_in_period
+    return pending_before, created_in_period
 
 def get_matter_completed(from_date, to_date, company):
     return frappe.db.count("Matter", filters={
@@ -160,14 +176,19 @@ def get_matter_completed(from_date, to_date, company):
 def get_case_clearance_data(period_list, company):
     data = []
     for period in period_list:
-        total = get_case_total(period.from_date, period.to_date, company)
+        pending, new = get_case_total(period.from_date, period.to_date, company)
+        total = pending + new
         completed = get_case_completed(period.from_date, period.to_date, company)
-        clearance_rate = (completed / total * 100) if total else 0
+        absolute_clearance_rate = (completed / new * 100) if new else (completed * 100)
+        clearance_rate = (completed / total * 100) if total else (completed * 100)
         data.append({
             "period": period.label,
+            "pending": pending,
+            "new": new,
             "total": total,
             "completed": completed,
-            "clearance_rate": clearance_rate
+            "absolute_clearance_rate": flt(absolute_clearance_rate, 2),
+            "clearance_rate": flt(clearance_rate, 2)
         })
 
     return data
@@ -183,7 +204,7 @@ def get_case_total(from_date, to_date, company):
         'creation': ['between', [from_date, to_date]],
         'company': company
     })
-    return pending_before + created_in_period
+    return pending_before, created_in_period
 
 def get_case_completed(from_date, to_date, company):
     return frappe.db.count("Case", filters={
@@ -196,7 +217,10 @@ def get_case_completed(from_date, to_date, company):
 def get_columns():
     return [
         {"fieldname": "period", "label": "Period", "fieldtype": "Data", "width": 300},
-        {"fieldname": "total", "label": "Total", "fieldtype": "Int", "width": 150},
+        {"fieldname": "pending", "label": "Pending", "fieldtype": "Data", "width": 100},
+        {"fieldname": "new", "label": "New", "fieldtype": "Data", "width": 100},
+        {"fieldname": "total", "label": "Total", "fieldtype": "Int", "width": 100},
         {"fieldname": "completed", "label": "Completed", "fieldtype": "Int", "width": 100},
-        {"fieldname": "clearance_rate", "label": "Clearance Rate (%)", "fieldtype": "Percent", "width": 150}
+        {"fieldname": "absolute_clearance_rate", "label": "Absolute Clearance Rate (%)", "fieldtype": "Percent", "width": 250},
+        {"fieldname": "clearance_rate", "label": "Clearance Rate (%)", "fieldtype": "Percent", "width": 200}
     ]

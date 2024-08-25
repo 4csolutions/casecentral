@@ -63,24 +63,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Reports",
-   "link_count": 1,
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Matter Analytics",
-   "link_count": 0,
-   "link_to": "Matter Analytics",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Case Management",
    "link_count": 2,
    "onboard": 0,
@@ -353,9 +335,28 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Reports",
+   "link_count": 1,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Case Central Metrics",
+   "link_count": 0,
+   "link_to": "Case Central Metrics",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2023-10-17 16:07:09.272039",
+ "modified": "2024-08-25 15:49:54.034113",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Case Central",
