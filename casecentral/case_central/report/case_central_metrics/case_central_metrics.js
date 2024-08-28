@@ -1,7 +1,45 @@
-// Copyright (c) 2024, 4C Solutions and contributors
-// For license information, please see license.txt
+// case_central_metrics.js
 
 frappe.query_reports["Case Central Metrics"] = {
+  onload: function (report) {
+    let fiscal_year = erpnext.utils.get_fiscal_year(
+      frappe.datetime.get_today()
+    );
+
+    frappe.model.with_doc("Fiscal Year", fiscal_year, function (r) {
+      var fy = frappe.model.get_doc("Fiscal Year", fiscal_year);
+      frappe.query_report.set_filter_value({
+        period_start_date: fy.year_start_date,
+        period_end_date: fy.year_end_date,
+      });
+    });
+    frappe.call({
+      method:
+        "casecentral.case_central.report.case_central_metrics.case_central_metrics.get_applicable_calendar_years",
+      callback: function (r) {
+        if (r.message) {
+          const applicable_years = r.message;
+          let from_year_filter = report.get_filter("from_year");
+          let to_year_filter = report.get_filter("to_year");
+          // Set options for from_year and to_year
+          from_year_filter.df.options = applicable_years[0].join("\n");
+          to_year_filter.df.options = applicable_years[0].join("\n");
+
+          // Set defaults
+          from_year_filter.set_input(
+            applicable_years[applicable_years.length - 1]
+          );
+          to_year_filter.set_input(
+            applicable_years[applicable_years.length - 1]
+          );
+
+          from_year_filter.refresh();
+          to_year_filter.refresh();
+        }
+      },
+    });
+  },
+
   filters: [
     {
       fieldname: "company",
@@ -23,28 +61,36 @@ frappe.query_reports["Case Central Metrics"] = {
       fieldname: "filter_based_on",
       label: __("Filter Based On"),
       fieldtype: "Select",
-      options: ["Fiscal Year", "Date Range"],
-      default: ["Fiscal Year"],
+      options: ["Calendar Year", "Date Range", "Fiscal Year"],
+      default: "Calendar Year",
       reqd: 1,
       on_change: function () {
         let filter_based_on =
           frappe.query_report.get_filter_value("filter_based_on");
-        frappe.query_report.toggle_filter_display(
-          "from_fiscal_year",
-          filter_based_on === "Date Range"
-        );
-        frappe.query_report.toggle_filter_display(
-          "to_fiscal_year",
-          filter_based_on === "Date Range"
-        );
-        frappe.query_report.toggle_filter_display(
-          "period_start_date",
-          filter_based_on === "Fiscal Year"
-        );
-        frappe.query_report.toggle_filter_display(
-          "period_end_date",
-          filter_based_on === "Fiscal Year"
-        );
+        if (filter_based_on === "Calendar Year") {
+          frappe.query_report.toggle_filter_display("from_year", false);
+          frappe.query_report.toggle_filter_display("to_year", false);
+          frappe.query_report.toggle_filter_display("period_start_date", true);
+          frappe.query_report.toggle_filter_display("period_end_date", true);
+          frappe.query_report.toggle_filter_display("from_fiscal_year", true);
+          frappe.query_report.toggle_filter_display("to_fiscal_year", true);
+        }
+        if (filter_based_on === "Date Range") {
+          frappe.query_report.toggle_filter_display("from_year", true);
+          frappe.query_report.toggle_filter_display("to_year", true);
+          frappe.query_report.toggle_filter_display("period_start_date", false);
+          frappe.query_report.toggle_filter_display("period_end_date", false);
+          frappe.query_report.toggle_filter_display("from_fiscal_year", true);
+          frappe.query_report.toggle_filter_display("to_fiscal_year", true);
+        }
+        if (filter_based_on === "Fiscal Year") {
+          frappe.query_report.toggle_filter_display("from_year", true);
+          frappe.query_report.toggle_filter_display("to_year", true);
+          frappe.query_report.toggle_filter_display("period_start_date", true);
+          frappe.query_report.toggle_filter_display("period_end_date", true);
+          frappe.query_report.toggle_filter_display("from_fiscal_year", false);
+          frappe.query_report.toggle_filter_display("to_fiscal_year", false);
+        }
 
         frappe.query_report.refresh();
       },
@@ -77,11 +123,24 @@ frappe.query_reports["Case Central Metrics"] = {
       reqd: 1,
     },
     {
+      fieldname: "from_year",
+      label: __("Start Year"),
+      fieldtype: "Select",
+      reqd: 1,
+    },
+    {
+      fieldname: "to_year",
+      label: __("End Year"),
+      fieldtype: "Select",
+      reqd: 1,
+    },
+    {
       fieldname: "from_fiscal_year",
       label: __("Start Year"),
       fieldtype: "Link",
       options: "Fiscal Year",
       default: erpnext.utils.get_fiscal_year(frappe.datetime.get_today()),
+      hidden: 1,
       reqd: 1,
       on_change: () => {
         frappe.model.with_doc(
@@ -106,6 +165,7 @@ frappe.query_reports["Case Central Metrics"] = {
       fieldtype: "Link",
       options: "Fiscal Year",
       default: erpnext.utils.get_fiscal_year(frappe.datetime.get_today()),
+      hidden: 1,
       reqd: 1,
       on_change: () => {
         frappe.model.with_doc(
@@ -125,17 +185,4 @@ frappe.query_reports["Case Central Metrics"] = {
       },
     },
   ],
-  onload: function () {
-    let fiscal_year = erpnext.utils.get_fiscal_year(
-      frappe.datetime.get_today()
-    );
-
-    frappe.model.with_doc("Fiscal Year", fiscal_year, function (r) {
-      var fy = frappe.model.get_doc("Fiscal Year", fiscal_year);
-      frappe.query_report.set_filter_value({
-        period_start_date: fy.year_start_date,
-        period_end_date: fy.year_end_date,
-      });
-    });
-  },
 };
