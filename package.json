@@ -1,0 +1,15 @@
+{
+  "name": "casecentral",
+  "version": "1.0.0",
+  "description": "Your description here",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {},
+  "author": "Your Name",
+  "license": "ISC"
+}
