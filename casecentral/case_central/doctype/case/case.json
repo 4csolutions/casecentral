@@ -382,16 +382,6 @@
    "label": "Pleadings / Issues"
   },
   {
-   "fieldname": "form_1_tab",
-   "fieldtype": "Tab Break",
-   "label": "Form 1"
-  },
-  {
-   "fieldname": "pleadings__issues_section",
-   "fieldtype": "Section Break",
-   "label": "Pleadings / Issues"
-  },
-  {
    "fieldname": "tab_3_tab",
    "fieldtype": "Tab Break",
    "label": "Form 2"
