@@ -91,6 +91,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "status",
    "fieldtype": "Select",
    "in_list_view": 1,
@@ -338,11 +339,10 @@
    "link_fieldname": "custom_matter"
   }
  ],
- "modified": "2023-10-30 23:01:24.808994",
+ "modified": "2026-09-01 14:51:14.805232",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Matter",
- "name_case": "Title Case",
  "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
@@ -386,6 +386,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "show_name_in_global_search": 1,
  "show_preview_popup": 1,
  "sort_field": "modified",
