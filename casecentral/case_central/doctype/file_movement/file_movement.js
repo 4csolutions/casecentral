@@ -182,6 +182,9 @@ function setup_page_scan_button(frm) {
 // =========================================================
 
 function open_scan_dialog(frm) {
+    var scanner_id = "scanner-reader-" + frappe.dom.set_unique_id();
+    var html5_scanner = null;
+
     var dialog = new frappe.ui.Dialog({
         title: __("Scan Barcode / Matter ID"),
         fields: [
@@ -233,41 +236,79 @@ function open_scan_dialog(frm) {
         '<i class="fa fa-camera" style="margin-right: 5px;"></i>' + __("Start Camera Scanner") +
         '</button>' +
         '<button type="button" class="btn btn-danger btn-sm stop-camera" style="display:none;">' + __("Stop Camera") + '</button>' +
-        '<video class="barcode-video" style="width:100%;max-height:260px;margin-top:12px;display:none;border:1px solid #ddd;border-radius:6px;object-fit:cover;" autoplay muted playsinline></video>' +
+        '<div id="' + scanner_id + '" style="width:100%;max-width:480px;margin-top:12px;margin-left:auto;margin-right:auto;display:none;border:1px solid #ddd;border-radius:6px;overflow:hidden;"></div>' +
         '<div class="camera-message" style="margin-top:8px;font-size:12px;"></div>' +
         '</div>';
 
     dialog.fields_dict.camera_area.$wrapper.html(html);
 
     var wrapper = dialog.fields_dict.camera_area.$wrapper;
-    var video = wrapper.find(".barcode-video")[0];
     var start_button = wrapper.find(".start-camera");
     var stop_button = wrapper.find(".stop-camera");
     var camera_message = wrapper.find(".camera-message");
+    var scanner_container = wrapper.find("#" + scanner_id);
 
-    var stream = null;
-    var scanning = false;
-    var scan_interval = null;
+    function stop_camera() {
+        if (html5_scanner) {
+            try {
+                html5_scanner.stop().then(function () {
+                    try { html5_scanner.clear(); } catch (e) {}
+                    html5_scanner = null;
+                }).catch(function () {
+                    html5_scanner = null;
+                });
+            } catch (e) {
+                html5_scanner = null;
+            }
+        }
+        scanner_container.hide();
+        start_button.show();
+        stop_button.hide();
+        camera_message.html("");
+    }
 
     start_button.on("click", function () {
-        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-                .then(function (s) {
-                    stream = s;
-                    video.srcObject = s;
-                    video.style.display = "block";
-                    start_button.hide();
-                    stop_button.show();
-                    camera_message.html("<span class='text-muted'>" + __("Point camera at barcode...") + "</span>");
-                    scanning = true;
-                    start_camera_detection();
-                })
-                .catch(function (err) {
-                    camera_message.html("<span class='text-danger'>" + __("Camera error: {0}", [err.message]) + "</span>");
-                });
-        } else {
-            camera_message.html("<span class='text-danger'>" + __("Camera not supported on this device.") + "</span>");
-        }
+        camera_message.html("<span class='text-muted'>" + __("Starting camera...") + "</span>");
+        
+        load_html5_qrcode().then(function () {
+            scanner_container.show();
+            start_button.hide();
+            stop_button.show();
+            camera_message.html("<span class='text-muted'>" + __("Point camera at barcode or QR code...") + "</span>");
+
+            html5_scanner = new Html5Qrcode(scanner_id);
+            var config = {
+                fps: 15,
+                qrbox: function(viewfinderWidth, viewfinderHeight) {
+                    var minEdgePercentage = 0.85;
+                    var minEdgeSize = Math.min(viewfinderWidth, viewfinderHeight);
+                    var qrboxSize = Math.floor(minEdgeSize * minEdgePercentage);
+                    return {
+                        width: qrboxSize,
+                        height: Math.max(120, Math.floor(qrboxSize * 0.5))
+                    };
+                }
+            };
+
+            html5_scanner.start(
+                { facingMode: "environment" },
+                config,
+                function onScanSuccess(decodedText) {
+                    if (decodedText) {
+                        stop_camera();
+                        process_scan(frm, decodedText, dialog);
+                    }
+                },
+                function onScanFailure() {
+                    // Frame scan attempt without match - continue scanning
+                }
+            ).catch(function (err) {
+                camera_message.html("<span class='text-danger'>" + __("Camera error: {0}", [err.message || err]) + "</span>");
+                stop_camera();
+            });
+        }).catch(function (err) {
+            camera_message.html("<span class='text-danger'>" + __("Could not load camera library: {0}", [err.message || err]) + "</span>");
+        });
     });
 
     stop_button.on("click", function () {
@@ -281,42 +322,27 @@ function open_scan_dialog(frm) {
     dialog.$wrapper.on("hidden.bs.modal", function () {
         stop_camera();
     });
+}
 
-    function stop_camera() {
-        scanning = false;
-        if (scan_interval) {
-            clearInterval(scan_interval);
-            scan_interval = null;
-        }
-        if (stream) {
-            stream.getTracks().forEach(function (track) { track.stop(); });
-            stream = null;
-        }
-        video.style.display = "none";
-        start_button.show();
-        stop_button.hide();
-        camera_message.html("");
+function load_html5_qrcode() {
+    if (window.Html5Qrcode) {
+        return Promise.resolve();
     }
-
-    function start_camera_detection() {
-        if ("BarcodeDetector" in window) {
-            var barcodeDetector = new BarcodeDetector();
-            scan_interval = setInterval(function () {
-                if (!scanning || !video.videoWidth) return;
-                barcodeDetector.detect(video)
-                    .then(function (barcodes) {
-                        if (barcodes.length > 0 && scanning) {
-                            var detected_code = barcodes[0].rawValue;
-                            stop_camera();
-                            process_scan(frm, detected_code, dialog);
-                        }
-                    })
-                    .catch(function () {});
-            }, 300);
-        } else {
-            camera_message.html("<span class='text-warning'>" + __("Live camera detection not supported by browser. Please type or scan using barcode gun.") + "</span>");
-        }
-    }
+    return new Promise(function (resolve, reject) {
+        frappe.require("/assets/frappe/node_modules/html5-qrcode/html5-qrcode.min.js", function () {
+            if (window.Html5Qrcode) {
+                resolve();
+            } else {
+                frappe.require("https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js", function () {
+                    if (window.Html5Qrcode) {
+                        resolve();
+                    } else {
+                        reject(new Error("Failed to load Html5Qrcode library"));
+                    }
+                });
+            }
+        });
+    });
 }
 
 
