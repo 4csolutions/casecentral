@@ -1,0 +1,64 @@
+{
+ "cards": [
+  {
+   "card": "Clients"
+  },
+  {
+   "card": "Matter"
+  },
+  {
+   "card": "Task"
+  }
+ ],
+ "chart_options": "",
+ "charts": [
+  {
+   "chart": "Matter Summary",
+   "width": "Half"
+  },
+  {
+   "chart": "Task Summary",
+   "width": "Half"
+  },
+  {
+   "chart": "Matter Count",
+   "width": "Half"
+  },
+  {
+   "chart": "Matter by Service",
+   "width": "Half"
+  },
+  {
+   "chart": "Case Count",
+   "width": "Half"
+  },
+  {
+   "chart": "Case by Courts",
+   "width": "Half"
+  },
+  {
+   "chart": "Task Clearance Rate",
+   "width": "Half"
+  },
+  {
+   "chart": "Matter Clearance Rate",
+   "width": "Half"
+  },
+  {
+   "chart": "Case Clearance Rate",
+   "width": "Half"
+  }
+ ],
+ "creation": "2023-01-07 12:16:04.838026",
+ "dashboard_name": "Case Central",
+ "docstatus": 0,
+ "doctype": "Dashboard",
+ "idx": 0,
+ "is_default": 0,
+ "is_standard": 1,
+ "modified": "2024-08-24 17:43:20.029480",
+ "modified_by": "Administrator",
+ "module": "Case Central",
+ "name": "Case Central",
+ "owner": "Administrator"
+}

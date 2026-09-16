@@ -1,0 +1,37 @@
+{
+ "based_on": "creation",
+ "chart_name": "Matter Count",
+ "chart_type": "Count",
+ "color": "#29CD42",
+ "creation": "2023-09-07 14:32:13.164753",
+ "docstatus": 0,
+ "doctype": "Dashboard Chart",
+ "document_type": "Matter",
+ "dynamic_filters_json": "[]",
+ "filters_json": "[[\"Matter\",\"docstatus\",\"=\",\"1\",false],[\"Matter\",\"status\",\"!=\",\"Cancelled\",false]]",
+ "group_by_type": "Count",
+ "idx": 0,
+ "is_public": 0,
+ "is_standard": 1,
+ "last_synced_on": "2023-09-07 14:43:55.765136",
+ "modified": "2023-09-07 14:44:48.342864",
+ "modified_by": "Administrator",
+ "module": "Case Central",
+ "name": "Matter Count",
+ "number_of_groups": 0,
+ "owner": "Administrator",
+ "parent_document_type": "",
+ "roles": [
+  {
+   "role": "System Manager"
+  }
+ ],
+ "source": "",
+ "time_interval": "Monthly",
+ "timeseries": 1,
+ "timespan": "Last Year",
+ "type": "Bar",
+ "use_report_chart": 0,
+ "value_based_on": "",
+ "y_axis": []
+}

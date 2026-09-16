@@ -1,0 +1,19 @@
+{
+ "content": null,
+ "creation": "2024-12-07 15:29:03.348117",
+ "docstatus": 0,
+ "doctype": "Page",
+ "idx": 0,
+ "modified": "2024-12-07 15:29:03.348117",
+ "modified_by": "Administrator",
+ "module": "Case Central",
+ "name": "cause-list",
+ "owner": "Administrator",
+ "page_name": "cause-list",
+ "roles": [],
+ "script": null,
+ "standard": "Yes",
+ "style": null,
+ "system_page": 0,
+ "title": "Cause List"
+}

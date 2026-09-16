@@ -1,0 +1,232 @@
+{% extends "templates/web.html" %}
+
+{% block header %}
+  <h3 class="mb-4 mt-0">Matter Detail - {{ matter.name }}</h3>
+{% endblock %}
+
+{% block page_content %}
+<div class="container-fluid">
+  <div class="row mb-3">
+    <div class="col-12">
+      <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+          <a
+            class="nav-link active"
+            id="details-tab"
+            data-toggle="tab"
+            href="#details"
+            role="tab"
+            aria-controls="details"
+            aria-selected="true"
+            >Details</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            id="fee-tab"
+            data-toggle="tab"
+            href="#fee"
+            role="tab"
+            aria-controls="fee"
+            aria-selected="false"
+            >Fee Details</a
+          >
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tab-content">
+    <div
+      class="tab-pane fade show active"
+      id="details"
+      role="tabpanel"
+      aria-labelledby="details-tab"
+    >
+      <!-- Linked Tasks -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Linked Tasks</h5>
+        </div>
+        <div class="card-body p-0">
+          {% if tasks %}
+          <div
+            class="table-responsive"
+            style="max-height: 320px; overflow: auto"
+          >
+            <table class="table table-striped table-sm mb-0 text-center">
+              <thead class="table-light">
+                <tr>
+                  <th class="border fw-semibold" style="width: 15%">Matter</th>
+                  <th class="border fw-semibold" style="width: 35%">Subject</th>
+                  <th class="border fw-semibold" style="width: 10%">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for t in tasks %}
+                <tr>
+                  <td class="border text-muted" style="word-break: break-word">
+                    {{ t.matter or "-" }}
+                  </td>
+                  <td class="border fw-medium" style="word-break: break-word">
+                    {{ t.subject }}
+                  </td>
+                  <td class="border">
+                    <span
+                      class="badge rounded-pill px-2 py-1 {% if t.status == 'Open' %} bg-primary text-white {% elif t.status == 'Completed' %} bg-success text-white {% elif t.status == 'Pending' %} bg-warning text-dark {% elif t.status == 'Cancelled' %} bg-danger text-white {% elif t.status == 'Working' %} bg-info text-white {% else %} bg-light text-muted {% endif %}"
+                      style="font-size: 14px"
+                    >
+                      {{ t.status }}
+                    </span>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="p-3 text-muted fst-italic">
+            No tasks linked to this case.
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Details Tab -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Matter Details</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <strong class="text-dark">Customer</strong>
+              <div class="fw-semibold">{{ matter.customer or "-" }}</div>
+            </div>
+            <!-- <div class="col-md-6 mb-3">
+              <strong class="text-dark">Company</strong>
+              <div class="fw-semibold">{{ matter.company or "-" }}</div>
+            </div> -->
+            <div class="col-md-6 mb-3">
+              <strong class="text-dark">Customer Name</strong>
+              <div>{{ matter.customer_name or "-" }}</div>
+            </div>
+            <!-- <div class="col-md-6 mb-3">
+              <strong class="text-dark">Branch</strong>
+              <div class="mt-1 text-muted">{{ matter.branch or "-" }}</div>
+            </div> -->
+            <div class="col-md-6 mb-3">
+              <strong class="text-dark">Contact Email</strong>
+              <div class="mt-1 text-muted">
+                {{ matter.contact_email or "-" }}
+              </div>
+            </div>
+            <!-- <div class="col-md-6 mb-3">
+              <strong class="text-dark">Matter Type</strong>
+              <div class="mt-1 text-muted">{{ matter.matter_type or "-" }}</div>
+            </div> -->
+            <!-- <div class="col-md-6 mb-3">
+              <strong class="text-dark">Service Type</strong>
+              <div class="mt-1 text-muted">{{ matter.service_type or "-" }}</div>
+            </div> -->
+            <div class="col-md-6 mb-3">
+              <strong class="text-dark">Service</strong>
+              <div class="mt-1 text-muted">{{ matter.service or "-" }}</div>
+            </div>
+            <!-- <div class="col-md-6 mb-3">
+              <strong class="text-dark">File Type</strong>
+              <div class="mt-1 text-muted">{{ matter.file_type or "-" }}</div>
+            </div> -->
+            <div class="col-md-6 mb-3">
+              <strong class="text-dark">Posting Date</strong>
+              <div class="mt-1 text-muted">
+                {{ matter.posting_date.strftime("%d-%m-%Y") or "-" }}
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <strong class="text-dark">Status</strong>
+              <div
+                class="badge rounded-pill px-2 py-1 {% if matter.status == 'Open' %} bg-primary text-white {% elif matter.status == 'Working' %} bg-info text-white {% elif matter.status == 'Pending' %} bg-warning text-dark {% elif matter.status == 'Closed' %} bg-danger text-white {% elif matter.status == 'Completed' %} bg-success text-white {% elif matter.status == 'Cancelled' %} bg-danger text-white {% else %} bg-light text-muted {% endif %}"
+              >
+                {{ matter.status }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Matter Description -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Description</h5>
+        </div>
+        <div class="card-body">
+          <p class="mb-0 text-muted">
+            {{ matter.description or "No description provided." }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fee Details Tab -->
+    <div
+      class="tab-pane fade"
+      id="fee"
+      role="tabpanel"
+      aria-labelledby="fee-tab"
+    >
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Fee Details</h5>
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-bordered table-striped table-sm mb-0">
+            <thead class="table-light">
+              <tr class="text-center">
+                <th class="border fw-semibold">No.</th>
+                <th class="border fw-semibold">Legal Service</th>
+                <th class="border fw-semibold">Description</th>
+                <th class="border fw-semibold">Rate</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if matter.legal_service_rates %} {% for rate in
+              matter.legal_service_rates %}
+              <tr>
+                <td class="border text-center">{{ loop.index }}</td>
+                <td class="border text-center" style="word-break: break-word">
+                  {{ rate.legal_service }}
+                </td>
+                <td class="border text-center" style="word-break: break-word">
+                  {{ rate.description }}
+                </td>
+                <td class="border text-center" style="word-break: break-word">
+                  {{ rate.rate }}
+                </td>
+              </tr>
+              {% endfor %} {% else %}
+              <tr>
+                <td colspan="4" class="text-center text-muted py-5">
+                  <div class="d-flex flex-column align-items-center">
+                    <i class="fa fa-table fa-2x mb-2 opacity-50"></i>
+                    <span>No Data</span>
+                  </div>
+                </td>
+              </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /tab-content -->
+
+  <!-- Comments Section -->
+  <div>
+    <h5>Comments</h5>
+    {% include 'templates/includes/comments/comments.html' %}
+  </div>
+</div>
+{% endblock %}

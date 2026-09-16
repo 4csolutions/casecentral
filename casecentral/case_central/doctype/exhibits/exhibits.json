@@ -1,0 +1,56 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-07-10 23:54:01.986503",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "exhibit_no",
+  "date_of_exhibit",
+  "description_of_exhibit",
+  "remark"
+ ],
+ "fields": [
+  {
+   "columns": 1,
+   "fieldname": "exhibit_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Exhibit No."
+  },
+  {
+   "columns": 1,
+   "fieldname": "date_of_exhibit",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date of Exhibit"
+  },
+  {
+   "columns": 4,
+   "fieldname": "description_of_exhibit",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Description of Exhibit"
+  },
+  {
+   "columns": 3,
+   "fieldname": "remark",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Remark"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-07-11 00:05:08.684450",
+ "modified_by": "Administrator",
+ "module": "Case Central",
+ "name": "Exhibits",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
