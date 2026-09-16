@@ -1,6 +1,7 @@
 {
+ "app": "casecentral",
  "charts": [],
- "content": "[{\"id\":\"header_1\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Case Central</span>\",\"col\":12}},{\"id\":\"sh_customer\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customer\",\"col\":3}},{\"id\":\"sh_matter\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Matter\",\"col\":3}},{\"id\":\"sh_case\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Case\",\"col\":3}},{\"id\":\"sh_caveat\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Caveat\",\"col\":3}},{\"id\":\"sh_task\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Task\",\"col\":3}},{\"id\":\"sh_appointment\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customer Appointment\",\"col\":3}},{\"id\":\"sh_timesheet\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Timesheet\",\"col\":3}},{\"id\":\"sh_schedule\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Lawyer Schedule\",\"col\":3}},{\"id\":\"sh_book\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Book\",\"col\":4}},{\"id\":\"sh_settings\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Case Central Settings\",\"col\":4}},{\"id\":\"sh_dashboard\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Dashboard\",\"col\":4}},{\"id\":\"spacer_1\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"card_matter_mgt\",\"type\":\"card\",\"data\":{\"card_name\":\"Matter Management\",\"col\":4}},{\"id\":\"card_case_mgt\",\"type\":\"card\",\"data\":{\"card_name\":\"Case Management\",\"col\":4}},{\"id\":\"card_appointments\",\"type\":\"card\",\"data\":{\"card_name\":\"Appointments\",\"col\":4}},{\"id\":\"card_operations\",\"type\":\"card\",\"data\":{\"card_name\":\"Operations\",\"col\":4}},{\"id\":\"card_books_journals\",\"type\":\"card\",\"data\":{\"card_name\":\"Books and Journals\",\"col\":4}},{\"id\":\"card_quality_mgt\",\"type\":\"card\",\"data\":{\"card_name\":\"Quality Management\",\"col\":4}},{\"id\":\"card_masters\",\"type\":\"card\",\"data\":{\"card_name\":\"Masters\",\"col\":4}},{\"id\":\"card_setup\",\"type\":\"card\",\"data\":{\"card_name\":\"Setup\",\"col\":4}},{\"id\":\"card_reports\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
+ "content": "[{\"id\":\"header_1\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Case Central</span>\",\"col\":12}},{\"id\":\"sh_customer\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customer\",\"col\":3}},{\"id\":\"sh_matter\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Matter\",\"col\":3}},{\"id\":\"sh_case\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Case\",\"col\":3}},{\"id\":\"sh_caveat\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Caveat\",\"col\":3}},{\"id\":\"sh_task\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Task\",\"col\":3}},{\"id\":\"sh_appointment\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customer Appointment\",\"col\":3}},{\"id\":\"sh_timesheet\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Timesheet\",\"col\":3}},{\"id\":\"sh_schedule\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Lawyer Schedule\",\"col\":3}},{\"id\":\"sh_book\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Book\",\"col\":4}},{\"id\":\"sh_settings\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Case Central Settings\",\"col\":4}},{\"id\":\"sh_dashboard\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Dashboard\",\"col\":4}},{\"id\":\"sh_file_movement\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"File Movement\",\"col\":4}},{\"id\":\"spacer_1\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"card_matter_mgt\",\"type\":\"card\",\"data\":{\"card_name\":\"Matter Management\",\"col\":4}},{\"id\":\"card_case_mgt\",\"type\":\"card\",\"data\":{\"card_name\":\"Case Management\",\"col\":4}},{\"id\":\"card_appointments\",\"type\":\"card\",\"data\":{\"card_name\":\"Appointments\",\"col\":4}},{\"id\":\"card_operations\",\"type\":\"card\",\"data\":{\"card_name\":\"Operations\",\"col\":4}},{\"id\":\"card_books_journals\",\"type\":\"card\",\"data\":{\"card_name\":\"Books and Journals\",\"col\":4}},{\"id\":\"card_quality_mgt\",\"type\":\"card\",\"data\":{\"card_name\":\"Quality Management\",\"col\":4}},{\"id\":\"card_masters\",\"type\":\"card\",\"data\":{\"card_name\":\"Masters\",\"col\":4}},{\"id\":\"card_setup\",\"type\":\"card\",\"data\":{\"card_name\":\"Setup\",\"col\":4}},{\"id\":\"card_reports\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
  "creation": "2022-12-27 17:17:22.857757",
  "custom_blocks": [],
  "docstatus": 0,
@@ -365,7 +366,7 @@
    "type": "Link"
   }
  ],
- "modified": "2026-06-15 21:05:37.815545",
+ "modified": "2026-09-16 13:23:58.276004",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Case Central",
@@ -384,6 +385,14 @@
    "label": "Customer",
    "link_to": "Customer",
    "stats_filter": "{\"disabled\":[\"=\",0]}",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "File Movement",
+   "link_to": "File Movement",
+   "stats_filter": "[]",
    "type": "DocType"
   },
   {
@@ -461,5 +470,6 @@
    "type": "Dashboard"
   }
  ],
- "title": "Case Central"
+ "title": "Case Central",
+ "type": "Workspace"
 }
