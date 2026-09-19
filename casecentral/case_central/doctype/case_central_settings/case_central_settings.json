@@ -17,19 +17,7 @@
   "favicon",
   "hide_system_branding",
   "api_security_section",
-  "allowed_cors_origins",
-  "ecourts_settings_section",
-  "auto_fetch_data_using_api",
-  "practicing_high_courts",
-  "user",
-  "column_break_gzxh",
-  "advocate_names",
-  "bar_registration_numbers",
-  "case_central_api_section",
-  "api_base_url",
-  "api_key",
-  "column_break_mneh",
-  "api_secret"
+  "allowed_cors_origins"
  ],
  "fields": [
   {
@@ -92,80 +80,12 @@
    "fieldname": "allowed_cors_origins",
    "fieldtype": "Small Text",
    "label": "Allowed CORS Origins"
-  },
-  {
-   "fieldname": "ecourts_settings_section",
-   "fieldtype": "Section Break",
-   "label": "E Courts Settings"
-  },
-  {
-   "default": "0",
-   "fieldname": "auto_fetch_data_using_api",
-   "fieldtype": "Check",
-   "label": "Auto Fetch data from Ecourts Website using API"
-  },
-  {
-   "fieldname": "practicing_high_courts",
-   "fieldtype": "Table MultiSelect",
-   "label": "Practicing High Courts",
-   "options": "High Court List"
-  },
-  {
-   "fieldname": "column_break_gzxh",
-   "fieldtype": "Column Break"
-  },
-  {
-   "description": "The advocate names to search for in cause lists.",
-   "fieldname": "advocate_names",
-   "fieldtype": "Table",
-   "label": "Advocate Names",
-   "options": "Advocate Name"
-  },
-  {
-   "description": "The bar registration numbers to search for in cause lists.",
-   "fieldname": "bar_registration_numbers",
-   "fieldtype": "Table",
-   "label": "Bar Registration Numbers",
-   "options": "Bar Registration Number"
-  },
-  {
-   "description": "The cause list will be emailed to this user.",
-   "fieldname": "user",
-   "fieldtype": "Link",
-   "label": "User",
-   "options": "User"
-  },
-  {
-   "fieldname": "case_central_api_section",
-   "fieldtype": "Section Break",
-   "label": "Case Central API"
-  },
-  {
-   "default": "https://erp.casecentral.in",
-   "description": "Base URL of CaseCentral ERP API (e.g., https://erp.casecentral.in)",
-   "fieldname": "api_base_url",
-   "fieldtype": "Data",
-   "label": "API Base URL"
-  },
-  {
-   "fieldname": "api_key",
-   "fieldtype": "Data",
-   "label": "API Key"
-  },
-  {
-   "fieldname": "column_break_mneh",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "api_secret",
-   "fieldtype": "Password",
-   "label": "API secret"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-09-16 12:45:00.000000",
+ "modified": "2026-09-19 13:16:00.000000",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Case Central Settings",
