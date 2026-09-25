@@ -57,13 +57,7 @@
   "final_order_details_section",
   "final_order",
   "document_details_section",
-  "document_details",
-  "exhibits_section",
-  "list_of_exhibits_for_plaintiff",
-  "list_of_exhibits_for_defendant",
-  "witnesses_examined_section",
-  "list_of_witnesses_examined_for_the_plaintiff",
-  "list_of_witnesses_examined_for_the_defendant"
+  "document_details"
  ],
  "fields": [
   {
@@ -332,40 +326,6 @@
    "fieldtype": "Data",
    "label": "Nature of Disposal",
    "mandatory_depends_on": "eval: doc.status==\"Disposed\""
-  },
-  {
-   "fieldname": "exhibits_section",
-   "fieldtype": "Section Break",
-   "label": "Exhibits"
-  },
-  {
-   "fieldname": "list_of_exhibits_for_plaintiff",
-   "fieldtype": "Table",
-   "label": "List of Exhibits for Plaintiff",
-   "options": "Exhibits"
-  },
-  {
-   "fieldname": "list_of_exhibits_for_defendant",
-   "fieldtype": "Table",
-   "label": "List of Exhibits for Defendant",
-   "options": "Exhibits"
-  },
-  {
-   "fieldname": "witnesses_examined_section",
-   "fieldtype": "Section Break",
-   "label": "Witnesses Examined"
-  },
-  {
-   "fieldname": "list_of_witnesses_examined_for_the_plaintiff",
-   "fieldtype": "Table",
-   "label": "List of Witnesses Examined for the Plaintiff",
-   "options": "Witness Examined"
-  },
-  {
-   "fieldname": "list_of_witnesses_examined_for_the_defendant",
-   "fieldtype": "Table",
-   "label": "List of Witnesses Examined for the Defendant",
-   "options": "Witness Examined"
   },
   {
    "collapsible": 1,
