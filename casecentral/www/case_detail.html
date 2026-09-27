@@ -1,0 +1,174 @@
+{% extends "templates/web.html" %} 
+{% block header %}
+  <h3 class="mb-4 mt-0">Case Detail - {{ case.name }}</h3>
+{% endblock %}
+
+{% block page_content %}
+<div class="container-fluid py-4">
+
+  <div id="details">
+    <!-- Linked Tasks -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">Linked Tasks</h5>
+      </div>
+      <div class="card-body p-0">
+        {% if tasks %}
+        <div class="table-responsive" style="max-height: 320px; overflow: auto">
+          <table class="table table-striped table-sm mb-0 text-center">
+            <thead class="table-light">
+              <tr>
+                <th class="border fw-semibold" style="width: 15%">Matter</th>
+                <th class="border fw-semibold" style="width: 35%">Subject</th>
+                <th class="border fw-semibold" style="width: 10%">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for t in tasks %}
+              <tr>
+                <td class="border text-muted" style="word-break: break-word">
+                  {{ t.matter or "-" }}
+                </td>
+                <td class="border fw-medium" style="word-break: break-word">
+                  {{ t.subject }}
+                </td>
+                <td class="border">
+                  <span
+                    class="badge rounded-pill px-2 py-1 {% if t.status == 'Open' %} bg-primary text-white {% elif t.status == 'Completed' %} bg-success text-white {% elif t.status == 'Pending Review' %} bg-warning text-dark {% elif t.status == 'Cancelled' %} bg-danger text-white {% elif t.status == 'Working' %} bg-info text-white {% elif t.status == 'Overdue' %} bg-danger text-white {% elif t.status == 'Template' %} bg-secondary text-white {% else %} bg-light text-muted {% endif %}"
+                    style="font-size: 14px">
+                    {{ t.status }}
+                  </span>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="p-3 text-muted fst-italic">
+          No tasks linked to this case.
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Case Details -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">Case Details</h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <strong class="text-dark">Case Title</strong>
+            <div class="mt-1 text-muted">{{ case.case_title }}</div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <strong class="text-dark">CNR:</strong>
+            <div class="mt-1 text-muted">{{ case.cnr or "-" }}</div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <strong class="text-dark">Case Year:</strong>
+            <div class="mt-1 text-muted">{{ case.case_year or "-" }}</div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <strong class="text-dark">Registration No:</strong>
+            <div class="mt-1 text-muted">
+              {{ case.registration_number or "-" }}
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <strong class="text-dark">Court No & Judge:</strong>
+            <div class="mt-1 text-muted">
+              {{ case.court_number_and_judge or "-" }}
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <div>
+              <strong class="text-dark">Next Hearing Date:</strong>
+            </div>
+            <div class="badge rounded-pill px-2 py-1 bg-primary text-white mt-1" style="font-size: 14px">
+              {{ case.next_hearing_date.strftime("%d-%m-%Y") }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Case History -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">Case History Details</h5>
+      </div>
+      <div class="card-body p-0">
+        {% if case.case_history %}
+        <div class="table-responsive" style="max-height: 420px; overflow: auto">
+          <table class="table table-bordered table-striped table-sm mb-0" style="font-size: 14px">
+            <thead class="table-light">
+              <tr class="text-center">
+                <th class="border fw-semibold" style="width: 6%">No.</th>
+                <th class="border fw-semibold" style="width: 18%">Judge</th>
+                <th class="border fw-semibold" style="width: 14%">
+                  Business on Date
+                </th>
+                <th class="border fw-semibold" style="width: 16%">
+                  Purpose of Hearing
+                </th>
+                <th class="border fw-semibold" style="width: 34%">
+                  Business Details
+                </th>
+                <th class="border fw-semibold" style="width: 12%">
+                  Hearing Date
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for h in case.case_history %}
+              <tr>
+                <td class="border text-center">{{ loop.index }}</td>
+                <td class="border text-center" style="word-break: break-word">
+                  {{ h.judge }}
+                </td>
+                <td class="border text-center" style="word-break: break-word">
+                  {% if h.business_on_date  %}
+                  {{ h.business_on_date.strftime("%d-%m-%Y") or "-" }}
+                  {% endif %}
+                </td>
+                <td class="border text-center" style="word-break: break-word">
+                  {{ h.purpose_of_hearing }}
+                </td>
+                <td class="border text-muted" style="word-break: break-word">
+                  {{ h.business_details }}
+                </td>
+                <td class="border text-center" style="word-break: break-word">
+                  {% if h.hearing_date  %}
+                  {{ h.hearing_date.strftime("%d-%m-%Y") or "-"}}
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="p-3 text-muted fst-italic">No case history available.</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Comments Section -->
+    <div>
+      <h5>Comments</h5>
+      {% include 'templates/includes/comments/comments.html' %}
+    </div>
+  </div>
+</div>
+
+
+
+
+{% endblock %}

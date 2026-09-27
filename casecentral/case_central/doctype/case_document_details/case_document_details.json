@@ -1,0 +1,59 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-11-01 18:47:00.555886",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "document_no",
+  "date_of_receiving",
+  "filed_by",
+  "name_of_advocate",
+  "document_filed"
+ ],
+ "fields": [
+  {
+   "fieldname": "document_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Document No."
+  },
+  {
+   "fieldname": "date_of_receiving",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date of Receiving"
+  },
+  {
+   "fieldname": "filed_by",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Filed By"
+  },
+  {
+   "fieldname": "name_of_advocate",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Name of Advocate"
+  },
+  {
+   "fieldname": "document_filed",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Document Filed"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-11-01 18:49:06.831353",
+ "modified_by": "Administrator",
+ "module": "Case Central",
+ "name": "Case Document Details",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

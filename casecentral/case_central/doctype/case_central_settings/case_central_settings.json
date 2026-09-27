@@ -1,0 +1,110 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-06-19 14:34:40.454195",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "create_book_on_purchase_invoice",
+  "auto_create_lse_on_hearing_task_complete",
+  "white_labeling_section",
+  "custom_app_title",
+  "app_logo",
+  "column_break_branding",
+  "watermark_text",
+  "favicon",
+  "hide_system_branding",
+  "api_security_section",
+  "allowed_cors_origins"
+ ],
+ "fields": [
+  {
+   "default": "0",
+   "fieldname": "create_book_on_purchase_invoice",
+   "fieldtype": "Check",
+   "label": "Create Book on Purchase Invoice"
+  },
+  {
+   "default": "1",
+   "fieldname": "auto_create_lse_on_hearing_task_complete",
+   "fieldtype": "Check",
+   "label": "Auto create legal service entry upon hearing task completion"
+  },
+  {
+   "fieldname": "white_labeling_section",
+   "fieldtype": "Section Break",
+   "label": "Firm Branding & White-Labeling"
+  },
+  {
+   "default": "Case Central",
+   "fieldname": "custom_app_title",
+   "fieldtype": "Data",
+   "label": "Custom App Title"
+  },
+  {
+   "fieldname": "app_logo",
+   "fieldtype": "Attach Image",
+   "label": "App Logo"
+  },
+  {
+   "fieldname": "column_break_branding",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Case Central",
+   "fieldname": "watermark_text",
+   "fieldtype": "Data",
+   "label": "Watermark Text"
+  },
+  {
+   "fieldname": "favicon",
+   "fieldtype": "Attach Image",
+   "label": "Favicon"
+  },
+  {
+   "default": "0",
+   "fieldname": "hide_system_branding",
+   "fieldtype": "Check",
+   "label": "Hide System Branding"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "api_security_section",
+   "fieldtype": "Section Break",
+   "label": "API & Integration Security"
+  },
+  {
+   "description": "Comma-separated list of allowed CORS origins for external portals (e.g. https://portal.lawfirm.com)",
+   "fieldname": "allowed_cors_origins",
+   "fieldtype": "Small Text",
+   "label": "Allowed CORS Origins"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-09-19 13:16:00.000000",
+ "modified_by": "Administrator",
+ "module": "Case Central",
+ "name": "Case Central Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

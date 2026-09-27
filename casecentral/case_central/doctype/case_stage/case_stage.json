@@ -1,0 +1,63 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:case_stage",
+ "creation": "2025-02-02 13:10:44.786385",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "case_stage",
+  "services"
+ ],
+ "fields": [
+  {
+   "fieldname": "case_stage",
+   "fieldtype": "Data",
+   "label": "Case Stage",
+   "unique": 1
+  },
+  {
+   "fieldname": "services",
+   "fieldtype": "Table MultiSelect",
+   "label": "Services",
+   "options": "Service List"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-02-02 14:38:28.877741",
+ "modified_by": "Administrator",
+ "module": "Case Central",
+ "name": "Case Stage",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Projects User",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

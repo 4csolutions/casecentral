@@ -1,0 +1,416 @@
+{
+ "actions": [],
+ "autoname": "naming_series:",
+ "creation": "2022-12-27 17:26:28.945877",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "project_template",
+  "customer",
+  "customer_name",
+  "contact_no",
+  "contact_email",
+  "column_break_6",
+  "company",
+  "branch",
+  "matter_type",
+  "service_type",
+  "service",
+  "service_abbr",
+  "file_type",
+  "file_type_abbr",
+  "column_break_12",
+  "posting_date",
+  "status",
+  "expected_start_date",
+  "expected_end_date",
+  "referred_by",
+  "referral_mobile_no",
+  "linked_matters",
+  "matter_description_section",
+  "description",
+  "matter_research_tab",
+  "research_notes",
+  "fee_details_tab",
+  "legal_service_rates",
+  "commissions_tab",
+  "sales_partner",
+  "column_break_dw8sb",
+  "commission_rate",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "allow_on_submit": 1,
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Customer",
+   "options": "Customer",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "project_template.custom_matter_type",
+   "fetch_if_empty": 1,
+   "fieldname": "matter_type",
+   "fieldtype": "Link",
+   "label": "Matter Type",
+   "options": "Matter Type"
+  },
+  {
+   "fetch_from": "project_template.custom_service_type",
+   "fetch_if_empty": 1,
+   "fieldname": "service_type",
+   "fieldtype": "Link",
+   "label": "Service Type",
+   "options": "Service Type"
+  },
+  {
+   "fetch_from": "project_template.custom_service",
+   "fetch_if_empty": 1,
+   "fieldname": "service",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Service",
+   "options": "Service",
+   "reqd": 1
+  },
+  {
+   "fieldname": "file_type",
+   "fieldtype": "Link",
+   "label": "File Type",
+   "options": "File Type",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Open\nWorking\nPending\nCompleted\nCancelled"
+  },
+  {
+   "fieldname": "expected_start_date",
+   "fieldtype": "Date",
+   "label": "Expected Start Date"
+  },
+  {
+   "fieldname": "expected_end_date",
+   "fieldtype": "Date",
+   "label": "Expected End Date"
+  },
+  {
+   "fetch_from": "service.abbr",
+   "fieldname": "service_abbr",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Service Abbr"
+  },
+  {
+   "fetch_from": "file_type.abbr",
+   "fieldname": "file_type_abbr",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "File Type Abbr"
+  },
+  {
+   "fieldname": "referred_by",
+   "fieldtype": "Link",
+   "label": "Referred By",
+   "options": "Customer"
+  },
+  {
+   "fetch_from": "referred_by.mobile_no",
+   "fieldname": "referral_mobile_no",
+   "fieldtype": "Read Only",
+   "label": "Referral Mobile No",
+   "options": "Phone"
+  },
+  {
+   "allow_on_submit": 1,
+   "fetch_from": "customer.mobile_no",
+   "fieldname": "contact_no",
+   "fieldtype": "Read Only",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Contact No",
+   "options": "Phone"
+  },
+  {
+   "fetch_from": "customer.customer_name",
+   "fieldname": "customer_name",
+   "fieldtype": "Read Only",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Customer Name"
+  },
+  {
+   "allow_on_submit": 1,
+   "fetch_from": "customer.email_id",
+   "fieldname": "contact_email",
+   "fieldtype": "Read Only",
+   "label": "Contact Email",
+   "options": "Email"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Matter",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_12",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Naming Series",
+   "options": "MID-.YY.-.###"
+  },
+  {
+   "fieldname": "matter_description_section",
+   "fieldtype": "Section Break",
+   "label": "Matter Description"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Text Editor",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Description"
+  },
+  {
+   "default": "Today",
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "legal_service_rates",
+   "fieldtype": "Table",
+   "label": "Legal Service Rates",
+   "options": "Legal Service Rate",
+   "permlevel": 1
+  },
+  {
+   "fieldname": "fee_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Fee Details",
+   "permlevel": 1
+  },
+  {
+   "fieldname": "matter_research_tab",
+   "fieldtype": "Tab Break",
+   "label": "Matter Research"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "research_notes",
+   "fieldtype": "Text Editor",
+   "label": "Research Notes"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "linked_matters",
+   "fieldtype": "Table MultiSelect",
+   "ignore_xss_filter": 1,
+   "label": "Linked Matters",
+   "options": "Linked Matter"
+  },
+  {
+   "fieldname": "project_template",
+   "fieldtype": "Link",
+   "label": "From Template",
+   "options": "Project Template"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "label": "Branch",
+   "options": "Branch"
+  },
+  {
+   "fieldname": "commissions_tab",
+   "fieldtype": "Tab Break",
+   "label": "Commissions"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "sales_partner",
+   "fieldtype": "Link",
+   "label": "Sales Partner",
+   "options": "Sales Partner",
+   "permlevel": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fetch_from": "sales_partner.commission_rate",
+   "fetch_if_empty": 1,
+   "fieldname": "commission_rate",
+   "fieldtype": "Float",
+   "label": "Commission Rate (%)",
+   "permlevel": 1
+  },
+  {
+   "fieldname": "column_break_dw8sb",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [
+  {
+   "group": "Task",
+   "link_doctype": "Task",
+   "link_fieldname": "matter"
+  },
+  {
+   "group": "Billing and Payments",
+   "link_doctype": "Sales Invoice",
+   "link_fieldname": "matter"
+  },
+  {
+   "group": "Legal Services Entry",
+   "link_doctype": "Legal Service Entry",
+   "link_fieldname": "matter"
+  },
+  {
+   "group": "Case",
+   "link_doctype": "Case",
+   "link_fieldname": "matter"
+  },
+  {
+   "group": "Case",
+   "link_doctype": "Caveat",
+   "link_fieldname": "matter"
+  },
+  {
+   "group": "Document Outward",
+   "link_doctype": "Document Outward",
+   "link_fieldname": "matter"
+  },
+  {
+   "custom": 1,
+   "group": "Quality",
+   "link_doctype": "Quality Review",
+   "link_fieldname": "matter"
+  },
+  {
+   "group": "Appointment",
+   "link_doctype": "Customer Appointment",
+   "link_fieldname": "matter"
+  },
+  {
+   "group": "Appointment",
+   "link_doctype": "Timesheet",
+   "link_fieldname": "matter"
+  },
+  {
+   "group": "Billing and Payments",
+   "link_doctype": "Payment Entry",
+   "link_fieldname": "custom_matter"
+  },
+  {
+   "group": "Support",
+   "link_doctype": "Issue",
+   "link_fieldname": "custom_matter"
+  }
+ ],
+ "modified": "2023-10-30 23:01:24.808994",
+ "modified_by": "Administrator",
+ "module": "Case Central",
+ "name": "Matter",
+ "name_case": "Title Case",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "cancel": 1,
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Projects User",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "permlevel": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "show_name_in_global_search": 1,
+ "show_preview_popup": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [
+  {
+   "color": "Orange",
+   "title": "Open"
+  },
+  {
+   "color": "Blue",
+   "title": "Working"
+  },
+  {
+   "color": "Green",
+   "title": "Completed"
+  },
+  {
+   "color": "Red",
+   "title": "Cancelled"
+  },
+  {
+   "color": "Gray",
+   "title": "Pending"
+  }
+ ],
+ "track_changes": 1
+}

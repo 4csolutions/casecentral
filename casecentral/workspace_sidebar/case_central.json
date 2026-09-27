@@ -1,0 +1,40 @@
+{
+ "app": "casecentral",
+ "creation": "2026-06-16 01:24:24.000000",
+ "docstatus": 0,
+ "doctype": "Workspace Sidebar",
+ "header_icon": "briefcase",
+ "idx": 0,
+ "items": [
+  {
+   "child": 0,
+   "collapsible": 1,
+   "icon": "briefcase",
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Case Central",
+   "link_to": "Case Central",
+   "link_type": "Workspace",
+   "show_arrow": 0,
+   "type": "Link"
+  },
+  {
+   "child": 0,
+   "collapsible": 1,
+   "icon": "file",
+   "indent": 0,
+   "keep_closed": 0,
+   "label": "Legal Documents",
+   "link_to": "Legal Documents",
+   "link_type": "Workspace",
+   "show_arrow": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-06-16 01:24:24.000000",
+ "modified_by": "Administrator",
+ "name": "Case Central",
+ "owner": "Administrator",
+ "standard": 1,
+ "title": "Case Central"
+}

@@ -1,0 +1,38 @@
+{
+ "based_on": "creation",
+ "chart_name": "Case Count",
+ "chart_type": "Count",
+ "color": "#ECAD4B",
+ "creation": "2023-09-07 14:25:26.305054",
+ "docstatus": 0,
+ "doctype": "Dashboard Chart",
+ "document_type": "Case",
+ "dynamic_filters_json": "[]",
+ "filters_json": "[]",
+ "group_by_based_on": "service",
+ "group_by_type": "Count",
+ "idx": 0,
+ "is_public": 0,
+ "is_standard": 1,
+ "last_synced_on": "2023-09-07 14:38:35.669331",
+ "modified": "2023-09-07 14:40:50.201469",
+ "modified_by": "Administrator",
+ "module": "Case Central",
+ "name": "Case Count",
+ "number_of_groups": 2,
+ "owner": "Administrator",
+ "parent_document_type": "",
+ "roles": [
+  {
+   "role": "System Manager"
+  }
+ ],
+ "source": "",
+ "time_interval": "Monthly",
+ "timeseries": 1,
+ "timespan": "Last Year",
+ "type": "Bar",
+ "use_report_chart": 0,
+ "value_based_on": "",
+ "y_axis": []
+}

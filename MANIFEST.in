@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include casecentral *.css
+recursive-include casecentral *.csv
+recursive-include casecentral *.html
+recursive-include casecentral *.ico
+recursive-include casecentral *.js
+recursive-include casecentral *.json
+recursive-include casecentral *.md
+recursive-include casecentral *.png
+recursive-include casecentral *.py
+recursive-include casecentral *.svg
+recursive-include casecentral *.txt
+recursive-exclude casecentral *.pyc

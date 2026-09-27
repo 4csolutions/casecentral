@@ -1,0 +1,128 @@
+{% extends "templates/web.html" %}
+
+{% block page_content %}
+<form method="get" class="mb-4">
+    <div class="row">
+        <div class="col-md-3 mb-2">
+            <input type="text" name="name" class="form-control" placeholder="Matter ID" value="{{ name or '' }}">
+        </div>
+        <div class="col-md-2 mb-2">
+            <input type="text" name="service_type" class="form-control" placeholder="Service Type"
+                value="{{ service_type or '' }}">
+        </div>
+        <div class="col-md-2 mb-2">
+            <input type="text" name="service" class="form-control" placeholder="Service" value="{{ service or '' }}">
+        </div>
+        <div class="col-md-2 mb-2">
+            <input type="text" name="status" class="form-control" placeholder="Status" value="{{ status or '' }}">
+        </div>
+        <div class="col-md-3 mb-2 level-right">
+            <button type="submit" class="mx-2 btn btn-primary">Search</button>
+            <a href="/matter" class="mx-2 btn btn-light">Clear</a>
+        </div>
+    </div>
+</form>
+
+<div class="transaction-list-item">
+    {% if matter_list %}
+        <table class="table table-border small align-middle">
+            <thead class="thead-light">
+                <tr class="text-center">
+					<th>Sl. No.</th>
+                    <th>ID</th>
+                    <th>Customer Name</th>
+                    <th>Service Type</th>
+                    <th>Service</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for matter in matter_list %}
+                <tr class="text-center">
+					<td>{{ loop.index + (page_size * (page - 1)) }}</td>
+                    <td class="text-left">
+                        <a href="/matter/{{ matter.name }}"><b>{{ matter.name }}</b></a>
+                    </td>
+                    <td>{{ matter.customer_name }}</td>
+                    <td>{{ matter.service_type or '-' }}</td>
+                    <td>{{ matter.service }}</td>
+                    <td>
+                        <span class="badge indicator-pill 
+                            {% if matter.status == 'Open' %}yellow
+                            {% elif matter.status == 'Working' %}blue
+                            {% elif matter.status == 'Pending' %}orange
+                            {% elif matter.status == 'Closed' %}red
+                            {% elif matter.status == 'Completed' %}green
+                            {% elif matter.status == 'Cancelled' %}red
+                            {% else %}gray
+                            {% endif %}
+                            p-3">
+                            {{ matter.status }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="list-paging-area level mt-4">
+			<div class="level-left">
+				<div class="btn-group">
+					<button type="button"
+						class="btn btn-default btn-sm btn-paging {% if page_size == 20 %}btn-info{% endif %}"
+						data-value="20">
+						20
+					</button>
+					<button type="button"
+						class="btn btn-default btn-sm btn-paging {% if page_size == 100 %}btn-info{% endif %}"
+						data-value="100">
+						100
+					</button>
+					<button type="button"
+						class="btn btn-default btn-sm btn-paging {% if page_size == 500 %}btn-info{% endif %}"
+						data-value="500">
+						500
+					</button>
+					<button type="button"
+						class="btn btn-default btn-sm btn-paging {% if page_size == 2500 %}btn-info{% endif %}"
+						data-value="2500">
+						2500
+					</button>
+				</div>
+			</div>
+            <div class="level-right">
+                {% if has_next %}
+                <form method="get" style="display:inline;">
+                    <input type="hidden" name="page" value="{{ page + 1 }}">
+                    <input type="hidden" name="page_size" value="{{ page_size }}">
+                    {% if name %}<input type="hidden" name="name" value="{{ name }}">{% endif %}
+                    {% if customer_name %}<input type="hidden" name="customer_name" value="{{ customer_name }}">{% endif %}
+                    {% if service_type %}<input type="hidden" name="service_type" value="{{ service_type }}">{% endif %}
+                    {% if service %}<input type="hidden" name="service" value="{{ service }}">{% endif %}
+                    {% if status %}<input type="hidden" name="status" value="{{ status }}">{% endif %}
+                    <button class="btn btn-default btn-more btn-sm" type="submit">
+                        Load More
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            No matters found.
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    document.querySelectorAll('.btn-paging').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            const pageSize = btn.getAttribute('data-value');
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('page_size', pageSize);
+            urlParams.set('page', 1);
+            window.location.search = urlParams.toString();
+        });
+    });
+</script>
+{% endblock %}

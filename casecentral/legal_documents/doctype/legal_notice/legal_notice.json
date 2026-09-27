@@ -1,0 +1,262 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2023-04-29 17:30:47.993979",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "legal_notice_details_section",
+  "naming_series",
+  "matter",
+  "client",
+  "client_name",
+  "contact_no",
+  "column_break_bjtaw",
+  "date",
+  "mode_of_delivery",
+  "place",
+  "is_cheque_bounce_notice",
+  "is_reply",
+  "section_break_mesg",
+  "client_details",
+  "column_break_qdnv",
+  "cheque_details_section",
+  "cheque_no",
+  "cheque_date",
+  "cheque_amount",
+  "column_break_gbza",
+  "cheque_deposit_date",
+  "cheque_return_date",
+  "return_reason",
+  "column_break_ivmt",
+  "drawer_bank_name",
+  "payee_bank",
+  "column_break_0fo7l",
+  "addressee",
+  "legal_notice_content_section",
+  "legal_notice",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "legal_notice_details_section",
+   "fieldtype": "Section Break",
+   "label": "Legal Notice Details"
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Naming Series",
+   "options": "LN-.YY.-.##"
+  },
+  {
+   "fieldname": "matter",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Matter",
+   "options": "Matter"
+  },
+  {
+   "fetch_from": "matter.customer",
+   "fieldname": "client",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Client",
+   "options": "Customer",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "matter.customer_name",
+   "fieldname": "client_name",
+   "fieldtype": "Read Only",
+   "label": "Client Name"
+  },
+  {
+   "fetch_from": "matter.contact_no",
+   "fieldname": "contact_no",
+   "fieldtype": "Read Only",
+   "label": "Contact No"
+  },
+  {
+   "fieldname": "column_break_bjtaw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "mode_of_delivery",
+   "fieldtype": "Select",
+   "label": "Mode of Delivery",
+   "options": "By S.P.A.D\nBy Hand"
+  },
+  {
+   "default": "Today",
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "place",
+   "fieldtype": "Data",
+   "label": "Place"
+  },
+  {
+   "fieldname": "column_break_0fo7l",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "addressee",
+   "fieldtype": "Table",
+   "label": "Addressee",
+   "options": "Party"
+  },
+  {
+   "fieldname": "legal_notice_content_section",
+   "fieldtype": "Section Break",
+   "label": "Legal Notice Content"
+  },
+  {
+   "fieldname": "legal_notice",
+   "fieldtype": "Text Editor",
+   "label": "Legal Notice"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Legal Notice",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "client_details",
+   "fieldtype": "Small Text",
+   "label": "Client Details"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_cheque_bounce_notice",
+   "fieldtype": "Check",
+   "label": "Is Cheque Bounce Notice"
+  },
+  {
+   "depends_on": "eval: doc.is_cheque_bounce_notice",
+   "fieldname": "cheque_details_section",
+   "fieldtype": "Section Break",
+   "label": "Cheque Details"
+  },
+  {
+   "fieldname": "cheque_no",
+   "fieldtype": "Data",
+   "label": "Cheque No"
+  },
+  {
+   "fieldname": "cheque_date",
+   "fieldtype": "Date",
+   "label": "Cheque Date"
+  },
+  {
+   "fieldname": "cheque_amount",
+   "fieldtype": "Currency",
+   "label": "Cheque Amount"
+  },
+  {
+   "fieldname": "column_break_gbza",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cheque_deposit_date",
+   "fieldtype": "Date",
+   "label": "Cheque Deposit Date"
+  },
+  {
+   "fieldname": "cheque_return_date",
+   "fieldtype": "Date",
+   "label": "Cheque Return Date"
+  },
+  {
+   "fieldname": "return_reason",
+   "fieldtype": "Data",
+   "label": "Return Reason"
+  },
+  {
+   "fieldname": "column_break_ivmt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "drawer_bank_name",
+   "fieldtype": "Data",
+   "label": "Drawer Bank Name"
+  },
+  {
+   "fieldname": "payee_bank",
+   "fieldtype": "Data",
+   "label": "Payee Bank"
+  },
+  {
+   "fieldname": "section_break_mesg",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_qdnv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_reply",
+   "fieldtype": "Check",
+   "label": "Is Reply"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [
+  {
+   "group": "Posts",
+   "link_doctype": "Postal Order",
+   "link_fieldname": "legal_document"
+  }
+ ],
+ "modified": "2026-08-12 14:01:32.762694",
+ "modified_by": "Administrator",
+ "module": "Legal Documents",
+ "name": "Legal Notice",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Projects User",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "search_fields": "matter,client,client_name",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

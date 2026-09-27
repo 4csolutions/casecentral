@@ -1,0 +1,533 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-04-02 02:05:22.500499",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "party_type_section",
+  "organization",
+  "represented_by_poa",
+  "party_details_section",
+  "salutation",
+  "first_name",
+  "relationship",
+  "relatives_name",
+  "column_break_wc2f4",
+  "gender",
+  "age",
+  "year_of_incorporation",
+  "tan",
+  "column_break_9dldj",
+  "mobile_number",
+  "id_proof_type",
+  "id_no",
+  "address_line_1",
+  "address_line_2",
+  "represented_by_section",
+  "rep_by_salutation",
+  "rep_by_name",
+  "rep_by_relationship",
+  "rep_by_relatives_name",
+  "column_break_whbt",
+  "rep_by_gender",
+  "rep_by_age",
+  "column_break_ldrf",
+  "rep_by_mobile_number",
+  "rep_by_id_proof_type",
+  "rep_by_id_no",
+  "rep_by_address_line_1",
+  "rep_by_address_line_2",
+  "poa_type_section",
+  "poa_organization",
+  "poa_details_section",
+  "poa_salutation",
+  "poa_name",
+  "poa_relationship",
+  "poa_relatives_name",
+  "column_break_dqpp",
+  "poa_gender",
+  "poa_age",
+  "poa_year_of_incorporation",
+  "poa_tan",
+  "column_break_dtad",
+  "poa_mobile_number",
+  "poa_id_proof_type",
+  "poa_id_no",
+  "poa_address_line_1",
+  "poa_address_line_2",
+  "poa_represented_by_section",
+  "poa_rep_by_salutation",
+  "poa_rep_by_name",
+  "poa_rep_by_relationship",
+  "poa_rep_by_relatives_name",
+  "column_break_fvsy",
+  "poa_rep_by_gender",
+  "poa_rep_by_age",
+  "column_break_qayk",
+  "poa_rep_by_mobile_number",
+  "poa_rep_by_id_proof_type",
+  "poa_rep_by_id_no",
+  "poa_rep_by_address_line_1",
+  "poa_rep_by_address_line_2"
+ ],
+ "fields": [
+  {
+   "columns": 1,
+   "depends_on": "eval:!doc.organization",
+   "fieldname": "salutation",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Salutation",
+   "options": "Salutation"
+  },
+  {
+   "columns": 2,
+   "fieldname": "first_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_wc2f4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "columns": 1,
+   "depends_on": "eval:!doc.organization",
+   "fieldname": "mobile_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Mobile Number"
+  },
+  {
+   "fieldname": "column_break_9dldj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "columns": 1,
+   "depends_on": "eval:!doc.organization",
+   "fieldname": "relationship",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Relationship",
+   "options": "\nM/G\nS/o\nW/o\nD/o\nH/o\nC/o"
+  },
+  {
+   "columns": 1,
+   "depends_on": "eval:!doc.organization",
+   "fieldname": "relatives_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Relatives Name"
+  },
+  {
+   "columns": 1,
+   "depends_on": "eval:!doc.organization",
+   "fieldname": "age",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Age"
+  },
+  {
+   "columns": 1,
+   "depends_on": "eval:!doc.organization",
+   "fieldname": "gender",
+   "fieldtype": "Link",
+   "label": "Gender",
+   "options": "Gender"
+  },
+  {
+   "depends_on": "eval:!doc.organization",
+   "fieldname": "id_proof_type",
+   "fieldtype": "Select",
+   "label": "ID Proof Type",
+   "options": "\nPAN\nPassport\nDriving License\nBank Passbook\nAdhaar\nBirth Certificate\nVoter ID"
+  },
+  {
+   "depends_on": "eval:!doc.organization",
+   "fieldname": "id_no",
+   "fieldtype": "Data",
+   "label": "ID No"
+  },
+  {
+   "columns": 1,
+   "fieldname": "address_line_1",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Address Line 1",
+   "reqd": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "address_line_2",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Address Line 2",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "organization",
+   "fieldtype": "Check",
+   "label": "Organization"
+  },
+  {
+   "depends_on": "eval:doc.organization",
+   "fieldname": "represented_by_section",
+   "fieldtype": "Section Break",
+   "label": "Represented By"
+  },
+  {
+   "fieldname": "column_break_whbt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_ldrf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "columns": 1,
+   "fieldname": "rep_by_salutation",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Salutation",
+   "options": "Salutation"
+  },
+  {
+   "columns": 2,
+   "fieldname": "rep_by_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Name",
+   "mandatory_depends_on": "eval:doc.organization"
+  },
+  {
+   "columns": 1,
+   "fieldname": "rep_by_relationship",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Relationship",
+   "options": "\nM/G\nS/o\nW/o\nD/o\nH/o\nC/o"
+  },
+  {
+   "columns": 1,
+   "fieldname": "rep_by_relatives_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Relatives Name"
+  },
+  {
+   "columns": 1,
+   "fieldname": "rep_by_gender",
+   "fieldtype": "Link",
+   "label": "Gender",
+   "options": "Gender"
+  },
+  {
+   "columns": 1,
+   "fieldname": "rep_by_age",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Age"
+  },
+  {
+   "columns": 1,
+   "fieldname": "rep_by_mobile_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Mobile Number"
+  },
+  {
+   "fieldname": "rep_by_id_proof_type",
+   "fieldtype": "Select",
+   "label": "ID Proof Type",
+   "options": "\nPAN\nPassport\nDriving License\nBank Passbook\nAdhaar\nBirth Certificate\nVoter ID"
+  },
+  {
+   "fieldname": "rep_by_id_no",
+   "fieldtype": "Data",
+   "label": "ID No"
+  },
+  {
+   "columns": 1,
+   "fieldname": "rep_by_address_line_1",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Address Line 1",
+   "mandatory_depends_on": "eval:doc.organization"
+  },
+  {
+   "columns": 1,
+   "fieldname": "rep_by_address_line_2",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Address Line 2",
+   "mandatory_depends_on": "eval:doc.organization"
+  },
+  {
+   "depends_on": "eval:doc.organization",
+   "fieldname": "year_of_incorporation",
+   "fieldtype": "Data",
+   "label": "Year of Incorporation",
+   "mandatory_depends_on": "eval:doc.organization"
+  },
+  {
+   "depends_on": "eval:doc.organization",
+   "fieldname": "tan",
+   "fieldtype": "Data",
+   "label": "TAN",
+   "mandatory_depends_on": "eval:doc.organization"
+  },
+  {
+   "default": "0",
+   "fieldname": "represented_by_poa",
+   "fieldtype": "Check",
+   "label": "Represented by POA"
+  },
+  {
+   "fieldname": "party_type_section",
+   "fieldtype": "Section Break",
+   "label": "Party Type"
+  },
+  {
+   "fieldname": "party_details_section",
+   "fieldtype": "Section Break",
+   "label": "Party Details"
+  },
+  {
+   "depends_on": "eval:doc.represented_by_poa",
+   "fieldname": "poa_details_section",
+   "fieldtype": "Section Break",
+   "label": "POA Details"
+  },
+  {
+   "fieldname": "column_break_dqpp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_dtad",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.represented_by_poa",
+   "fieldname": "poa_type_section",
+   "fieldtype": "Section Break",
+   "label": "POA Type"
+  },
+  {
+   "default": "0",
+   "fieldname": "poa_organization",
+   "fieldtype": "Check",
+   "label": "POA Organization"
+  },
+  {
+   "columns": 2,
+   "fieldname": "poa_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Name",
+   "mandatory_depends_on": "eval:doc.represented_by_poa"
+  },
+  {
+   "columns": 1,
+   "depends_on": "eval:!doc.poa_organization",
+   "fieldname": "poa_relationship",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Relationship",
+   "options": "\nM/G\nS/o\nW/o\nD/o\nH/o\nC/o"
+  },
+  {
+   "columns": 1,
+   "depends_on": "eval:!doc.poa_organization",
+   "fieldname": "poa_relatives_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Relatives Name"
+  },
+  {
+   "columns": 1,
+   "depends_on": "eval:!doc.poa_organization",
+   "fieldname": "poa_gender",
+   "fieldtype": "Link",
+   "label": "Gender",
+   "options": "Gender"
+  },
+  {
+   "columns": 1,
+   "depends_on": "eval:!doc.poa_organization",
+   "fieldname": "poa_age",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Age"
+  },
+  {
+   "depends_on": "eval:doc.poa_organization",
+   "fieldname": "poa_year_of_incorporation",
+   "fieldtype": "Data",
+   "label": "Year of Incorporation",
+   "mandatory_depends_on": "eval:doc.poa_organization"
+  },
+  {
+   "depends_on": "eval:doc.poa_organization",
+   "fieldname": "poa_tan",
+   "fieldtype": "Data",
+   "label": "TAN",
+   "mandatory_depends_on": "eval:doc.poa_organization"
+  },
+  {
+   "columns": 1,
+   "depends_on": "eval:!doc.poa_organization",
+   "fieldname": "poa_mobile_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Mobile Number"
+  },
+  {
+   "depends_on": "eval:!doc.poa_organization",
+   "fieldname": "poa_id_proof_type",
+   "fieldtype": "Select",
+   "label": "ID Proof Type",
+   "options": "\nPAN\nPassport\nDriving License\nBank Passbook\nAdhaar\nBirth Certificate\nVoter ID"
+  },
+  {
+   "depends_on": "eval:!doc.poa_organization",
+   "fieldname": "poa_id_no",
+   "fieldtype": "Data",
+   "label": "ID No"
+  },
+  {
+   "columns": 1,
+   "fieldname": "poa_address_line_1",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Address Line 1",
+   "mandatory_depends_on": "eval:doc.represented_by_poa"
+  },
+  {
+   "columns": 1,
+   "fieldname": "poa_address_line_2",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Address Line 2",
+   "mandatory_depends_on": "eval:doc.represented_by_poa"
+  },
+  {
+   "depends_on": "eval:doc.poa_organization",
+   "fieldname": "poa_represented_by_section",
+   "fieldtype": "Section Break",
+   "label": "POA Represented By"
+  },
+  {
+   "fieldname": "column_break_fvsy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_qayk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "columns": 1,
+   "fieldname": "poa_rep_by_salutation",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Salutation",
+   "options": "Salutation"
+  },
+  {
+   "columns": 2,
+   "fieldname": "poa_rep_by_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Name",
+   "mandatory_depends_on": "eval:doc.poa_organization"
+  },
+  {
+   "columns": 1,
+   "fieldname": "poa_rep_by_relationship",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Relationship",
+   "options": "\nM/G\nS/o\nW/o\nD/o\nH/o\nC/o"
+  },
+  {
+   "columns": 1,
+   "fieldname": "poa_rep_by_relatives_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Relatives Name"
+  },
+  {
+   "columns": 1,
+   "fieldname": "poa_rep_by_gender",
+   "fieldtype": "Link",
+   "label": "Gender",
+   "options": "Gender"
+  },
+  {
+   "columns": 1,
+   "fieldname": "poa_rep_by_age",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Age"
+  },
+  {
+   "columns": 1,
+   "fieldname": "poa_rep_by_mobile_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Mobile Number"
+  },
+  {
+   "fieldname": "poa_rep_by_id_proof_type",
+   "fieldtype": "Select",
+   "label": "ID Proof Type",
+   "options": "\nPAN\nPassport\nDriving License\nBank Passbook\nAdhaar\nBirth Certificate\nVoter ID"
+  },
+  {
+   "fieldname": "poa_rep_by_id_no",
+   "fieldtype": "Data",
+   "label": "ID No"
+  },
+  {
+   "columns": 1,
+   "fieldname": "poa_rep_by_address_line_1",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Address Line 1",
+   "mandatory_depends_on": "eval:doc.poa_organization"
+  },
+  {
+   "columns": 1,
+   "fieldname": "poa_rep_by_address_line_2",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Address Line 2"
+  },
+  {
+   "columns": 1,
+   "depends_on": "eval:!doc.poa_organization",
+   "fieldname": "poa_salutation",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Salutation",
+   "options": "Salutation"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-06-25 21:07:31.011915",
+ "modified_by": "Administrator",
+ "module": "Case Central",
+ "name": "Party",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -1,0 +1,134 @@
+{% extends "templates/web.html" %}
+
+{% block page_content %}
+<form method="get" class="mb-4">
+    <div class="row">
+        <div class="col-md-3 mb-2">
+            <input type="text" name="case_number" class="form-control" placeholder="Case Number" value="{{ case_number or '' }}">
+        </div>
+        <div class="col-md-3 mb-2">
+            <input type="text" name="status" class="form-control" placeholder="Status" value="{{ status or '' }}">
+        </div>
+        <div class="col-md-3 mb-2">
+            <input type="date" name="next_hearing_date" class="form-control" placeholder="Next Hearing Date" value="{{ next_hearing_date or '' }}">
+        </div>
+        <div class="col-md-3 mb-2 level-right">
+            <button type="submit" class="mx-2 btn btn-primary">Search</button>
+            <a href="/case" class="mx-2 btn btn-light">Clear</a>
+        </div>
+    </div>
+</form>
+<div class="transaction-list-item">
+    {% if case_list %}
+    <table class="table table-border small align-middle">
+        <thead class="thead-light">
+            <tr class="text-center">
+                <th>Sl. No.</th>
+                <th>Case Number</th>
+                <th>Case Title</th>
+                <th>Status</th>
+                <th>Registration Number</th>
+                <th>Court Number & Judge</th>
+                <th>Next Hearing Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for case in case_list %}
+            <tr class="text-center">
+                <td>{{ loop.index + (page_size * (page - 1)) }}</td>
+                <td>
+                    <a href="/case/{{ case.name }}"><b>{{ case.name }}</b></a>
+                </td>
+                <td>{{ case.case_title }}</td>
+                <td>
+                    <span class="badge indicator-pill 
+                        {% if case.status == 'Pending' %}yellow
+                        {% elif case.status == 'Inprogress' %}blue
+                        {% elif case.status == 'Disposed' %}orange
+                        {% elif case.status == 'NOC' %}green
+                        {% else %}gray
+                        {% endif %}
+                        p-3">
+                        {{ case.status }}
+                    </span>
+                </td>
+                <td>{{ case.registration_number }}</td>
+                <td>
+                    {{ case.court_number_and_judge }}<br>
+                </td>
+                <td>
+                    <span class="badge indicator-pill p-3 {% if case.next_hearing_date %}blue{% endif %}">
+                        {% if case.next_hearing_date %}
+                        {{ case.next_hearing_date.strftime("%d-%m-%Y") }}
+                        {% else %}
+                        -
+                        {% endif %}
+                    </span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <!-- List Paging Area -->
+    <div class="list-paging-area level mt-4">
+        <div class="level-left">
+            <div class="btn-group">
+                <button type="button"
+                    class="btn btn-default btn-sm btn-paging {% if page_size == 20 %}btn-info{% endif %}"
+                    data-value="20">
+                    20
+                </button>
+                <button type="button"
+                    class="btn btn-default btn-sm btn-paging {% if page_size == 100 %}btn-info{% endif %}"
+                    data-value="100">
+                    100
+                </button>
+                <button type="button"
+                    class="btn btn-default btn-sm btn-paging {% if page_size == 500 %}btn-info{% endif %}"
+                    data-value="500">
+                    500
+                </button>
+                <button type="button"
+                    class="btn btn-default btn-sm btn-paging {% if page_size == 2500 %}btn-info{% endif %}"
+                    data-value="2500">
+                    2500
+                </button>
+            </div>
+        </div>
+        <div class="level-right">
+            {% if has_next %}
+            <form method="get" style="display:inline;">
+                <input type="hidden" name="page" value="{{ page + 1 }}">
+                <input type="hidden" name="page_size" value="{{ page_size }}">
+                {% if case %}<input type="hidden" name="case" value="{{ case }}">{% endif %}
+                {% if status %}<input type="hidden" name="status" value="{{ status }}">{% endif %}
+                {% if next_hearing_date %}<input type="hidden" name="next_hearing_date" value="{{ next_hearing_date }}">{% endif %}
+                <button class="btn btn-default btn-more btn-sm" type="submit">
+                    Load More
+                </button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+    <!-- End List Paging Area -->
+
+    {% else %}
+    <div class="alert alert-info">
+        No cases found.
+    </div>
+    {% endif %}
+</div> <!-- transaction-list-item -->
+
+<script>
+document.querySelectorAll('.btn-paging').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+        const pageSize = btn.getAttribute('data-value');
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('page_size', pageSize);
+        urlParams.set('page', 1);
+        window.location.search = urlParams.toString();
+    });
+});
+</script>
+{% endblock %}
