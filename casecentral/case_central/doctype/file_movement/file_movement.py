@@ -154,14 +154,15 @@ class FileMovement(Document):
             if row.matter:
                 matters.add(row.matter)
         for matter_name in matters:
-            if frappe.db.exists("Matter", matter_name):
-                frappe.db.set_value("Matter", matter_name, "status", "Working")
+            recalculate_matter_status_from_movements(matter_name)
 
     def update_incoming_linked_statuses(self):
+        matters = set()
         for row in self.get("barcode_files") or []:
-            if row.matter and row.returned:
-                if frappe.db.exists("Matter", row.matter):
-                    frappe.db.set_value("Matter", row.matter, "status", "Open")
+            if row.matter:
+                matters.add(row.matter)
+        for matter_name in matters:
+            recalculate_matter_status_from_movements(matter_name)
 
     def restore_outgoing_linked_statuses(self):
         matters = set()
@@ -169,8 +170,57 @@ class FileMovement(Document):
             if row.matter:
                 matters.add(row.matter)
         for matter_name in matters:
-            if frappe.db.exists("Matter", matter_name):
-                frappe.db.set_value("Matter", matter_name, "status", "Open")
+            recalculate_matter_status_from_movements(matter_name)
+
+
+def recalculate_matter_status_from_movements(matter_name):
+    """
+    Checks whether all cases and files for a Matter have been returned.
+    If there are active unreturned outgoing movements, status is 'Working'.
+    Once all cases and matter files are returned, status is set to 'Open'.
+    """
+    if not matter_name or not frappe.db.exists("Matter", matter_name):
+        return
+
+    # Find all submitted outgoing file movements containing this matter
+    outgoing_rows = frappe.db.sql("""
+        SELECT bfi.name, bfi.parent, bfi.case, bfi.barcode
+        FROM `tabBarcode File Item` bfi
+        INNER JOIN `tabFile Movement` fm ON fm.name = bfi.parent
+        WHERE fm.docstatus = 1 AND fm.movement_type = 'Outgoing' AND bfi.matter = %s
+    """, (matter_name,), as_dict=True)
+
+    if not outgoing_rows:
+        # No active outgoing movements for this matter -> it is Open
+        frappe.db.set_value("Matter", matter_name, "status", "Open")
+        return
+
+    # Check for unreturned items
+    unreturned_count = 0
+    for out_row in outgoing_rows:
+        # Check if there is a submitted incoming movement for this outgoing movement where this item is returned
+        returned = frappe.db.sql("""
+            SELECT bfi.name
+            FROM `tabBarcode File Item` bfi
+            INNER JOIN `tabFile Movement` fm ON fm.name = bfi.parent
+            WHERE fm.docstatus = 1 
+              AND fm.movement_type = 'Incoming' 
+              AND fm.original_outgoing_movement = %s
+              AND (
+                  (bfi.case = %s AND %s != '') OR 
+                  (bfi.barcode = %s AND %s != '') OR 
+                  (bfi.matter = %s)
+              )
+              AND bfi.returned = 1
+        """, (out_row.parent, out_row.get("case") or "", out_row.get("case") or "", out_row.get("barcode") or "", out_row.get("barcode") or "", matter_name))
+
+        if not returned:
+            unreturned_count += 1
+
+    if unreturned_count == 0:
+        frappe.db.set_value("Matter", matter_name, "status", "Open")
+    else:
+        frappe.db.set_value("Matter", matter_name, "status", "Working")
 
 
 # =========================================================
