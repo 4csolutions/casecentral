@@ -4,15 +4,20 @@
 frappe.ui.form.on("File Movement", {
 
     onload: function (frm) {
-        setup_page_scan_button(frm);
+        setup_scan_barcode_input(frm);
     },
 
     refresh: function (frm) {
-        setup_page_scan_button(frm);
+        setup_scan_barcode_input(frm);
 
         frm.remove_custom_button("Create Incoming");
         frm.remove_custom_button("Return Missing Files");
         frm.remove_custom_button("Scan Barcode");
+
+        // Force Outgoing movement status to "Open"
+        if (frm.doc.movement_type === "Outgoing" && frm.doc.status !== "Open") {
+            frm.set_value("status", "Open");
+        }
 
         // Direct standalone "Create Incoming" button on submitted Outgoing movement (not inside Actions)
         if (frm.doc.docstatus === 1 && frm.doc.movement_type === "Outgoing") {
@@ -28,9 +33,19 @@ frappe.ui.form.on("File Movement", {
         set_form_read_only_states(frm);
     },
 
+    scan_barcode: function (frm) {
+        var val = (frm.doc.scan_barcode || "").trim();
+        if (!val) return;
+        frm.set_value("scan_barcode", "");
+        process_scan(frm, val);
+    },
+
     movement_type: function (frm) {
         set_form_read_only_states(frm);
-        if (frm.doc.movement_type === "Incoming" && frm.doc.docstatus === 0) {
+        if (frm.doc.movement_type === "Outgoing") {
+            frm.set_value("missing_file_items", []);
+            frm.set_value("status", "Open");
+        } else if (frm.doc.movement_type === "Incoming" && frm.doc.docstatus === 0) {
             update_missing_files_table_and_status_client(frm);
         }
     }
@@ -155,25 +170,27 @@ function set_form_read_only_states(frm) {
 
 
 // =========================================================
-// SCAN BARCODE BUTTON (ONLY IN PAGE BELOW RECEIVER)
+// SCAN BARCODE INPUT FIELD SETUP
 // =========================================================
 
-function setup_page_scan_button(frm) {
-    if (!frm.fields_dict.scan_barcode_btn) return;
+function setup_scan_barcode_input(frm) {
+    if (!frm.fields_dict.scan_barcode) return;
 
-    var btn_html =
-        '<div style="margin-top: 8px; margin-bottom: 8px;">' +
-        '<button type="button" class="btn btn-primary btn-sm btn-page-scan-barcode" style="font-weight: 500; padding: 7px 18px; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">' +
-        '<i class="fa fa-barcode" style="margin-right: 6px;"></i>' + __("Scan Barcode / Matter ID") +
-        '</button>' +
-        '</div>';
-
-    frm.fields_dict.scan_barcode_btn.$wrapper.html(btn_html);
-
-    frm.fields_dict.scan_barcode_btn.$wrapper.find(".btn-page-scan-barcode").off("click").on("click", function (e) {
-        e.preventDefault();
-        open_scan_dialog(frm);
-    });
+    var field = frm.fields_dict.scan_barcode;
+    if (field.$input) {
+        field.$input.attr("placeholder", __("Scan Barcode / Matter ID / Case..."));
+        field.$input.off("keydown.fm_scan").on("keydown.fm_scan", function (e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                var val = $(this).val().trim();
+                if (val) {
+                    $(this).val("");
+                    frm.set_value("scan_barcode", "");
+                    process_scan(frm, val);
+                }
+            }
+        });
+    }
 }
 
 
@@ -531,6 +548,9 @@ function handle_incoming_scan(frm, data, original_value) {
 function update_missing_files_table_and_status_client(frm) {
     if (frm.doc.movement_type !== "Incoming") {
         frm.set_value("missing_file_items", []);
+        if (frm.doc.status !== "Open") {
+            frm.set_value("status", "Open");
+        }
         return;
     }
 

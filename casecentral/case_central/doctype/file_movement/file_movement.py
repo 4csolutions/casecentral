@@ -37,6 +37,9 @@ class FileMovement(Document):
             self.name = frappe.model.naming.make_autoname("FMO-.#####")
 
     def validate(self):
+        if self.movement_type == "Outgoing":
+            self.status = "Open"
+            self.set("missing_file_items", [])
         self.validate_movement()
         self.validate_rows()
         self.validate_duplicate_barcodes()
@@ -110,8 +113,7 @@ class FileMovement(Document):
 
     def update_missing_files_and_status(self):
         if self.movement_type == "Outgoing":
-            if not self.status:
-                self.status = "Open"
+            self.status = "Open"
             self.set("missing_file_items", [])
             return
 
@@ -137,11 +139,14 @@ class FileMovement(Document):
 
     def on_submit(self):
         if self.movement_type == "Outgoing":
+            self.status = "Open"
+            self.db_set("status", "Open")
             self.update_outgoing_linked_statuses()
         elif self.movement_type == "Incoming":
             missing = calculate_missing_files_from_doc(self)
             self.set_missing_file_table(missing)
             self.status = "Missing Files" if missing else "Received"
+            self.db_set("status", self.status)
             self.update_incoming_linked_statuses()
 
     def on_cancel(self):
