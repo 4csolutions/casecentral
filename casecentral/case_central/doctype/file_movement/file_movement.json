@@ -8,7 +8,7 @@
  "field_order": [
   "giver",
   "receiver",
-  "scan_barcode_btn",
+  "scan_barcode",
   "column_break_1",
   "movement_date",
   "status",
@@ -38,9 +38,10 @@
    "reqd": 1
   },
   {
-   "fieldname": "scan_barcode_btn",
-   "fieldtype": "HTML",
-   "label": "Scan Barcode Button"
+   "fieldname": "scan_barcode",
+   "fieldtype": "Data",
+   "label": "Scan Barcode",
+   "options": "Barcode"
   },
   {
    "fieldname": "column_break_1",
@@ -123,7 +124,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-09-15 14:00:00.000000",
+ "modified": "2026-10-05 14:00:00.000000",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "File Movement",
