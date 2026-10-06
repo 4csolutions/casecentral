@@ -64,7 +64,7 @@ class FileMovement(Document):
         if not frappe.db.exists("Employee", self.receiver):
             frappe.throw(f"Receiver employee '{self.receiver}' does not exist.")
 
-        if not self.get("barcode_files"):
+        if self.movement_type == "Outgoing" and not self.get("barcode_files"):
             frappe.throw("Please add at least one row in the Matter Files table.")
 
     def validate_rows(self):
@@ -123,9 +123,11 @@ class FileMovement(Document):
         if self.docstatus == 1:
             self.status = "Missing Files" if missing else "Received"
         else:
-            if not self.status:
+            if not self.get("barcode_files") and not self.status:
                 self.status = "Open"
-            elif self.status != "Open":
+            elif not self.get("barcode_files"):
+                self.status = "Open"
+            else:
                 self.status = "Missing Files" if missing else "Received"
 
     def set_missing_file_table(self, missing):
@@ -166,6 +168,13 @@ class FileMovement(Document):
         for row in self.get("barcode_files") or []:
             if row.matter:
                 matters.add(row.matter)
+        # Also check matters from original outgoing movement
+        outgoing_name = (self.original_outgoing_movement or self.get("outgoing_movement") or "").strip()
+        if outgoing_name and frappe.db.exists("File Movement", outgoing_name):
+            out_doc = frappe.get_doc("File Movement", outgoing_name)
+            for row in out_doc.get("barcode_files") or []:
+                if row.matter:
+                    matters.add(row.matter)
         for matter_name in matters:
             recalculate_matter_status_from_movements(matter_name)
 
@@ -363,17 +372,10 @@ def create_incoming(outgoing_name):
     incoming.receiver = outgoing.giver
     incoming.original_outgoing_movement = outgoing.name
 
-    # Copy Matter Files
+    # Matter Files table starts EMPTY - user/giver will scan to populate!
     incoming.set("barcode_files", [])
-    for row in outgoing.barcode_files or []:
-        incoming.append("barcode_files", {
-            "barcode": row.barcode or "",
-            "matter": row.matter or "",
-            "case": row.case or "",
-            "returned": 0
-        })
 
-    # Initially all copied files are missing
+    # Initially all outgoing files are missing until scanned
     missing = calculate_missing_files_from_doc(incoming)
     incoming.set_missing_file_table(missing)
 
@@ -381,7 +383,80 @@ def create_incoming(outgoing_name):
     return incoming.name
 
 
+@frappe.whitelist()
+def get_outgoing_movement_items(outgoing_name):
+    outgoing_name = str(outgoing_name or "").strip()
+    if not outgoing_name or not frappe.db.exists("File Movement", outgoing_name):
+        return []
+
+    outgoing = frappe.get_doc("File Movement", outgoing_name)
+    result = []
+    for row in outgoing.get("barcode_files") or []:
+        result.append({
+            "barcode": row.barcode or "",
+            "matter": row.matter or "",
+            "case": row.case or ""
+        })
+    return result
+
+
+def is_item_returned(out_row, incoming_rows):
+    """
+    Checks if an item from outgoing movement is present and marked returned in incoming_rows.
+    """
+    out_case = (out_row.get("case") or "").strip()
+    out_barcode = (out_row.get("barcode") or "").strip()
+    out_matter = (out_row.get("matter") or "").strip()
+
+    for inc_row in incoming_rows:
+        inc_returned = inc_row.get("returned")
+        if not inc_returned or inc_returned in [0, "0", False]:
+            continue
+
+        inc_case = (inc_row.get("case") or "").strip()
+        inc_barcode = (inc_row.get("barcode") or "").strip()
+        inc_matter = (inc_row.get("matter") or "").strip()
+
+        # 1. Match by case if both have case
+        if out_case and inc_case:
+            if out_case == inc_case:
+                return True
+
+        # 2. Match by barcode if both have barcode
+        if out_barcode and inc_barcode:
+            if out_barcode == inc_barcode:
+                return True
+
+        # 3. Match by matter
+        if out_matter and inc_matter:
+            if out_matter == inc_matter:
+                if not out_case and not inc_case:
+                    return True
+                if out_case and inc_case and out_case == inc_case:
+                    return True
+
+    return False
+
+
 def calculate_missing_files_from_doc(doc):
+    if doc.movement_type == "Outgoing":
+        return []
+
+    outgoing_name = (doc.original_outgoing_movement or doc.get("outgoing_movement") or "").strip()
+    if outgoing_name and frappe.db.exists("File Movement", outgoing_name):
+        outgoing = frappe.get_doc("File Movement", outgoing_name)
+        incoming_rows = doc.get("barcode_files") or []
+        missing = []
+        for out_row in outgoing.get("barcode_files") or []:
+            if not is_item_returned(out_row, incoming_rows):
+                missing.append({
+                    "barcode": out_row.barcode or "",
+                    "matter": out_row.matter or "",
+                    "case": out_row.case or ""
+                })
+        return missing
+
+    # Fallback if no outgoing movement linked
     missing = []
     for row in doc.get("barcode_files") or []:
         if not row.returned:
@@ -422,7 +497,7 @@ def return_missing_files(
     if doc.movement_type != "Incoming":
         frappe.throw("Only Incoming movements can return missing files.")
 
-    items_to_return = set()
+    items_to_return = []
 
     # Parse files arg if passed as json or list
     if isinstance(files, str):
@@ -433,35 +508,58 @@ def return_missing_files(
     if isinstance(files, list):
         for f in files:
             if isinstance(f, dict):
-                if f.get("barcode"):
-                    items_to_return.add(str(f["barcode"]).strip())
-                if f.get("case"):
-                    items_to_return.add(str(f["case"]).strip())
-                if f.get("matter"):
-                    items_to_return.add(str(f["matter"]).strip())
+                items_to_return.append(f)
             elif str(f).strip():
-                items_to_return.add(str(f).strip())
+                items_to_return.append({"case": str(f).strip()})
 
     for b in selected_barcodes or []:
         if str(b).strip():
-            items_to_return.add(str(b).strip())
+            items_to_return.append({"barcode": str(b).strip()})
     for m in selected_matters or []:
         if str(m).strip():
-            items_to_return.add(str(m).strip())
+            items_to_return.append({"matter": str(m).strip()})
     for c in selected_cases or []:
         if str(c).strip():
-            items_to_return.add(str(c).strip())
+            items_to_return.append({"case": str(c).strip()})
 
     if not items_to_return:
         frappe.throw("Please select at least one file or matter to return.")
 
-    # Mark returned in barcode_files (Matter Files table)
-    for row in doc.barcode_files or []:
-        if (row.barcode and row.barcode in items_to_return) or \
-           (row.case and row.case in items_to_return) or \
-           (row.matter and row.matter in items_to_return):
-            row.returned = 1
-            frappe.db.set_value("Barcode File Item", row.name, "returned", 1)
+    # Mark returned or append to barcode_files
+    for item in items_to_return:
+        target_case = item.get("case") or ""
+        target_barcode = item.get("barcode") or ""
+        target_matter = item.get("matter") or ""
+
+        found = False
+        for row in doc.get("barcode_files") or []:
+            if (target_case and row.case == target_case) or \
+               (target_barcode and row.barcode == target_barcode) or \
+               (target_matter and row.matter == target_matter and not row.case and not target_case):
+                row.returned = 1
+                frappe.db.set_value("Barcode File Item", row.name, "returned", 1)
+                found = True
+                break
+
+        if not found:
+            # Look up case/matter if partial
+            if not target_matter and target_case:
+                target_matter = frappe.db.get_value("Case", target_case, "matter") or ""
+            if not target_case and target_barcode:
+                target_case = find_case_by_barcode(target_barcode) or ""
+                if target_case and not target_matter:
+                    target_matter = frappe.db.get_value("Case", target_case, "matter") or ""
+
+            new_row = doc.append("barcode_files", {
+                "barcode": target_barcode,
+                "matter": target_matter,
+                "case": target_case,
+                "returned": 1
+            })
+            new_row.parent = doc.name
+            new_row.parenttype = "File Movement"
+            new_row.parentfield = "barcode_files"
+            new_row.db_insert()
 
     # Recalculate remaining missing
     remaining_missing = calculate_missing_files_from_doc(doc)

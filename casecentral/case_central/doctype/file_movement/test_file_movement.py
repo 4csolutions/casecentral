@@ -213,8 +213,8 @@ class TestFileMovement(FrappeTestCase):
         """
         Complete lifecycle test with single Matter Files table:
         1. Create Outgoing with 2 items -> Submit
-        2. Create Incoming via create_incoming -> Check giver/receiver reversal & copy
-        3. Partial return (1 returned, 1 unreturned) -> Submit -> Status "Missing Files" & missing table populated
+        2. Create Incoming via create_incoming -> Verify barcode_files is EMPTY and missing_file_items has 2 items
+        3. Partial scan / return (1 item scanned into barcode_files) -> Submit -> Status "Missing Files" & 1 missing item
         4. Late return of remaining missing file -> Status becomes "Received"
         """
         # Step 1: Outgoing
@@ -237,7 +237,7 @@ class TestFileMovement(FrappeTestCase):
         outgoing.insert(ignore_permissions=True)
         outgoing.submit()
 
-        # Step 2: Create Incoming
+        # Step 2: Create Incoming - should start with EMPTY barcode_files
         incoming_name = create_incoming(outgoing.name)
         incoming = frappe.get_doc("File Movement", incoming_name)
         self.assertEqual(incoming.movement_type, "Incoming")
@@ -247,13 +247,19 @@ class TestFileMovement(FrappeTestCase):
         self.assertEqual(incoming.giver, self.receiver)
         self.assertEqual(incoming.receiver, self.giver)
         self.assertEqual(incoming.original_outgoing_movement, outgoing.name)
-        self.assertEqual(len(incoming.barcode_files), 2)
-        self.assertEqual(incoming.barcode_files[0].returned, 0)
-        self.assertEqual(incoming.barcode_files[1].returned, 0)
+        
+        # BARCODE_FILES MUST BE EMPTY INITIALLY
+        self.assertEqual(len(incoming.barcode_files), 0, "Incoming barcode_files should start empty")
+        # All 2 outgoing files should be listed in missing_file_items initially
+        self.assertEqual(len(incoming.missing_file_items), 2, "Incoming missing_file_items should list all 2 outgoing items")
 
-        # Step 3: Partial return - mark row 0 as returned, row 1 unreturned
-        incoming.barcode_files[0].returned = 1
-        incoming.barcode_files[1].returned = 0
+        # Step 3: Partial return - scan 1 item into barcode_files
+        incoming.append("barcode_files", {
+            "barcode": "TEST-BC-101",
+            "matter": self.matter_1,
+            "case": self.case_1,
+            "returned": 1
+        })
         incoming.save(ignore_permissions=True)
         incoming.submit()
 
@@ -275,6 +281,7 @@ class TestFileMovement(FrappeTestCase):
         incoming.reload()
         self.assertEqual(incoming.status, "Received")
         self.assertEqual(len(incoming.missing_file_items), 0)
+        self.assertEqual(len(incoming.barcode_files), 2)
 
     def test_fmo_and_fmi_matching_id_number(self):
         """Test that Outgoing movement creates FMO-##### and Incoming creates matching FMI-#####."""
