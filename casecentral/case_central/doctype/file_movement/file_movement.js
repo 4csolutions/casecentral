@@ -815,7 +815,8 @@ function show_return_missing_modal(frm, missing_files) {
             fieldname: "quick_scan",
             label: __("Scan Barcode / Matter to Return"),
             fieldtype: "Data",
-            description: __("Scan barcode gun or type code to check off returned items")
+            options: "Barcode",
+            description: __("Scan using barcode gun, click scanner icon for camera scanner, or enter Matter ID / Case ID")
         },
         {
             fieldname: "missing_items_section",
@@ -834,7 +835,7 @@ function show_return_missing_modal(frm, missing_files) {
             fieldname: "item_" + idx,
             label: label_parts.join(" | ") || __("Item {0}", [idx + 1]),
             fieldtype: "Check",
-            default: 1
+            default: 0
         });
     });
 
@@ -852,7 +853,7 @@ function show_return_missing_modal(frm, missing_files) {
             });
 
             if (!selected_items.length) {
-                frappe.msgprint(__("Please select at least one file to return."));
+                frappe.msgprint(__("Please select or scan at least one file to return."));
                 return;
             }
 
@@ -883,28 +884,56 @@ function show_return_missing_modal(frm, missing_files) {
 
     dialog.show();
 
-    // Bind quick scanner in modal
-    setTimeout(function () {
-        var $input = dialog.fields_dict.quick_scan?.$input;
-        if ($input) {
-            $input.focus();
-            $input.on("keydown", function (e) {
-                if (e.which === 13) {
-                    e.preventDefault();
-                    var code = $(this).val().trim();
-                    if (!code) return;
+    function match_and_check(code) {
+        if (!code) return;
+        code = code.trim();
 
-                    var matched = false;
-                    missing_files.forEach(function (item, idx) {
-                        if (item.barcode === code || item.case === code || item.matter === code) {
+        var matched_indices = [];
+        missing_files.forEach(function (item, idx) {
+            if (item.barcode === code || item.case === code || item.matter === code) {
+                matched_indices.push(idx);
+            }
+        });
+
+        if (matched_indices.length > 0) {
+            matched_indices.forEach(function (idx) {
+                dialog.set_value("item_" + idx, 1);
+            });
+            frappe.show_alert({
+                message: __("Checked <b>{0}</b> missing item(s) for: <b>{1}</b>", [matched_indices.length, code]),
+                indicator: "green"
+            });
+            dialog.set_value("quick_scan", "");
+            setTimeout(function () {
+                dialog.fields_dict.quick_scan?.$input?.focus();
+            }, 100);
+        } else {
+            // Check via get_scan_information API in case barcode maps to a case/matter
+            frappe.call({
+                method: "casecentral.case_central.doctype.file_movement.file_movement.get_scan_information",
+                args: { value: code },
+                callback: function (r) {
+                    var data = r.message;
+                    var api_matched = [];
+
+                    if (data && data.type !== "not_found") {
+                        missing_files.forEach(function (item, idx) {
+                            if (data.type === "matter" && item.matter === data.matter) {
+                                api_matched.push(idx);
+                            } else if (data.type === "case" && item.case === data.case_name) {
+                                api_matched.push(idx);
+                            } else if (data.barcode && item.barcode === data.barcode) {
+                                api_matched.push(idx);
+                            }
+                        });
+                    }
+
+                    if (api_matched.length > 0) {
+                        api_matched.forEach(function (idx) {
                             dialog.set_value("item_" + idx, 1);
-                            matched = true;
-                        }
-                    });
-
-                    if (matched) {
+                        });
                         frappe.show_alert({
-                            message: __("Checked item: <b>{0}</b>", [code]),
+                            message: __("Checked <b>{0}</b> missing item(s) for: <b>{1}</b>", [api_matched.length, code]),
                             indicator: "green"
                         });
                     } else {
@@ -914,7 +943,37 @@ function show_return_missing_modal(frm, missing_files) {
                         });
                     }
                     dialog.set_value("quick_scan", "");
-                    setTimeout(function () { $input.focus(); }, 50);
+                    setTimeout(function () {
+                        dialog.fields_dict.quick_scan?.$input?.focus();
+                    }, 100);
+                }
+            });
+        }
+    }
+
+    // Bind quick scanner in modal
+    setTimeout(function () {
+        var field = dialog.fields_dict.quick_scan;
+        var $input = field?.$input;
+        if ($input) {
+            $input.focus();
+
+            $input.off("keydown.return_scan").on("keydown.return_scan", function (e) {
+                if (e.which === 13) {
+                    e.preventDefault();
+                    var code = $(this).val().trim();
+                    if (code) {
+                        $(this).val("");
+                        match_and_check(code);
+                    }
+                }
+            });
+
+            $input.off("change.return_scan").on("change.return_scan", function () {
+                var code = $(this).val().trim();
+                if (code) {
+                    $(this).val("");
+                    match_and_check(code);
                 }
             });
         }
