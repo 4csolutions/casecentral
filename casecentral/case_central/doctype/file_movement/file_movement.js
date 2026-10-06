@@ -6,7 +6,7 @@ frappe.ui.form.on("File Movement", {
     onload: function (frm) {
         setup_scan_barcode_input(frm);
         if (frm.doc.movement_type === "Incoming" && frm.doc.original_outgoing_movement) {
-            fetch_outgoing_items_and_update(frm);
+            load_outgoing_items(frm);
         }
     },
 
@@ -16,11 +16,6 @@ frappe.ui.form.on("File Movement", {
         frm.remove_custom_button("Create Incoming");
         frm.remove_custom_button("Return Missing Files");
         frm.remove_custom_button("Scan Barcode");
-
-        // Force Outgoing movement status to "Open"
-        if (frm.doc.movement_type === "Outgoing" && frm.doc.status !== "Open") {
-            frm.set_value("status", "Open");
-        }
 
         // Direct standalone "Create Incoming" button on submitted Outgoing movement (not inside Actions)
         if (frm.doc.docstatus === 1 && frm.doc.movement_type === "Outgoing") {
@@ -36,7 +31,7 @@ frappe.ui.form.on("File Movement", {
         set_form_read_only_states(frm);
 
         if (frm.doc.movement_type === "Incoming" && frm.doc.original_outgoing_movement) {
-            fetch_outgoing_items_and_update(frm);
+            load_outgoing_items(frm);
         }
     },
 
@@ -49,17 +44,23 @@ frappe.ui.form.on("File Movement", {
 
     original_outgoing_movement: function (frm) {
         if (frm.doc.movement_type === "Incoming") {
-            fetch_outgoing_items_and_update(frm);
+            load_outgoing_items(frm, function () {
+                update_missing_files_table_and_status_client(frm);
+            });
         }
     },
 
     movement_type: function (frm) {
         set_form_read_only_states(frm);
         if (frm.doc.movement_type === "Outgoing") {
-            frm.set_value("missing_file_items", []);
-            frm.set_value("status", "Open");
+            frm.doc.missing_file_items = [];
+            frm.doc.status = "Open";
+            frm.refresh_field("missing_file_items");
+            frm.refresh_field("status");
         } else if (frm.doc.movement_type === "Incoming") {
-            fetch_outgoing_items_and_update(frm);
+            load_outgoing_items(frm, function () {
+                update_missing_files_table_and_status_client(frm);
+            });
         }
     }
 });
@@ -546,7 +547,7 @@ function handle_outgoing_scan(frm, data, original_value) {
 
 function handle_incoming_scan(frm, data, original_value) {
     if (!frm._outgoing_items && frm.doc.original_outgoing_movement) {
-        fetch_outgoing_items_and_update(frm, function () {
+        load_outgoing_items(frm, function () {
             handle_incoming_scan_process(frm, data, original_value);
         });
     } else {
@@ -658,10 +659,9 @@ function handle_incoming_scan_process(frm, data, original_value) {
 // REAL-TIME MISSING FILES TABLE CALCULATION (CLIENT-SIDE)
 // =========================================================
 
-function fetch_outgoing_items_and_update(frm, callback) {
+function load_outgoing_items(frm, callback) {
     if (frm.doc.movement_type !== "Incoming" || !frm.doc.original_outgoing_movement) {
         frm._outgoing_items = [];
-        update_missing_files_table_and_status_client(frm);
         if (callback) callback();
         return;
     }
@@ -673,7 +673,6 @@ function fetch_outgoing_items_and_update(frm, callback) {
         },
         callback: function (r) {
             frm._outgoing_items = r.message || [];
-            update_missing_files_table_and_status_client(frm);
             if (callback) callback();
         }
     });
@@ -681,17 +680,13 @@ function fetch_outgoing_items_and_update(frm, callback) {
 
 function update_missing_files_table_and_status_client(frm) {
     if (frm.doc.movement_type !== "Incoming") {
-        frm.set_value("missing_file_items", []);
-        if (frm.doc.status !== "Open") {
-            frm.set_value("status", "Open");
-        }
         return;
     }
 
     var incoming_rows = frm.doc.barcode_files || [];
+    var missing = [];
 
     if (frm.doc.original_outgoing_movement && frm._outgoing_items && frm._outgoing_items.length > 0) {
-        var missing = [];
         frm._outgoing_items.forEach(function (out_row) {
             var is_returned = incoming_rows.some(function (inc_row) {
                 if (!inc_row.returned && inc_row.returned !== 1 && inc_row.returned !== true) {
@@ -719,24 +714,7 @@ function update_missing_files_table_and_status_client(frm) {
                 });
             }
         });
-
-        frm.set_value("missing_file_items", missing);
-
-        var new_status;
-        if (missing.length === 0) {
-            new_status = "Received";
-        } else if (incoming_rows.length === 0 && frm.doc.docstatus === 0) {
-            new_status = "Open";
-        } else {
-            new_status = "Missing Files";
-        }
-
-        if (frm.doc.status !== new_status) {
-            frm.set_value("status", new_status);
-        }
     } else {
-        // Fallback if not created from outgoing movement
-        var missing = [];
         incoming_rows.forEach(function (row) {
             if (!row.returned) {
                 missing.push({
@@ -747,16 +725,27 @@ function update_missing_files_table_and_status_client(frm) {
                 });
             }
         });
-        frm.set_value("missing_file_items", missing);
-        var new_status = missing.length > 0 ? "Missing Files" : "Received";
-        if (incoming_rows.length === 0 && frm.doc.docstatus === 0) {
-            new_status = "Open";
-        }
-        if (frm.doc.status !== new_status) {
-            frm.set_value("status", new_status);
-        }
+    }
+
+    // Direct memory update and UI refresh (no frm.set_value loops)
+    frm.doc.missing_file_items = missing;
+    frm.refresh_field("missing_file_items");
+
+    var new_status;
+    if (missing.length === 0 && incoming_rows.length > 0) {
+        new_status = "Received";
+    } else if (incoming_rows.length === 0 && frm.doc.docstatus === 0) {
+        new_status = "Open";
+    } else {
+        new_status = "Missing Files";
+    }
+
+    if (frm.doc.status !== new_status) {
+        frm.doc.status = new_status;
+        frm.refresh_field("status");
     }
 }
+
 
 
 // =========================================================
