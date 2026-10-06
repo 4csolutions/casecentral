@@ -5,6 +5,9 @@ frappe.ui.form.on("File Movement", {
 
     onload: function (frm) {
         setup_scan_barcode_input(frm);
+        if (frm.doc.movement_type === "Incoming" && frm.doc.original_outgoing_movement) {
+            fetch_outgoing_items_and_update(frm);
+        }
     },
 
     refresh: function (frm) {
@@ -31,6 +34,10 @@ frappe.ui.form.on("File Movement", {
 
         // Set field read-only states depending on movement type
         set_form_read_only_states(frm);
+
+        if (frm.doc.movement_type === "Incoming" && frm.doc.original_outgoing_movement) {
+            fetch_outgoing_items_and_update(frm);
+        }
     },
 
     scan_barcode: function (frm) {
@@ -40,13 +47,19 @@ frappe.ui.form.on("File Movement", {
         process_scan(frm, val);
     },
 
+    original_outgoing_movement: function (frm) {
+        if (frm.doc.movement_type === "Incoming") {
+            fetch_outgoing_items_and_update(frm);
+        }
+    },
+
     movement_type: function (frm) {
         set_form_read_only_states(frm);
         if (frm.doc.movement_type === "Outgoing") {
             frm.set_value("missing_file_items", []);
             frm.set_value("status", "Open");
-        } else if (frm.doc.movement_type === "Incoming" && frm.doc.docstatus === 0) {
-            update_missing_files_table_and_status_client(frm);
+        } else if (frm.doc.movement_type === "Incoming") {
+            fetch_outgoing_items_and_update(frm);
         }
     }
 });
@@ -57,9 +70,26 @@ frappe.ui.form.on("File Movement", {
 // =========================================================
 
 frappe.ui.form.on("Barcode File Item", {
+    barcode_files_add: function (frm, cdt, cdn) {
+        if (frm.doc.movement_type === "Incoming") {
+            frappe.model.set_value(cdt, cdn, "returned", 1);
+            update_missing_files_table_and_status_client(frm);
+        }
+    },
+
+    barcode_files_remove: function (frm) {
+        if (frm.doc.movement_type === "Incoming") {
+            update_missing_files_table_and_status_client(frm);
+        }
+    },
+
     matter: function (frm, cdt, cdn) {
         var row = frappe.get_doc(cdt, cdn);
         if (!row.matter) return;
+
+        if (frm.doc.movement_type === "Incoming") {
+            frappe.model.set_value(cdt, cdn, "returned", 1);
+        }
 
         frappe.call({
             method: "casecentral.case_central.doctype.file_movement.file_movement.get_cases_for_matter",
@@ -107,7 +137,7 @@ frappe.ui.form.on("Barcode File Item", {
                             new_row.matter = c.matter || row.matter;
                             new_row.case = c.name || "";
                             new_row.barcode = c.barcode || "";
-                            new_row.returned = 0;
+                            new_row.returned = frm.doc.movement_type === "Incoming" ? 1 : 0;
                         }
                     }
                     frm.refresh_field("barcode_files");
@@ -134,10 +164,17 @@ frappe.ui.form.on("Barcode File Item", {
         var row = frappe.get_doc(cdt, cdn);
         if (!row.case) return;
 
+        if (frm.doc.movement_type === "Incoming") {
+            frappe.model.set_value(cdt, cdn, "returned", 1);
+        }
+
         frappe.db.get_value("Case", row.case, ["matter", "name"]).then(r => {
             if (r && r.message) {
                 if (r.message.matter && !row.matter) {
                     frappe.model.set_value(cdt, cdn, "matter", r.message.matter);
+                }
+                if (frm.doc.movement_type === "Incoming") {
+                    update_missing_files_table_and_status_client(frm);
                 }
             } else {
                 frappe.msgprint({
@@ -508,35 +545,111 @@ function handle_outgoing_scan(frm, data, original_value) {
 }
 
 function handle_incoming_scan(frm, data, original_value) {
-    var matched_rows = [];
-
-    (frm.doc.barcode_files || []).forEach(function (row) {
-        if (data.type === "matter" && row.matter === data.matter) {
-            matched_rows.push(row);
-        } else if (data.type === "case" && row.case === data.case_name) {
-            matched_rows.push(row);
-        } else if (row.barcode === original_value || (data.barcode && row.barcode === data.barcode)) {
-            matched_rows.push(row);
-        }
-    });
-
-    if (matched_rows.length > 0) {
-        matched_rows.forEach(function (row) {
-            row.returned = 1;
+    if (!frm._outgoing_items && frm.doc.original_outgoing_movement) {
+        fetch_outgoing_items_and_update(frm, function () {
+            handle_incoming_scan_process(frm, data, original_value);
         });
+    } else {
+        handle_incoming_scan_process(frm, data, original_value);
+    }
+}
+
+function handle_incoming_scan_process(frm, data, original_value) {
+    var added_count = 0;
+
+    if (data.type === "matter") {
+        var cases = data.cases || [];
+        if (cases.length > 0) {
+            cases.forEach(function (c) {
+                var exists = (frm.doc.barcode_files || []).some(function (item) {
+                    return item.matter === (c.matter || data.matter) && item.case === c.name;
+                });
+
+                if (!exists) {
+                    var row = frm.add_child("barcode_files");
+                    row.matter = c.matter || data.matter;
+                    row.case = c.name || "";
+                    row.barcode = c.barcode || "";
+                    row.returned = 1;
+                    added_count++;
+                }
+            });
+        } else {
+            var exists = (frm.doc.barcode_files || []).some(function (item) {
+                return item.matter === data.matter;
+            });
+            if (!exists) {
+                var row = frm.add_child("barcode_files");
+                row.matter = data.matter;
+                row.case = "";
+                row.barcode = "";
+                row.returned = 1;
+                added_count++;
+            }
+        }
+
         frm.refresh_field("barcode_files");
         update_missing_files_table_and_status_client(frm);
 
-        frappe.show_alert({
-            message: __("Marked returned: <b>{0}</b> ({1} item(s)).", [original_value, matched_rows.length]),
-            indicator: "green"
+        if (added_count > 0) {
+            frappe.show_alert({
+                message: __("Scanned Matter <b>{0}</b> ({1} Case(s) returned).", [data.matter, added_count]),
+                indicator: "green"
+            });
+        } else {
+            frappe.show_alert({
+                message: __("Matter <b>{0}</b> is already scanned.", [data.matter]),
+                indicator: "orange"
+            });
+        }
+    } else if (data.type === "case") {
+        var exists = (frm.doc.barcode_files || []).some(function (item) {
+            return item.case === data.case_name;
         });
-    } else {
-        frappe.msgprint({
-            title: __("Not in Movement"),
-            indicator: "orange",
-            message: __("Scanned item '<b>{0}</b>' was not found in this Incoming movement.", [original_value])
+
+        if (!exists) {
+            var row = frm.add_child("barcode_files");
+            row.matter = data.matter || "";
+            row.case = data.case_name || "";
+            row.barcode = data.barcode || original_value;
+            row.returned = 1;
+            frm.refresh_field("barcode_files");
+            update_missing_files_table_and_status_client(frm);
+
+            frappe.show_alert({
+                message: __("Scanned & returned Case <b>{0}</b>.", [data.case_name]),
+                indicator: "green"
+            });
+        } else {
+            frappe.show_alert({
+                message: __("Case <b>{0}</b> is already scanned.", [data.case_name]),
+                indicator: "orange"
+            });
+        }
+    } else if (data.type === "case_file") {
+        var exists = (frm.doc.barcode_files || []).some(function (item) {
+            return item.barcode === data.barcode;
         });
+
+        if (!exists) {
+            var row = frm.add_child("barcode_files");
+            row.matter = data.matter || "";
+            row.case = data.case || "";
+            row.barcode = data.barcode || original_value;
+            row.returned = 1;
+            frm.refresh_field("barcode_files");
+            update_missing_files_table_and_status_client(frm);
+
+            frappe.show_alert({
+                message: __("Scanned & returned Barcode <b>{0}</b>.", [data.barcode]),
+                indicator: "green"
+            });
+        } else {
+            frappe.show_alert({
+                message: __("Barcode <b>{0}</b> is already scanned.", [data.barcode]),
+                indicator: "orange"
+            });
+        }
     }
 }
 
@@ -544,6 +657,27 @@ function handle_incoming_scan(frm, data, original_value) {
 // =========================================================
 // REAL-TIME MISSING FILES TABLE CALCULATION (CLIENT-SIDE)
 // =========================================================
+
+function fetch_outgoing_items_and_update(frm, callback) {
+    if (frm.doc.movement_type !== "Incoming" || !frm.doc.original_outgoing_movement) {
+        frm._outgoing_items = [];
+        update_missing_files_table_and_status_client(frm);
+        if (callback) callback();
+        return;
+    }
+
+    frappe.call({
+        method: "casecentral.case_central.doctype.file_movement.file_movement.get_outgoing_movement_items",
+        args: {
+            outgoing_name: frm.doc.original_outgoing_movement
+        },
+        callback: function (r) {
+            frm._outgoing_items = r.message || [];
+            update_missing_files_table_and_status_client(frm);
+            if (callback) callback();
+        }
+    });
+}
 
 function update_missing_files_table_and_status_client(frm) {
     if (frm.doc.movement_type !== "Incoming") {
@@ -554,24 +688,73 @@ function update_missing_files_table_and_status_client(frm) {
         return;
     }
 
-    var missing = [];
+    var incoming_rows = frm.doc.barcode_files || [];
 
-    (frm.doc.barcode_files || []).forEach(function (row) {
-        if (!row.returned) {
-            missing.push({
-                barcode: row.barcode || "",
-                matter: row.matter || "",
-                case: row.case || "",
-                returned: 0
+    if (frm.doc.original_outgoing_movement && frm._outgoing_items && frm._outgoing_items.length > 0) {
+        var missing = [];
+        frm._outgoing_items.forEach(function (out_row) {
+            var is_returned = incoming_rows.some(function (inc_row) {
+                if (!inc_row.returned && inc_row.returned !== 1 && inc_row.returned !== true) {
+                    return false;
+                }
+                if (out_row.case && inc_row.case && out_row.case === inc_row.case) {
+                    return true;
+                }
+                if (out_row.barcode && inc_row.barcode && out_row.barcode === inc_row.barcode) {
+                    return true;
+                }
+                if (out_row.matter && inc_row.matter && out_row.matter === inc_row.matter) {
+                    if (!out_row.case && !inc_row.case) return true;
+                    if (out_row.case && inc_row.case && out_row.case === inc_row.case) return true;
+                }
+                return false;
             });
+
+            if (!is_returned) {
+                missing.push({
+                    barcode: out_row.barcode || "",
+                    matter: out_row.matter || "",
+                    case: out_row.case || "",
+                    returned: 0
+                });
+            }
+        });
+
+        frm.set_value("missing_file_items", missing);
+
+        var new_status;
+        if (missing.length === 0) {
+            new_status = "Received";
+        } else if (incoming_rows.length === 0 && frm.doc.docstatus === 0) {
+            new_status = "Open";
+        } else {
+            new_status = "Missing Files";
         }
-    });
 
-    frm.set_value("missing_file_items", missing);
-
-    var new_status = missing.length > 0 ? "Missing Files" : "Received";
-    if (frm.doc.status !== new_status) {
-        frm.set_value("status", new_status);
+        if (frm.doc.status !== new_status) {
+            frm.set_value("status", new_status);
+        }
+    } else {
+        // Fallback if not created from outgoing movement
+        var missing = [];
+        incoming_rows.forEach(function (row) {
+            if (!row.returned) {
+                missing.push({
+                    barcode: row.barcode || "",
+                    matter: row.matter || "",
+                    case: row.case || "",
+                    returned: 0
+                });
+            }
+        });
+        frm.set_value("missing_file_items", missing);
+        var new_status = missing.length > 0 ? "Missing Files" : "Received";
+        if (incoming_rows.length === 0 && frm.doc.docstatus === 0) {
+            new_status = "Open";
+        }
+        if (frm.doc.status !== new_status) {
+            frm.set_value("status", new_status);
+        }
     }
 }
 
