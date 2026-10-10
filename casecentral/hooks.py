@@ -341,7 +341,6 @@ add_to_apps_screen = [
 		"name": "casecentral",
 		"logo": "/assets/casecentral/images/logo.png",
 		"title": "Case Central",
-		"route": "/desk",
 	}
 ]
 

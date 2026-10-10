@@ -1,0 +1,49 @@
+{
+ "app": "casecentral",
+ "creation": "2026-10-10 05:07:58.675969",
+ "docstatus": 0,
+ "doctype": "Sidebar",
+ "header_icon": "briefcase",
+ "idx": 0,
+ "items": [
+  {
+   "added": 0,
+   "child": 0,
+   "collapsible": 1,
+   "hidden": 0,
+   "icon": "send",
+   "indent": 0,
+   "is_default_module": 1,
+   "keep_closed": 0,
+   "label": "Document Outward",
+   "link_to": "Document Outward",
+   "link_type": "DocType",
+   "open_in_new_tab": 0,
+   "show_arrow": 0,
+   "type": "Link"
+  },
+  {
+   "added": 0,
+   "child": 0,
+   "collapsible": 1,
+   "hidden": 0,
+   "icon": "door-open",
+   "indent": 0,
+   "is_default_module": 1,
+   "keep_closed": 0,
+   "label": "Meeting Room",
+   "link_to": "Meeting Room",
+   "link_type": "DocType",
+   "open_in_new_tab": 0,
+   "show_arrow": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-10-10 06:17:34.481750",
+ "modified_by": "Administrator",
+ "module": "Case Central",
+ "name": "Operations",
+ "owner": "Administrator",
+ "standard": 1,
+ "title": "Operations"
+}

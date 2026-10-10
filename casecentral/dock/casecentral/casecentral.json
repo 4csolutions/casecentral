@@ -1,0 +1,103 @@
+{
+ "app": "casecentral",
+ "creation": "2026-10-10 04:59:00.449125",
+ "docstatus": 0,
+ "doctype": "Dock",
+ "idx": 0,
+ "items": [
+  {
+   "added": 1,
+   "hidden": 0,
+   "icon": "users",
+   "link_to": "Client Management",
+   "link_type": "Sidebar",
+   "title": "Client Management"
+  },
+  {
+   "added": 1,
+   "hidden": 0,
+   "icon": "calendar",
+   "link_to": "Appointments",
+   "link_type": "Sidebar",
+   "title": "Appointments"
+  },
+  {
+   "added": 1,
+   "hidden": 0,
+   "icon": "scale",
+   "link_to": "Matter Management",
+   "link_type": "Sidebar",
+   "title": "Matter Management"
+  },
+  {
+   "added": 1,
+   "hidden": 0,
+   "icon": "gavel",
+   "link_to": "Case Management",
+   "link_type": "Sidebar",
+   "title": "Case Management"
+  },
+  {
+   "added": 1,
+   "hidden": 0,
+   "icon": "square-check",
+   "link_to": "Task Management",
+   "link_type": "Sidebar",
+   "title": "Task Management"
+  },
+  {
+   "added": 1,
+   "hidden": 0,
+   "icon": "briefcase",
+   "link_to": "Operations",
+   "link_type": "Sidebar",
+   "title": "Operations"
+  },
+  {
+   "added": 1,
+   "hidden": 0,
+   "icon": "file-text",
+   "link_to": "Legal Documents",
+   "link_type": "Sidebar",
+   "title": "Legal Documents"
+  },
+  {
+   "added": 1,
+   "hidden": 0,
+   "icon": "receipt",
+   "link_to": "Legal Services & Billing",
+   "link_type": "Sidebar",
+   "title": "Legal Services & Billing"
+  },
+  {
+   "added": 1,
+   "hidden": 0,
+   "icon": "book-open",
+   "link_to": "Law Library",
+   "link_type": "Sidebar",
+   "title": "Law Library"
+  },
+  {
+   "added": 1,
+   "hidden": 0,
+   "icon": "shield-check",
+   "link_to": "Quality Assurance",
+   "link_type": "Sidebar",
+   "title": "Quality Assurance"
+  },
+  {
+   "added": 1,
+   "hidden": 0,
+   "icon": "settings",
+   "link_to": "Case Central Setup",
+   "link_type": "Sidebar",
+   "title": "Setup"
+  }
+ ],
+ "modified": "2026-10-10 05:53:59.113596",
+ "modified_by": "Administrator",
+ "name": "casecentral",
+ "owner": "Administrator",
+ "standard": 1,
+ "user": ""
+}
