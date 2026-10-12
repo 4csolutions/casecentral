@@ -11,44 +11,15 @@ class FileMovement(Document):
     def autoname(self):
         if self.name:
             return
-
-        if self.movement_type == "Outgoing":
-            self.name = frappe.model.naming.make_autoname("FMO-.#####")
-        elif self.movement_type == "Incoming":
-            outgoing_name = (self.original_outgoing_movement or self.get("outgoing_movement") or "").strip()
-            if outgoing_name:
-                if outgoing_name.startswith("FMO-"):
-                    candidate = "FMI-" + outgoing_name[4:]
-                elif outgoing_name.startswith("FM-"):
-                    candidate = "FMI-" + outgoing_name[3:]
-                else:
-                    candidate = "FMI-" + outgoing_name
-
-                if frappe.db.exists("File Movement", candidate):
-                    idx = 1
-                    while frappe.db.exists("File Movement", f"{candidate}-{idx}"):
-                        idx += 1
-                    self.name = f"{candidate}-{idx}"
-                else:
-                    self.name = candidate
-            else:
-                self.name = frappe.model.naming.make_autoname("FMI-.#####")
-        else:
-            self.name = frappe.model.naming.make_autoname("FMO-.#####")
+        self.name = frappe.model.naming.make_autoname("FM-.#####")
 
     def validate(self):
-        if self.movement_type == "Outgoing":
-            self.status = "Open"
-            self.set("missing_file_items", [])
         self.validate_movement()
         self.validate_rows()
         self.validate_duplicate_barcodes()
         self.update_missing_files_and_status()
 
     def validate_movement(self):
-        if self.movement_type not in ["Outgoing", "Incoming"]:
-            frappe.throw("Movement Type must be Outgoing or Incoming.")
-
         if not self.giver:
             frappe.throw("Giver is required.")
 
@@ -64,71 +35,72 @@ class FileMovement(Document):
         if not frappe.db.exists("Employee", self.receiver):
             frappe.throw(f"Receiver employee '{self.receiver}' does not exist.")
 
-        if self.movement_type == "Outgoing" and not self.get("barcode_files"):
-            frappe.throw("Please add at least one row in the Matter Files table.")
+        if not self.get("outgoing_files"):
+            frappe.throw("Please add at least one row in the Outgoing Files table.")
 
     def validate_rows(self):
-        for idx, row in enumerate(self.get("barcode_files") or [], start=1):
-            # If matter is provided, verify it exists
+        for idx, row in enumerate(self.get("outgoing_files") or [], start=1):
             if row.matter:
                 if not frappe.db.exists("Matter", row.matter):
                     frappe.throw(f"Matter ID '{row.matter}' in row {idx} does not exist.")
-
-                # Auto-populate case if not set and case exists
                 if not row.case:
                     case_name = frappe.db.get_value("Case", {"matter": row.matter}, "name")
                     if case_name:
                         row.case = case_name
 
-            # If case is provided, verify it exists
             if row.case:
                 if not frappe.db.exists("Case", row.case):
                     frappe.throw(f"Case '{row.case}' in row {idx} does not exist.")
-
-                # Auto-populate matter if not set
                 if not row.matter:
                     case_matter = frappe.db.get_value("Case", row.case, "matter")
                     if case_matter:
                         row.matter = case_matter
 
-            # If neither matter nor case nor barcode is provided
             if not row.matter and not row.case and not row.barcode:
-                frappe.throw(f"Row {idx} in Matter Files must have a Matter ID, Case, or Barcode.")
+                frappe.throw(f"Row {idx} in Outgoing Files must have a Matter ID, Case, or Barcode.")
 
     def validate_duplicate_barcodes(self):
+        # Validate uniqueness inside outgoing_files
         seen_barcodes = set()
         seen_cases = set()
-        for idx, row in enumerate(self.get("barcode_files") or [], start=1):
+        for idx, row in enumerate(self.get("outgoing_files") or [], start=1):
             barcode = (row.barcode or "").strip()
             if barcode:
                 if barcode in seen_barcodes:
-                    frappe.throw(f"Duplicate barcode '{barcode}' in row {idx}.")
+                    frappe.throw(f"Duplicate barcode '{barcode}' in Outgoing Files row {idx}.")
                 seen_barcodes.add(barcode)
 
             case_name = (row.case or "").strip()
             if case_name:
                 if case_name in seen_cases:
-                    frappe.throw(f"Duplicate Case '{case_name}' in row {idx}.")
+                    frappe.throw(f"Duplicate Case '{case_name}' in Outgoing Files row {idx}.")
                 seen_cases.add(case_name)
 
+        # Validate uniqueness inside incoming_files
+        seen_inc_barcodes = set()
+        seen_inc_cases = set()
+        for idx, row in enumerate(self.get("incoming_files") or [], start=1):
+            barcode = (row.barcode or "").strip()
+            if barcode:
+                if barcode in seen_inc_barcodes:
+                    frappe.throw(f"Duplicate barcode '{barcode}' in Incoming Files row {idx}.")
+                seen_inc_barcodes.add(barcode)
+
+            case_name = (row.case or "").strip()
+            if case_name:
+                if case_name in seen_inc_cases:
+                    frappe.throw(f"Duplicate Case '{case_name}' in Incoming Files row {idx}.")
+                seen_inc_cases.add(case_name)
+
     def update_missing_files_and_status(self):
-        if self.movement_type == "Outgoing":
+        if not self.has_incoming and not self.get("incoming_files"):
             self.status = "Open"
             self.set("missing_file_items", [])
             return
 
         missing = calculate_missing_files_from_doc(self)
         self.set_missing_file_table(missing)
-
-        if self.docstatus == 1:
-            self.status = "Missing Files" if missing else "Received"
-        else:
-            if not self.get("barcode_files") and not self.status:
-                self.status = "Open"
-            elif not self.get("barcode_files"):
-                self.status = "Open"
-            else:
-                self.status = "Missing Files" if missing else "Received"
+        self.status = "Received" if len(missing) == 0 else "Missing Files"
 
     def set_missing_file_table(self, missing):
         self.set("missing_file_items", [])
@@ -137,50 +109,26 @@ class FileMovement(Document):
             row.barcode = item.get("barcode") or ""
             row.matter = item.get("matter") or ""
             row.case = item.get("case") or ""
-            row.returned = 0
 
     def on_submit(self):
-        if self.movement_type == "Outgoing":
-            self.status = "Open"
-            self.db_set("status", "Open")
-            self.update_outgoing_linked_statuses()
-        elif self.movement_type == "Incoming":
-            missing = calculate_missing_files_from_doc(self)
-            self.set_missing_file_table(missing)
-            self.status = "Missing Files" if missing else "Received"
-            self.db_set("status", self.status)
-            self.update_incoming_linked_statuses()
+        self.status = "Open"
+        self.db_set("status", "Open")
+        self.update_outgoing_linked_statuses()
 
     def on_cancel(self):
-        if self.movement_type == "Outgoing":
-            self.restore_outgoing_linked_statuses()
+        self.restore_outgoing_linked_statuses()
 
     def update_outgoing_linked_statuses(self):
         matters = set()
-        for row in self.get("barcode_files") or []:
+        for row in self.get("outgoing_files") or []:
             if row.matter:
                 matters.add(row.matter)
-        for matter_name in matters:
-            recalculate_matter_status_from_movements(matter_name)
-
-    def update_incoming_linked_statuses(self):
-        matters = set()
-        for row in self.get("barcode_files") or []:
-            if row.matter:
-                matters.add(row.matter)
-        # Also check matters from original outgoing movement
-        outgoing_name = (self.original_outgoing_movement or self.get("outgoing_movement") or "").strip()
-        if outgoing_name and frappe.db.exists("File Movement", outgoing_name):
-            out_doc = frappe.get_doc("File Movement", outgoing_name)
-            for row in out_doc.get("barcode_files") or []:
-                if row.matter:
-                    matters.add(row.matter)
         for matter_name in matters:
             recalculate_matter_status_from_movements(matter_name)
 
     def restore_outgoing_linked_statuses(self):
         matters = set()
-        for row in self.get("barcode_files") or []:
+        for row in self.get("outgoing_files") or []:
             if row.matter:
                 matters.add(row.matter)
         for matter_name in matters:
@@ -190,51 +138,49 @@ class FileMovement(Document):
 def recalculate_matter_status_from_movements(matter_name):
     """
     Checks whether all cases and files for a Matter have been returned.
-    If there are active unreturned outgoing movements, status is 'Working'.
-    Once all cases and matter files are returned, status is set to 'Open'.
+    If there are active unreturned movements (docstatus=1, status!='Received'),
+    Matter status is set to 'Working'. Once all files are returned, status is 'Open'.
     """
     if not matter_name or not frappe.db.exists("Matter", matter_name):
         return
 
-    # Find all submitted outgoing file movements containing this matter
-    outgoing_rows = frappe.db.sql("""
-        SELECT bfi.name, bfi.parent, bfi.case, bfi.barcode
+    # Find unreturned movements containing this matter in outgoing_files
+    unreturned = frappe.db.sql("""
+        SELECT bfi.name, bfi.`case`, bfi.barcode, fm.name as movement_name
         FROM `tabBarcode File Item` bfi
         INNER JOIN `tabFile Movement` fm ON fm.name = bfi.parent
-        WHERE fm.docstatus = 1 AND fm.movement_type = 'Outgoing' AND bfi.matter = %s
+        WHERE fm.docstatus = 1 
+          AND fm.status != 'Received'
+          AND bfi.parentfield = 'outgoing_files'
+          AND bfi.matter = %s
     """, (matter_name,), as_dict=True)
 
-    if not outgoing_rows:
-        # No active outgoing movements for this matter -> it is Open
+    if not unreturned:
         frappe.db.set_value("Matter", matter_name, "status", "Open")
         return
 
-    # Check for unreturned items
-    unreturned_count = 0
-    for out_row in outgoing_rows:
-        # Check if there is a submitted incoming movement for this outgoing movement where this item is returned
-        returned = frappe.db.sql("""
-            SELECT bfi.name
-            FROM `tabBarcode File Item` bfi
-            INNER JOIN `tabFile Movement` fm ON fm.name = bfi.parent
-            WHERE fm.docstatus = 1 
-              AND fm.movement_type = 'Incoming' 
-              AND fm.original_outgoing_movement = %s
+    has_unreturned = False
+    for out_row in unreturned:
+        # Check if this outgoing item has been added into incoming_files of this movement
+        inc = frappe.db.sql("""
+            SELECT name FROM `tabBarcode File Item`
+            WHERE parent = %s 
+              AND parentfield = 'incoming_files'
               AND (
-                  (bfi.case = %s AND %s != '') OR 
-                  (bfi.barcode = %s AND %s != '') OR 
-                  (bfi.matter = %s)
+                  (`case` = %s AND %s != '') OR 
+                  (barcode = %s AND %s != '') OR 
+                  (matter = %s)
               )
-              AND bfi.returned = 1
-        """, (out_row.parent, out_row.get("case") or "", out_row.get("case") or "", out_row.get("barcode") or "", out_row.get("barcode") or "", matter_name))
+        """, (out_row.movement_name, out_row.get("case") or "", out_row.get("case") or "", out_row.get("barcode") or "", out_row.get("barcode") or "", matter_name))
 
-        if not returned:
-            unreturned_count += 1
+        if not inc:
+            has_unreturned = True
+            break
 
-    if unreturned_count == 0:
-        frappe.db.set_value("Matter", matter_name, "status", "Open")
-    else:
+    if has_unreturned:
         frappe.db.set_value("Matter", matter_name, "status", "Working")
+    else:
+        frappe.db.set_value("Matter", matter_name, "status", "Open")
 
 
 # =========================================================
@@ -348,124 +294,266 @@ def find_case_by_barcode(barcode):
 
 
 # =========================================================
-# INCOMING & MISSING FILES WORKFLOW
+# SINGLE DOCUMENT INCOMING & RETURN WORKFLOW
 # =========================================================
-
-@frappe.whitelist()
-def create_incoming(outgoing_name):
-    outgoing_name = str(outgoing_name or "").strip()
-    if not outgoing_name:
-        frappe.throw("Outgoing movement is required.")
-
-    outgoing = frappe.get_doc("File Movement", outgoing_name)
-
-    if outgoing.docstatus != 1:
-        frappe.throw("Outgoing movement must be submitted first.")
-
-    if outgoing.movement_type != "Outgoing":
-        frappe.throw("The selected movement is not Outgoing.")
-
-    incoming = frappe.new_doc("File Movement")
-    incoming.movement_type = "Incoming"
-    incoming.status = "Open"
-    incoming.giver = outgoing.receiver
-    incoming.receiver = outgoing.giver
-    incoming.original_outgoing_movement = outgoing.name
-
-    # Matter Files table starts EMPTY - user/giver will scan to populate!
-    incoming.set("barcode_files", [])
-
-    # Initially all outgoing files are missing until scanned
-    missing = calculate_missing_files_from_doc(incoming)
-    incoming.set_missing_file_table(missing)
-
-    incoming.insert(ignore_permissions=True)
-    return incoming.name
-
-
-@frappe.whitelist()
-def get_outgoing_movement_items(outgoing_name):
-    outgoing_name = str(outgoing_name or "").strip()
-    if not outgoing_name or not frappe.db.exists("File Movement", outgoing_name):
-        return []
-
-    outgoing = frappe.get_doc("File Movement", outgoing_name)
-    result = []
-    for row in outgoing.get("barcode_files") or []:
-        result.append({
-            "barcode": row.barcode or "",
-            "matter": row.matter or "",
-            "case": row.case or ""
-        })
-    return result
-
 
 def is_item_returned(out_row, incoming_rows):
     """
-    Checks if an item from outgoing movement is present and marked returned in incoming_rows.
+    Checks if an item from outgoing_files is present in incoming_rows.
     """
     out_case = (out_row.get("case") or "").strip()
     out_barcode = (out_row.get("barcode") or "").strip()
     out_matter = (out_row.get("matter") or "").strip()
 
     for inc_row in incoming_rows:
-        inc_returned = inc_row.get("returned")
-        if not inc_returned or inc_returned in [0, "0", False]:
-            continue
-
         inc_case = (inc_row.get("case") or "").strip()
         inc_barcode = (inc_row.get("barcode") or "").strip()
         inc_matter = (inc_row.get("matter") or "").strip()
 
         # 1. Match by case if both have case
-        if out_case and inc_case:
-            if out_case == inc_case:
-                return True
+        if out_case and inc_case and out_case == inc_case:
+            return True
 
         # 2. Match by barcode if both have barcode
-        if out_barcode and inc_barcode:
-            if out_barcode == inc_barcode:
-                return True
+        if out_barcode and inc_barcode and out_barcode == inc_barcode:
+            return True
 
         # 3. Match by matter
-        if out_matter and inc_matter:
-            if out_matter == inc_matter:
-                if not out_case and not inc_case:
-                    return True
-                if out_case and inc_case and out_case == inc_case:
-                    return True
+        if out_matter and inc_matter and out_matter == inc_matter:
+            if not out_case and not inc_case:
+                return True
+            if out_case and inc_case and out_case == inc_case:
+                return True
 
     return False
 
 
 def calculate_missing_files_from_doc(doc):
-    if doc.movement_type == "Outgoing":
-        return []
+    """
+    Compares doc.outgoing_files against doc.incoming_files.
+    Any outgoing item not present in incoming_files is missing.
+    """
+    outgoing = doc.get("outgoing_files") or []
+    incoming = doc.get("incoming_files") or []
 
-    outgoing_name = (doc.original_outgoing_movement or doc.get("outgoing_movement") or "").strip()
-    if outgoing_name and frappe.db.exists("File Movement", outgoing_name):
-        outgoing = frappe.get_doc("File Movement", outgoing_name)
-        incoming_rows = doc.get("barcode_files") or []
-        missing = []
-        for out_row in outgoing.get("barcode_files") or []:
-            if not is_item_returned(out_row, incoming_rows):
-                missing.append({
-                    "barcode": out_row.barcode or "",
-                    "matter": out_row.matter or "",
-                    "case": out_row.case or ""
-                })
-        return missing
-
-    # Fallback if no outgoing movement linked
     missing = []
-    for row in doc.get("barcode_files") or []:
-        if not row.returned:
+    for out_row in outgoing:
+        if not is_item_returned(out_row, incoming):
             missing.append({
-                "barcode": row.barcode or "",
-                "matter": row.matter or "",
-                "case": row.case or ""
+                "barcode": out_row.barcode or "",
+                "matter": out_row.matter or "",
+                "case": out_row.case or ""
             })
     return missing
+
+
+@frappe.whitelist()
+def create_incoming(movement_name):
+    """
+    Activates incoming workflow on the SAME File Movement document:
+    - Sets has_incoming = 1
+    - Initializes incoming_date
+    - Computes missing files (all outgoing items not in incoming_files)
+    - Updates status and persists missing_file_items
+    """
+    movement_name = str(movement_name or "").strip()
+    if not movement_name or not frappe.db.exists("File Movement", movement_name):
+        frappe.throw("File Movement not found.")
+
+    doc = frappe.get_doc("File Movement", movement_name)
+
+    if doc.docstatus != 1:
+        frappe.throw("File Movement must be submitted before creating incoming.")
+
+    doc.has_incoming = 1
+    if not doc.incoming_date:
+        doc.incoming_date = frappe.utils.now_datetime()
+
+    missing = calculate_missing_files_from_doc(doc)
+    doc.set_missing_file_table(missing)
+    doc.status = "Missing Files" if missing else "Received"
+
+    frappe.db.set_value("File Movement", doc.name, {
+        "has_incoming": 1,
+        "incoming_date": doc.incoming_date,
+        "status": doc.status
+    })
+
+    frappe.db.delete("Missing File Items", {"parent": doc.name})
+    for row in doc.missing_file_items:
+        row.parent = doc.name
+        row.parenttype = "File Movement"
+        row.parentfield = "missing_file_items"
+        row.db_insert()
+
+    return {
+        "name": doc.name,
+        "has_incoming": 1,
+        "status": doc.status,
+        "missing_count": len(missing)
+    }
+
+
+@frappe.whitelist()
+def scan_incoming_file(movement_name, value):
+    """
+    Scans a barcode, Case ID, or Matter ID into incoming_files for this movement:
+    - Verifies the item belongs to outgoing_files
+    - Appends to incoming_files
+    - Recalculates missing files and status (Received / Missing Files)
+    - Updates DB and Matter status in real time
+    """
+    movement_name = str(movement_name or "").strip()
+    value = str(value or "").strip()
+
+    if not movement_name or not frappe.db.exists("File Movement", movement_name):
+        frappe.throw("File Movement not found.")
+
+    if not value:
+        frappe.throw("Barcode or ID is required.")
+
+    doc = frappe.get_doc("File Movement", movement_name)
+    if doc.docstatus != 1:
+        frappe.throw("Movement must be submitted before receiving files.")
+
+    outgoing = doc.get("outgoing_files") or []
+    items_to_add = []
+
+    # 1. Check direct matches in outgoing_files by barcode, case, or matter
+    direct_bc = [r for r in outgoing if (r.barcode or "").strip() == value]
+    direct_case = [r for r in outgoing if (r.case or "").strip() == value]
+    direct_matter = [r for r in outgoing if (r.matter or "").strip() == value]
+
+    if direct_bc:
+        for r in direct_bc:
+            items_to_add.append({
+                "matter": r.matter or "",
+                "case": r.case or "",
+                "barcode": r.barcode or value
+            })
+    elif direct_case:
+        for r in direct_case:
+            items_to_add.append({
+                "matter": r.matter or "",
+                "case": r.case,
+                "barcode": r.barcode or ""
+            })
+    elif direct_matter:
+        for r in direct_matter:
+            items_to_add.append({
+                "matter": r.matter,
+                "case": r.case or "",
+                "barcode": r.barcode or ""
+            })
+    else:
+        # 2. Fallback to global resolver
+        info = get_scan_information(value)
+        if not info or info.get("type") == "not_found":
+            return {
+                "status": "error",
+                "message": f"Scanned value '<b>{value}</b>' does not match any existing Matter, Case, or Barcode."
+            }
+
+        if info["type"] == "matter":
+            matter_val = info["matter"]
+            matching_out = [r for r in outgoing if r.matter == matter_val]
+            if not matching_out:
+                return {
+                    "status": "error",
+                    "message": f"Matter '<b>{matter_val}</b>' is not part of Outgoing Files in this movement."
+                }
+            for out_r in matching_out:
+                items_to_add.append({
+                    "matter": out_r.matter,
+                    "case": out_r.case or "",
+                    "barcode": out_r.barcode or ""
+                })
+
+        elif info["type"] == "case":
+            case_val = info["case_name"]
+            matching_out = [r for r in outgoing if r.case == case_val]
+            if not matching_out:
+                return {
+                    "status": "error",
+                    "message": f"Case '<b>{case_val}</b>' is not part of Outgoing Files in this movement."
+                }
+            items_to_add.append({
+                "matter": matching_out[0].matter,
+                "case": case_val,
+                "barcode": matching_out[0].barcode or info.get("barcode") or ""
+            })
+
+        elif info["type"] == "case_file":
+            barcode_val = info["barcode"]
+            matching_out = [r for r in outgoing if r.barcode == barcode_val]
+            if not matching_out:
+                return {
+                    "status": "error",
+                    "message": f"Barcode '<b>{barcode_val}</b>' is not part of Outgoing Files in this movement."
+                }
+            items_to_add.append({
+                "matter": matching_out[0].matter,
+                "case": matching_out[0].case or "",
+                "barcode": barcode_val
+            })
+
+    # Filter out items already in incoming_files
+    incoming = doc.get("incoming_files") or []
+    new_items = []
+    already_scanned = 0
+
+    for item in items_to_add:
+        if is_item_returned(item, incoming):
+            already_scanned += 1
+        else:
+            new_items.append(item)
+
+    if not new_items:
+        return {
+            "status": "warning",
+            "message": f"All matching items for '<b>{value}</b>' are already scanned in Incoming Files."
+        }
+
+    # Insert new items into incoming_files
+    for item in new_items:
+        new_row = doc.append("incoming_files", item)
+        new_row.parent = doc.name
+        new_row.parenttype = "File Movement"
+        new_row.parentfield = "incoming_files"
+        new_row.db_insert()
+
+    # Recalculate remaining missing
+    remaining_missing = calculate_missing_files_from_doc(doc)
+    doc.set_missing_file_table(remaining_missing)
+    doc.status = "Received" if len(remaining_missing) == 0 else "Missing Files"
+    doc.has_incoming = 1
+    if not doc.incoming_date:
+        doc.incoming_date = frappe.utils.now_datetime()
+
+    frappe.db.set_value("File Movement", doc.name, {
+        "status": doc.status,
+        "has_incoming": 1,
+        "incoming_date": doc.incoming_date
+    })
+
+    # Update missing file items in DB
+    frappe.db.delete("Missing File Items", {"parent": doc.name})
+    for row in doc.missing_file_items:
+        row.parent = doc.name
+        row.parenttype = "File Movement"
+        row.parentfield = "missing_file_items"
+        row.db_insert()
+
+    # Update matter statuses
+    doc.update_outgoing_linked_statuses()
+
+    return {
+        "status": "success",
+        "movement_status": doc.status,
+        "added_count": len(new_items),
+        "missing_count": len(remaining_missing),
+        "message": f"Scanned & received {len(new_items)} file(s). Status: <b>{doc.status}</b>."
+    }
 
 
 @frappe.whitelist()
@@ -475,9 +563,6 @@ def get_missing_files(movement_name):
         return []
 
     doc = frappe.get_doc("File Movement", movement_name)
-    if doc.movement_type != "Incoming":
-        frappe.throw("Only Incoming movements can have missing files.")
-
     return calculate_missing_files_from_doc(doc)
 
 
@@ -489,17 +574,18 @@ def return_missing_files(
     selected_matters=None,
     selected_cases=None
 ):
+    """
+    Returns missing files directly into incoming_files of this single document.
+    """
     movement_name = str(movement_name or "").strip()
     if not movement_name:
         frappe.throw("Movement name is required.")
 
     doc = frappe.get_doc("File Movement", movement_name)
-    if doc.movement_type != "Incoming":
-        frappe.throw("Only Incoming movements can return missing files.")
+    if doc.docstatus != 1:
+        frappe.throw("Movement must be submitted first.")
 
     items_to_return = []
-
-    # Parse files arg if passed as json or list
     if isinstance(files, str):
         try:
             files = json.loads(files)
@@ -523,52 +609,66 @@ def return_missing_files(
             items_to_return.append({"case": str(c).strip()})
 
     if not items_to_return:
-        frappe.throw("Please select at least one file or matter to return.")
+        frappe.throw("Please select or scan at least one file to return.")
 
-    # Mark returned or append to barcode_files
+    incoming = doc.get("incoming_files") or []
+    outgoing = doc.get("outgoing_files") or []
+    added_count = 0
+
     for item in items_to_return:
-        target_case = item.get("case") or ""
-        target_barcode = item.get("barcode") or ""
-        target_matter = item.get("matter") or ""
+        t_case = item.get("case") or ""
+        t_barcode = item.get("barcode") or ""
+        t_matter = item.get("matter") or ""
 
-        found = False
-        for row in doc.get("barcode_files") or []:
-            if (target_case and row.case == target_case) or \
-               (target_barcode and row.barcode == target_barcode) or \
-               (target_matter and row.matter == target_matter and not row.case and not target_case):
-                row.returned = 1
-                frappe.db.set_value("Barcode File Item", row.name, "returned", 1)
-                found = True
+        # Match against outgoing files to get full record
+        matched_out = None
+        for out_r in outgoing:
+            if (t_case and out_r.case == t_case) or \
+               (t_barcode and out_r.barcode == t_barcode) or \
+               (t_matter and out_r.matter == t_matter and not t_case and not out_r.case):
+                matched_out = out_r
                 break
 
-        if not found:
-            # Look up case/matter if partial
-            if not target_matter and target_case:
-                target_matter = frappe.db.get_value("Case", target_case, "matter") or ""
-            if not target_case and target_barcode:
-                target_case = find_case_by_barcode(target_barcode) or ""
-                if target_case and not target_matter:
-                    target_matter = frappe.db.get_value("Case", target_case, "matter") or ""
+        if matched_out:
+            if not is_item_returned(matched_out, incoming):
+                new_row = doc.append("incoming_files", {
+                    "barcode": matched_out.barcode or "",
+                    "matter": matched_out.matter or "",
+                    "case": matched_out.case or ""
+                })
+                new_row.parent = doc.name
+                new_row.parenttype = "File Movement"
+                new_row.parentfield = "incoming_files"
+                new_row.db_insert()
+                added_count += 1
+        else:
+            # Direct insert if not strictly matched
+            if not t_matter and t_case:
+                t_matter = frappe.db.get_value("Case", t_case, "matter") or ""
+            if not t_case and t_barcode:
+                t_case = find_case_by_barcode(t_barcode) or ""
+                if t_case and not t_matter:
+                    t_matter = frappe.db.get_value("Case", t_case, "matter") or ""
 
-            new_row = doc.append("barcode_files", {
-                "barcode": target_barcode,
-                "matter": target_matter,
-                "case": target_case,
-                "returned": 1
-            })
-            new_row.parent = doc.name
-            new_row.parenttype = "File Movement"
-            new_row.parentfield = "barcode_files"
-            new_row.db_insert()
+            entry = {"barcode": t_barcode, "matter": t_matter, "case": t_case}
+            if not is_item_returned(entry, incoming):
+                new_row = doc.append("incoming_files", entry)
+                new_row.parent = doc.name
+                new_row.parenttype = "File Movement"
+                new_row.parentfield = "incoming_files"
+                new_row.db_insert()
+                added_count += 1
 
-    # Recalculate remaining missing
     remaining_missing = calculate_missing_files_from_doc(doc)
     doc.set_missing_file_table(remaining_missing)
+    doc.status = "Received" if len(remaining_missing) == 0 else "Missing Files"
+    doc.has_incoming = 1
 
-    doc.status = "Missing Files" if remaining_missing else "Received"
-    frappe.db.set_value("File Movement", doc.name, "status", doc.status)
+    frappe.db.set_value("File Movement", doc.name, {
+        "status": doc.status,
+        "has_incoming": 1
+    })
 
-    # Update missing table in DB
     frappe.db.delete("Missing File Items", {"parent": doc.name})
     for row in doc.missing_file_items:
         row.parent = doc.name
@@ -576,8 +676,7 @@ def return_missing_files(
         row.parentfield = "missing_file_items"
         row.db_insert()
 
-    # Update matter status
-    doc.update_incoming_linked_statuses()
+    doc.update_outgoing_linked_statuses()
 
     return {
         "status": doc.status,

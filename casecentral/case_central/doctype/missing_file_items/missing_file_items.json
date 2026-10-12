@@ -9,19 +9,18 @@
  "field_order": [
   "barcode",
   "matter",
-  "case",
-  "returned"
+  "case"
  ],
  "fields": [
   {
-   "columns": 3,
+   "columns": 4,
    "fieldname": "barcode",
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Barcode"
   },
   {
-   "columns": 3,
+   "columns": 4,
    "fieldname": "matter",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -29,27 +28,19 @@
    "options": "Matter"
   },
   {
-   "columns": 3,
+   "columns": 4,
    "fieldname": "case",
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Case",
    "options": "Case"
-  },
-  {
-   "columns": 1,
-   "default": "0",
-   "fieldname": "returned",
-   "fieldtype": "Check",
-   "in_list_view": 1,
-   "label": "Returned"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-09-05 16:04:00.786893",
+ "modified": "2026-10-06 14:00:00.000000",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "Missing File Items",
