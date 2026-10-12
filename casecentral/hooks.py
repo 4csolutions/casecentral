@@ -106,18 +106,6 @@ fixtures = [
                 ]
             ]
         ]
-    },
-    {
-        "doctype": "Report",
-		"filters" : [
-            [
-                "name",
-                "in",
-                [
-                    "Case Diary"
-                ]
-            ]
-        ]
     }
 ]
 # Includes in <head>
