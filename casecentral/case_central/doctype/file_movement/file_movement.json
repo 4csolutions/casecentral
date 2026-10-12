@@ -8,15 +8,18 @@
  "field_order": [
   "giver",
   "receiver",
-  "scan_barcode",
+  "has_incoming",
   "column_break_1",
   "movement_date",
+  "incoming_date",
   "status",
-  "movement_type",
-  "original_outgoing_movement",
   "amended_from",
-  "section_break_matter_files",
-  "barcode_files",
+  "section_break_outgoing_files",
+  "scan_outgoing_barcode",
+  "outgoing_files",
+  "section_break_incoming_files",
+  "scan_incoming_barcode",
+  "incoming_files",
   "section_break_missing_files",
   "missing_file_items"
  ],
@@ -38,10 +41,11 @@
    "reqd": 1
   },
   {
-   "fieldname": "scan_barcode",
-   "fieldtype": "Data",
-   "label": "Scan Barcode",
-   "options": "Barcode"
+   "default": "0",
+   "fieldname": "has_incoming",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Has Incoming"
   },
   {
    "fieldname": "column_break_1",
@@ -57,30 +61,22 @@
   },
   {
    "allow_on_submit": 1,
+   "depends_on": "eval:doc.has_incoming || (doc.incoming_files && doc.incoming_files.length > 0)",
+   "fieldname": "incoming_date",
+   "fieldtype": "Datetime",
+   "label": "Incoming Date",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
    "default": "Open",
    "fieldname": "status",
    "fieldtype": "Select",
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Status",
-   "options": "Open\nMissing Files\nReceived"
-  },
-  {
-   "fieldname": "movement_type",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Movement Type",
-   "options": "Outgoing\nIncoming",
-   "reqd": 1
-  },
-  {
-   "allow_on_submit": 1,
-   "depends_on": "eval:doc.movement_type=='Incoming'",
-   "fieldname": "original_outgoing_movement",
-   "fieldtype": "Link",
-   "label": "Original Outgoing Movement",
-   "options": "File Movement"
+   "options": "Open\nMissing Files\nReceived",
+   "read_only": 1
   },
   {
    "fieldname": "amended_from",
@@ -93,20 +89,52 @@
    "search_index": 1
   },
   {
-   "fieldname": "section_break_matter_files",
+   "fieldname": "section_break_outgoing_files",
    "fieldtype": "Section Break",
-   "label": "Matter Files"
+   "label": "Outgoing Files"
+  },
+  {
+   "fieldname": "scan_outgoing_barcode",
+   "fieldtype": "Data",
+   "label": "Scan Outgoing Barcode",
+   "options": "Barcode",
+   "read_only_depends_on": "eval:doc.docstatus == 1"
+  },
+  {
+   "allow_on_submit": 0,
+   "fieldname": "outgoing_files",
+   "fieldtype": "Table",
+   "label": "Outgoing Files",
+   "options": "Barcode File Item",
+   "read_only_depends_on": "eval:doc.docstatus == 1",
+   "reqd": 1
+  },
+  {
+   "collapsible": 0,
+   "depends_on": "eval:doc.has_incoming || (doc.incoming_files && doc.incoming_files.length > 0)",
+   "fieldname": "section_break_incoming_files",
+   "fieldtype": "Section Break",
+   "label": "Incoming Files"
   },
   {
    "allow_on_submit": 1,
-   "fieldname": "barcode_files",
+   "depends_on": "eval:doc.has_incoming || (doc.incoming_files && doc.incoming_files.length > 0)",
+   "fieldname": "scan_incoming_barcode",
+   "fieldtype": "Data",
+   "label": "Scan Incoming Barcode",
+   "options": "Barcode"
+  },
+  {
+   "allow_on_submit": 1,
+   "depends_on": "eval:doc.has_incoming || (doc.incoming_files && doc.incoming_files.length > 0)",
+   "fieldname": "incoming_files",
    "fieldtype": "Table",
-   "label": "Matter Files",
+   "label": "Incoming Files",
    "options": "Barcode File Item"
   },
   {
    "collapsible": 1,
-   "depends_on": "eval:doc.status=='Missing Files' || (doc.missing_file_items && doc.missing_file_items.length > 0)",
+   "depends_on": "eval:doc.status == 'Missing Files' || (doc.missing_file_items && doc.missing_file_items.length > 0)",
    "fieldname": "section_break_missing_files",
    "fieldtype": "Section Break",
    "label": "Missing Files"
@@ -124,7 +152,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-10-05 14:00:00.000000",
+ "modified": "2026-10-12 15:00:00.000000",
  "modified_by": "Administrator",
  "module": "Case Central",
  "name": "File Movement",

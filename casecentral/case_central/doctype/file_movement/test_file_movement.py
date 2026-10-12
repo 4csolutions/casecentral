@@ -5,6 +5,7 @@ import frappe
 from frappe.tests.utils import FrappeTestCase
 from casecentral.case_central.doctype.file_movement.file_movement import (
     create_incoming,
+    scan_incoming_file,
     get_missing_files,
     return_missing_files,
     get_scan_information,
@@ -141,9 +142,8 @@ class TestFileMovement(FrappeTestCase):
     # =========================================================
 
     def test_empty_movement_validation(self):
-        """Must fail if barcode_files is empty."""
+        """Must fail if outgoing_files is empty."""
         fm = frappe.new_doc("File Movement")
-        fm.movement_type = "Outgoing"
         fm.giver = self.giver
         fm.receiver = self.receiver
         self.assertRaises(frappe.ValidationError, fm.insert)
@@ -151,20 +151,18 @@ class TestFileMovement(FrappeTestCase):
     def test_same_giver_receiver_validation(self):
         """Same giver and receiver must throw validation error."""
         fm = frappe.new_doc("File Movement")
-        fm.movement_type = "Outgoing"
         fm.giver = self.giver
         fm.receiver = self.giver
-        fm.append("barcode_files", {"barcode": "BC-001", "matter": self.matter_1, "case": self.case_1})
+        fm.append("outgoing_files", {"barcode": "BC-001", "matter": self.matter_1, "case": self.case_1})
         self.assertRaises(frappe.ValidationError, fm.insert)
 
     def test_duplicate_barcode_validation(self):
-        """Duplicate barcode in the same movement must throw validation error."""
+        """Duplicate barcode in the same movement outgoing files must throw validation error."""
         fm = frappe.new_doc("File Movement")
-        fm.movement_type = "Outgoing"
         fm.giver = self.giver
         fm.receiver = self.receiver
-        fm.append("barcode_files", {"barcode": "BC-DUP-01", "matter": self.matter_1, "case": self.case_1})
-        fm.append("barcode_files", {"barcode": "BC-DUP-01", "matter": self.matter_2, "case": self.case_2})
+        fm.append("outgoing_files", {"barcode": "BC-DUP-01", "matter": self.matter_1, "case": self.case_1})
+        fm.append("outgoing_files", {"barcode": "BC-DUP-01", "matter": self.matter_2, "case": self.case_2})
         self.assertRaises(frappe.ValidationError, fm.insert)
 
     def test_nonexistent_matter_scan_rejection(self):
@@ -173,18 +171,18 @@ class TestFileMovement(FrappeTestCase):
         self.assertIsNotNone(res)
         self.assertEqual(res["type"], "not_found")
 
-    def test_outgoing_with_matter_files(self):
-        """Outgoing movement with matter files in barcode_files table."""
+    def test_outgoing_with_files_and_autoname(self):
+        """Outgoing movement creates FM-.#####, sets status to Open and Matter to Working."""
         fm = frappe.new_doc("File Movement")
-        fm.movement_type = "Outgoing"
         fm.giver = self.giver
         fm.receiver = self.receiver
-        fm.append("barcode_files", {
+        fm.append("outgoing_files", {
             "barcode": "BC-001",
             "matter": self.matter_1,
             "case": self.case_1
         })
         fm.insert(ignore_permissions=True)
+        self.assertTrue(fm.name.startswith("FM-"), f"Expected FM- prefix, got {fm.name}")
         self.assertEqual(fm.status, "Open")
         fm.submit()
         self.assertEqual(frappe.db.get_value("Matter", self.matter_1, "status"), "Working")
@@ -209,103 +207,70 @@ class TestFileMovement(FrappeTestCase):
         cases = get_cases_for_matter(self.matter_1)
         self.assertTrue(any(c["name"] == self.case_1 for c in cases))
 
-    def test_full_incoming_workflow_partial_and_full_returns(self):
+    def test_single_doc_incoming_workflow_partial_and_full_returns(self):
         """
-        Complete lifecycle test with single Matter Files table:
-        1. Create Outgoing with 2 items -> Submit
-        2. Create Incoming via create_incoming -> Verify barcode_files is EMPTY and missing_file_items has 2 items
-        3. Partial scan / return (1 item scanned into barcode_files) -> Submit -> Status "Missing Files" & 1 missing item
-        4. Late return of remaining missing file -> Status becomes "Received"
+        Complete Single Document Lifecycle test:
+        1. Create Outgoing with 2 items in outgoing_files -> Submit (status: Open, Matter: Working)
+        2. Call create_incoming on SAME doc -> has_incoming=1, incoming_files empty, 2 missing items
+        3. Scan 1 item into incoming_files via scan_incoming_file -> Status 'Missing Files', 1 missing
+        4. Late return of remaining missing file via return_missing_files -> Status becomes 'Received', Matter: Open
         """
-        # Step 1: Outgoing
-        outgoing = frappe.new_doc("File Movement")
-        outgoing.movement_type = "Outgoing"
-        outgoing.giver = self.giver
-        outgoing.receiver = self.receiver
-        outgoing.append("barcode_files", {
+        # Step 1: Create Outgoing
+        doc = frappe.new_doc("File Movement")
+        doc.giver = self.giver
+        doc.receiver = self.receiver
+        doc.append("outgoing_files", {
             "barcode": "TEST-BC-101",
-            "matter": self.matter_1,
-            "case": self.case_1,
-            "returned": 0
-        })
-        outgoing.append("barcode_files", {
-            "barcode": "TEST-BC-102",
-            "matter": self.matter_2,
-            "case": self.case_2,
-            "returned": 0
-        })
-        outgoing.insert(ignore_permissions=True)
-        outgoing.submit()
-
-        # Step 2: Create Incoming - should start with EMPTY barcode_files
-        incoming_name = create_incoming(outgoing.name)
-        incoming = frappe.get_doc("File Movement", incoming_name)
-        self.assertEqual(incoming.movement_type, "Incoming")
-        self.assertTrue(outgoing.name.startswith("FMO-"), f"Outgoing name should start with FMO-, got {outgoing.name}")
-        self.assertTrue(incoming.name.startswith("FMI-"), f"Incoming name should start with FMI-, got {incoming.name}")
-        self.assertEqual(incoming.name[4:], outgoing.name[4:], f"FMI suffix {incoming.name} should match FMO suffix {outgoing.name}")
-        self.assertEqual(incoming.giver, self.receiver)
-        self.assertEqual(incoming.receiver, self.giver)
-        self.assertEqual(incoming.original_outgoing_movement, outgoing.name)
-        
-        # BARCODE_FILES MUST BE EMPTY INITIALLY
-        self.assertEqual(len(incoming.barcode_files), 0, "Incoming barcode_files should start empty")
-        # All 2 outgoing files should be listed in missing_file_items initially
-        self.assertEqual(len(incoming.missing_file_items), 2, "Incoming missing_file_items should list all 2 outgoing items")
-
-        # Step 3: Partial return - scan 1 item into barcode_files
-        incoming.append("barcode_files", {
-            "barcode": "TEST-BC-101",
-            "matter": self.matter_1,
-            "case": self.case_1,
-            "returned": 1
-        })
-        incoming.save(ignore_permissions=True)
-        incoming.submit()
-
-        self.assertEqual(incoming.status, "Missing Files")
-        self.assertEqual(len(incoming.missing_file_items), 1)
-        self.assertEqual(incoming.missing_file_items[0].case, self.case_2)
-
-        # Step 4: Check get_missing_files
-        missing = get_missing_files(incoming.name)
-        self.assertEqual(len(missing), 1)
-        self.assertEqual(missing[0]["case"], self.case_2)
-
-        # Step 5: Late return of remaining missing file
-        res = return_missing_files(incoming.name, files=[self.case_2])
-        self.assertEqual(res["status"], "Received")
-        self.assertEqual(len(res["missing"]), 0)
-
-        # Verify incoming doc status updated in database
-        incoming.reload()
-        self.assertEqual(incoming.status, "Received")
-        self.assertEqual(len(incoming.missing_file_items), 0)
-        self.assertEqual(len(incoming.barcode_files), 2)
-
-    def test_fmo_and_fmi_matching_id_number(self):
-        """Test that Outgoing movement creates FMO-##### and Incoming creates matching FMI-#####."""
-        outgoing = frappe.new_doc("File Movement")
-        outgoing.movement_type = "Outgoing"
-        outgoing.giver = self.giver
-        outgoing.receiver = self.receiver
-        outgoing.append("barcode_files", {
-            "barcode": "TEST-BC-FMO-01",
             "matter": self.matter_1,
             "case": self.case_1
         })
-        outgoing.insert(ignore_permissions=True)
-        outgoing.submit()
+        doc.append("outgoing_files", {
+            "barcode": "TEST-BC-102",
+            "matter": self.matter_2,
+            "case": self.case_2
+        })
+        doc.insert(ignore_permissions=True)
+        doc.submit()
 
-        self.assertTrue(outgoing.name.startswith("FMO-"), f"Expected FMO- prefix, got {outgoing.name}")
+        self.assertEqual(doc.status, "Open")
+        self.assertEqual(frappe.db.get_value("Matter", self.matter_1, "status"), "Working")
+        self.assertEqual(frappe.db.get_value("Matter", self.matter_2, "status"), "Working")
 
-        # Extract number part
-        num_part = outgoing.name.replace("FMO-", "")
+        # Step 2: Initialize Incoming on the SAME document
+        res_inc = create_incoming(doc.name)
+        self.assertEqual(res_inc["name"], doc.name)
+        self.assertEqual(res_inc["has_incoming"], 1)
+        self.assertEqual(res_inc["status"], "Missing Files")
+        self.assertEqual(res_inc["missing_count"], 2)
 
-        # Create incoming
-        incoming_name = create_incoming(outgoing.name)
-        self.assertEqual(incoming_name, f"FMI-{num_part}", f"Expected FMI-{num_part}, got {incoming_name}")
+        doc.reload()
+        self.assertEqual(len(doc.incoming_files), 0, "Incoming files should start empty")
+        self.assertEqual(len(doc.missing_file_items), 2, "All 2 outgoing items should initially be missing")
 
+        # Step 3: Scan 1 item into incoming_files
+        scan_res = scan_incoming_file(doc.name, "TEST-BC-101")
+        self.assertEqual(scan_res["status"], "success")
+        self.assertEqual(scan_res["movement_status"], "Missing Files")
+        self.assertEqual(scan_res["added_count"], 1)
+        self.assertEqual(scan_res["missing_count"], 1)
+
+        doc.reload()
+        self.assertEqual(len(doc.incoming_files), 1)
+        self.assertEqual(len(doc.missing_file_items), 1)
+        self.assertEqual(doc.missing_file_items[0].case, self.case_2)
+
+        # Step 4: Return remaining item
+        ret_res = return_missing_files(doc.name, files=[self.case_2])
+        self.assertEqual(ret_res["status"], "Received")
+        self.assertEqual(len(ret_res["missing"]), 0)
+
+        # Step 5: Verify document is now Received and Matters are Open
+        doc.reload()
+        self.assertEqual(doc.status, "Received")
+        self.assertEqual(len(doc.missing_file_items), 0)
+        self.assertEqual(len(doc.incoming_files), 2)
+        self.assertEqual(frappe.db.get_value("Matter", self.matter_1, "status"), "Open")
+        self.assertEqual(frappe.db.get_value("Matter", self.matter_2, "status"), "Open")
 
 
 def run_test_suite():
