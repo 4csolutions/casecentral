@@ -6,6 +6,16 @@ from frappe.utils import today, getdate, formatdate
 
 
 class Case(Document):
+    def validate(self):
+        if self.court and self.case_type:
+            case_type_court = frappe.db.get_value("Case Type", self.case_type, "court")
+            if case_type_court and case_type_court != self.court:
+                frappe.throw(
+                    _("Case Type {0} does not belong to Court {1}.").format(
+                        frappe.bold(self.case_type), frappe.bold(self.court)
+                    )
+                )
+
     def on_update(self):
         # Fetch the most recent hearing date from Case History
         case_history = frappe.db.get_all(

@@ -21,6 +21,20 @@ frappe.ui.form.on("Case", {
 				}
 			};
 		});
+
+		frm.set_query("case_type", function () {
+			return {
+				filters: {
+					court: frm.doc.court || "",
+				}
+			};
+		});
+	},
+
+	court: function (frm) {
+		if (frm.doc.case_type) {
+			frm.set_value("case_type", "");
+		}
 	},
 
 	after_save: function (frm) {

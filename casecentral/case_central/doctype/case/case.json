@@ -40,6 +40,8 @@
   "case_details_section",
   "date_of_filing",
   "column_break_bdsk1",
+  "court",
+  "case_type",
   "case_type_abbr",
   "nature_of_case",
   "case_no",
@@ -191,6 +193,18 @@
    "in_standard_filter": 1,
    "label": "Registration Number",
    "read_only": 1
+  },
+  {
+   "fieldname": "court",
+   "fieldtype": "Link",
+   "label": "Court",
+   "options": "Court"
+  },
+  {
+   "fieldname": "case_type",
+   "fieldtype": "Link",
+   "label": "Case Type",
+   "options": "Case Type"
   },
   {
    "fetch_from": "case_type.case_type_abbr",
