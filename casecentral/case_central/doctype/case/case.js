@@ -13,6 +13,16 @@ frappe.ui.form.on("Case", {
 			}
 		});
 
+		frm.set_query("court", function () {
+			if (frm.doc.service) {
+				return {
+					filters: {
+						service: frm.doc.service,
+					}
+				};
+			}
+		});
+
 		frm.set_query("case_stage", function () {
 			return {
 				query: "casecentral.case_central.doctype.case.case.get_case_stage",
