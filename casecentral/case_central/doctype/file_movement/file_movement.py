@@ -253,7 +253,7 @@ def get_cases_for_matter(matter):
     cases = frappe.get_all(
         "Case",
         filters={"matter": matter},
-        fields=["name", "matter"],
+        fields=["name", "matter", "case_title", "status"],
         order_by="name asc"
     )
 
@@ -263,6 +263,8 @@ def get_cases_for_matter(matter):
         result.append({
             "name": c.name,
             "matter": c.matter or matter,
+            "case_title": c.get("case_title") or "",
+            "status": c.get("status") or "",
             "barcode": get_case_barcode(case_doc)
         })
 

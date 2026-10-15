@@ -107,6 +107,9 @@ frappe.ui.form.on("Barcode File Item", {
         // Only auto-expand in outgoing_files when in draft
         if (row.parentfield !== "outgoing_files") return;
 
+        // If a specific case is already selected in this row, don't re-prompt
+        if (row.case) return;
+
         frappe.call({
             method: "casecentral.case_central.doctype.file_movement.file_movement.get_cases_for_matter",
             args: { matter: row.matter },
@@ -135,32 +138,23 @@ frappe.ui.form.on("Barcode File Item", {
                     return;
                 }
 
-                // Populate first case in current row
-                frappe.model.set_value(cdt, cdn, "case", cases[0].name);
-                frappe.model.set_value(cdt, cdn, "barcode", cases[0].barcode || "");
-
-                // If multiple cases exist, add additional rows
-                if (cases.length > 1) {
-                    for (var i = 1; i < cases.length; i++) {
-                        var c = cases[i];
-                        var exists = (frm.doc.outgoing_files || []).some(function (item) {
-                            return item.matter === (c.matter || row.matter) && item.case === c.name;
-                        });
-
-                        if (!exists) {
-                            var new_row = frm.add_child("outgoing_files");
-                            new_row.matter = c.matter || row.matter;
-                            new_row.case = c.name || "";
-                            new_row.barcode = c.barcode || "";
+                if (cases.length === 1) {
+                    // Populate single case directly
+                    frappe.model.set_value(cdt, cdn, "case", cases[0].name);
+                    frappe.model.set_value(cdt, cdn, "barcode", cases[0].barcode || "");
+                    frappe.show_alert({
+                        message: __("Added Case {0} for Matter {1}.", [cases[0].name, row.matter]),
+                        indicator: "green"
+                    });
+                } else {
+                    // Multiple cases exist -> Show selection dialog so user can pick which cases to take
+                    show_case_selection_dialog(frm, row.matter, cases, row, function () {
+                        if (!row.case) {
+                            frappe.model.set_value(cdt, cdn, "matter", "");
+                            frappe.model.set_value(cdt, cdn, "barcode", "");
                         }
-                    }
-                    frm.refresh_field("outgoing_files");
+                    });
                 }
-
-                frappe.show_alert({
-                    message: __("{0} Case(s) added for Matter {1}.", [cases.length, row.matter]),
-                    indicator: "green"
-                });
             },
             error: function () {
                 frappe.model.set_value(cdt, cdn, "matter", "");
@@ -238,7 +232,6 @@ function process_outgoing_scan(frm, code) {
             }
 
             if (data.type === "matter") {
-                var added_count = 0;
                 var cases = data.cases || [];
 
                 if (cases.length === 0) {
@@ -248,34 +241,41 @@ function process_outgoing_scan(frm, code) {
                     if (!exists) {
                         var row = frm.add_child("outgoing_files");
                         row.matter = data.matter;
-                        added_count++;
+                        frm.refresh_field("outgoing_files");
+                        frappe.show_alert({
+                            message: __("Added Matter <b>{0}</b> (No linked Cases found).", [data.matter]),
+                            indicator: "blue"
+                        });
+                    } else {
+                        frappe.show_alert({
+                            message: __("Matter <b>{0}</b> is already in Outgoing Files.", [data.matter]),
+                            indicator: "orange"
+                        });
+                    }
+                } else if (cases.length === 1) {
+                    var c = cases[0];
+                    var exists = (frm.doc.outgoing_files || []).some(function (item) {
+                        return item.case === c.name;
+                    });
+                    if (!exists) {
+                        var row = frm.add_child("outgoing_files");
+                        row.matter = c.matter || data.matter;
+                        row.case = c.name || "";
+                        row.barcode = c.barcode || "";
+                        frm.refresh_field("outgoing_files");
+                        frappe.show_alert({
+                            message: __("Added Case <b>{0}</b> for Matter <b>{1}</b>.", [c.name, data.matter]),
+                            indicator: "green"
+                        });
+                    } else {
+                        frappe.show_alert({
+                            message: __("Case <b>{0}</b> is already in Outgoing Files.", [c.name]),
+                            indicator: "orange"
+                        });
                     }
                 } else {
-                    cases.forEach(function (c) {
-                        var exists = (frm.doc.outgoing_files || []).some(function (item) {
-                            return item.matter === (c.matter || data.matter) && item.case === c.name;
-                        });
-                        if (!exists) {
-                            var row = frm.add_child("outgoing_files");
-                            row.matter = c.matter || data.matter;
-                            row.case = c.name || "";
-                            row.barcode = c.barcode || "";
-                            added_count++;
-                        }
-                    });
-                }
-
-                frm.refresh_field("outgoing_files");
-                if (added_count > 0) {
-                    frappe.show_alert({
-                        message: __("Added Matter <b>{0}</b> ({1} Case(s)).", [data.matter, added_count]),
-                        indicator: "green"
-                    });
-                } else {
-                    frappe.show_alert({
-                        message: __("Matter <b>{0}</b> is already in Outgoing Files.", [data.matter]),
-                        indicator: "orange"
-                    });
+                    // Multiple cases exist -> Show selection modal
+                    show_case_selection_dialog(frm, data.matter, cases, null, null);
                 }
 
             } else if (data.type === "case") {
@@ -325,6 +325,230 @@ function process_outgoing_scan(frm, code) {
                 });
             }
         }
+    });
+}
+
+
+// =========================================================
+// MULTI-CASE SELECTION DIALOG (WHEN MATTER HAS MULTIPLE CASES)
+// =========================================================
+
+function show_case_selection_dialog(frm, matter, cases, target_row, on_cancel) {
+    cases = cases || [];
+    var existing_cases = new Set(
+        (frm.doc.outgoing_files || [])
+            .map(function (item) { return (item.case || "").trim(); })
+            .filter(Boolean)
+    );
+
+    if (target_row && target_row.case) {
+        existing_cases.delete(target_row.case.trim());
+    }
+
+    var available_count = cases.filter(function (c) {
+        return !existing_cases.has(c.name);
+    }).length;
+
+    if (available_count === 0) {
+        frappe.msgprint({
+            title: __("Cases Already Added"),
+            indicator: "orange",
+            message: __("All {0} case(s) for Matter <b>{1}</b> are already in Outgoing Files.", [cases.length, frappe.utils.escape_html(matter)])
+        });
+        if (on_cancel) on_cancel();
+        return;
+    }
+
+    var rows_html = "";
+    cases.forEach(function (c) {
+        var is_added = existing_cases.has(c.name);
+        var barcode_label = c.barcode ? `<span class="badge badge-light" style="font-family: monospace; font-size: 11px; margin-left: 6px; padding: 2px 6px; border: 1px solid var(--border-color);">${frappe.utils.escape_html(c.barcode)}</span>` : "";
+        var status_badge = c.status ? `<span class="badge badge-secondary" style="font-size: 11px;">${frappe.utils.escape_html(c.status)}</span>` : "";
+        var disabled_attr = is_added ? "disabled" : "";
+        var row_style = is_added
+            ? "display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; margin-bottom: 6px; border: 1px solid var(--border-color); border-radius: 6px; opacity: 0.6; background: var(--bg-light-gray, #f9f9f9);"
+            : "display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; margin-bottom: 6px; border: 1px solid var(--border-color); border-radius: 6px; cursor: pointer; background: var(--card-bg, #fff); transition: background 0.15s ease;";
+        var already_added_note = is_added ? `<span class="badge badge-warning" style="margin-left: 6px; font-size: 10px;">${__("Already in Outgoing Files")}</span>` : "";
+        var title_html = c.case_title ? `<div class="text-muted" style="font-size: 12px; margin-top: 3px;">${frappe.utils.escape_html(c.case_title)}</div>` : "";
+        var search_meta = ((c.name || "") + " " + (c.barcode || "") + " " + (c.case_title || "") + " " + (c.status || "")).toLowerCase();
+
+        rows_html += `
+            <div class="case-item-card" data-case-name="${frappe.utils.escape_html(c.name)}" data-search="${frappe.utils.escape_html(search_meta)}" style="${row_style}">
+                <div style="display: flex; align-items: flex-start; gap: 12px; flex: 1;">
+                    <input type="checkbox" class="case-select-checkbox" data-case-name="${frappe.utils.escape_html(c.name)}" ${disabled_attr} style="margin-top: 3px; cursor: pointer; transform: scale(1.15);">
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 4px;">
+                            <strong style="font-size: 13px; color: var(--text-color);">${frappe.utils.escape_html(c.name)}</strong>
+                            ${barcode_label}
+                            ${already_added_note}
+                        </div>
+                        ${title_html}
+                    </div>
+                </div>
+                <div style="margin-left: 12px; text-align: right;">
+                    ${status_badge}
+                </div>
+            </div>
+        `;
+    });
+
+    var dialog_content = `
+        <div class="matter-case-selector-container">
+            <div style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <div class="text-muted" style="font-size: 13px;">
+                    Matter <b class="text-primary">${frappe.utils.escape_html(matter)}</b> has <b>${cases.length}</b> cases. Select the case(s) you want to take:
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button type="button" class="btn btn-xs btn-default btn-select-all" style="font-size: 11px;">${__("Select All")}</button>
+                    <button type="button" class="btn btn-xs btn-default btn-clear-all" style="font-size: 11px;">${__("Clear All")}</button>
+                    <span class="badge badge-info case-selected-counter" style="font-size: 11px; padding: 4px 8px;">0 of ${available_count} selected</span>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 10px;">
+                <input type="text" class="form-control form-control-sm case-filter-input" placeholder="${__("Type to filter cases by ID, barcode, title, or status...")}">
+            </div>
+
+            <div class="case-list-scrollable" style="max-height: 320px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 6px; padding: 6px; background: var(--control-bg, #fafafa);">
+                ${rows_html}
+            </div>
+        </div>
+    `;
+
+    var dialog = new frappe.ui.Dialog({
+        title: __("Select Cases to Take — Matter {0}", [matter]),
+        fields: [
+            {
+                fieldtype: "HTML",
+                fieldname: "cases_html",
+                options: dialog_content
+            }
+        ],
+        primary_action_label: __("Add Selected Cases"),
+        primary_action: function () {
+            var selected = [];
+            dialog.$wrapper.find(".case-select-checkbox:checked").each(function () {
+                var c_name = $(this).data("case-name");
+                var match = cases.find(function (c) { return c.name === c_name; });
+                if (match) {
+                    selected.push(match);
+                }
+            });
+
+            if (!selected.length) {
+                frappe.msgprint({
+                    title: __("No Cases Selected"),
+                    indicator: "orange",
+                    message: __("Please select at least one case to take, or click Cancel.")
+                });
+                return;
+            }
+
+            dialog._completed = true;
+            add_selected_cases_to_outgoing(frm, matter, selected, target_row);
+            dialog.hide();
+        }
+    });
+
+    function update_counter() {
+        var count = dialog.$wrapper.find(".case-select-checkbox:checked").length;
+        dialog.$wrapper.find(".case-selected-counter").text(`${count} of ${available_count} selected`);
+        if (count > 0) {
+            dialog.set_primary_action_label(__("Add Selected ({0})", [count]));
+        } else {
+            dialog.set_primary_action_label(__("Add Selected Cases"));
+        }
+    }
+
+    dialog.on_page_show = function () {
+        var $wrapper = dialog.$wrapper;
+
+        $wrapper.on("click", ".case-item-card", function (e) {
+            if ($(e.target).is("input[type='checkbox']")) {
+                update_counter();
+                return;
+            }
+            var $cb = $(this).find(".case-select-checkbox");
+            if (!$cb.prop("disabled")) {
+                $cb.prop("checked", !$cb.prop("checked"));
+                update_counter();
+            }
+        });
+
+        $wrapper.on("input", ".case-filter-input", function () {
+            var q = ($(this).val() || "").toLowerCase().trim();
+            $wrapper.find(".case-item-card").each(function () {
+                var text = $(this).data("search") || "";
+                if (!q || text.indexOf(q) !== -1) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+
+        $wrapper.on("click", ".btn-select-all", function () {
+            $wrapper.find(".case-item-card:visible .case-select-checkbox:not(:disabled)").prop("checked", true);
+            update_counter();
+        });
+
+        $wrapper.on("click", ".btn-clear-all", function () {
+            $wrapper.find(".case-select-checkbox:not(:disabled)").prop("checked", false);
+            update_counter();
+        });
+
+        update_counter();
+    };
+
+    dialog.onhide = function () {
+        if (!dialog._completed && on_cancel) {
+            on_cancel();
+        }
+    };
+
+    dialog.show();
+}
+
+function add_selected_cases_to_outgoing(frm, matter, selected_cases, target_row) {
+    if (!selected_cases || !selected_cases.length) return;
+
+    var start_idx = 0;
+    if (target_row) {
+        var first = selected_cases[0];
+        frappe.model.set_value(target_row.doctype, target_row.name, "matter", matter);
+        frappe.model.set_value(target_row.doctype, target_row.name, "case", first.name);
+        frappe.model.set_value(target_row.doctype, target_row.name, "barcode", first.barcode || "");
+        start_idx = 1;
+    } else {
+        var blank_row = (frm.doc.outgoing_files || []).find(function (r) {
+            return !r.matter && !r.case && !r.barcode;
+        });
+        if (blank_row) {
+            var first = selected_cases[0];
+            blank_row.matter = matter;
+            blank_row.case = first.name;
+            blank_row.barcode = first.barcode || "";
+            start_idx = 1;
+        }
+    }
+
+    for (var i = start_idx; i < selected_cases.length; i++) {
+        var c = selected_cases[i];
+        var exists = (frm.doc.outgoing_files || []).some(function (item) {
+            return item.case === c.name;
+        });
+        if (!exists) {
+            var new_row = frm.add_child("outgoing_files");
+            new_row.matter = matter;
+            new_row.case = c.name;
+            new_row.barcode = c.barcode || "";
+        }
+    }
+
+    frm.refresh_field("outgoing_files");
+    frappe.show_alert({
+        message: __("Added {0} Case(s) for Matter <b>{1}</b> to Outgoing Files.", [selected_cases.length, frappe.utils.escape_html(matter)]),
+        indicator: "green"
     });
 }
 
