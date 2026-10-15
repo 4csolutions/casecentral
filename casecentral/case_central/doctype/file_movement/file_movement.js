@@ -554,6 +554,163 @@ function add_selected_cases_to_outgoing(frm, matter, selected_cases, target_row)
 
 
 // =========================================================
+// RETURN CASE SELECTION DIALOG (WHEN MATTER HAS MULTIPLE MISSING CASES)
+// =========================================================
+
+function show_return_case_selection_dialog(matter, cases, on_select, on_cancel) {
+    cases = cases || [];
+    if (!cases.length) {
+        if (on_cancel) on_cancel();
+        return;
+    }
+
+    var available_count = cases.length;
+
+    var rows_html = "";
+    cases.forEach(function (c) {
+        var barcode_label = c.barcode ? `<span class="badge badge-light" style="font-family: monospace; font-size: 11px; margin-left: 6px; padding: 2px 6px; border: 1px solid var(--border-color);">${frappe.utils.escape_html(c.barcode)}</span>` : "";
+        var status_badge = c.status ? `<span class="badge badge-secondary" style="font-size: 11px;">${frappe.utils.escape_html(c.status)}</span>` : "";
+        var title_html = c.case_title ? `<div class="text-muted" style="font-size: 12px; margin-top: 3px;">${frappe.utils.escape_html(c.case_title)}</div>` : "";
+        var search_meta = ((c.case || "") + " " + (c.barcode || "") + " " + (c.case_title || "") + " " + (c.status || "")).toLowerCase();
+
+        rows_html += `
+            <div class="return-case-item-card" data-case-name="${frappe.utils.escape_html(c.case || '')}" data-search="${frappe.utils.escape_html(search_meta)}" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; margin-bottom: 6px; border: 1px solid var(--border-color); border-radius: 6px; cursor: pointer; background: var(--card-bg, #fff); transition: background 0.15s ease;">
+                <div style="display: flex; align-items: flex-start; gap: 12px; flex: 1;">
+                    <input type="checkbox" class="return-case-select-checkbox" data-case-name="${frappe.utils.escape_html(c.case || '')}" style="margin-top: 3px; cursor: pointer; transform: scale(1.15);">
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 4px;">
+                            <strong style="font-size: 13px; color: var(--text-color);">${frappe.utils.escape_html(c.case || c.barcode || '')}</strong>
+                            ${barcode_label}
+                        </div>
+                        ${title_html}
+                    </div>
+                </div>
+                <div style="margin-left: 12px; text-align: right;">
+                    ${status_badge}
+                </div>
+            </div>
+        `;
+    });
+
+    var dialog_content = `
+        <div class="return-matter-case-selector-container">
+            <div style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <div class="text-muted" style="font-size: 13px;">
+                    Matter <b class="text-primary">${frappe.utils.escape_html(matter)}</b> has <b>${cases.length}</b> unreturned file(s). Select which case file(s) are being returned:
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button type="button" class="btn btn-xs btn-default btn-return-select-all" style="font-size: 11px;">${__("Select All")}</button>
+                    <button type="button" class="btn btn-xs btn-default btn-return-clear-all" style="font-size: 11px;">${__("Clear All")}</button>
+                    <span class="badge badge-info return-case-selected-counter" style="font-size: 11px; padding: 4px 8px;">0 of ${available_count} selected</span>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 10px;">
+                <input type="text" class="form-control form-control-sm return-case-filter-input" placeholder="${__("Type to filter cases by ID, barcode, title, or status...")}">
+            </div>
+
+            <div class="case-list-scrollable" style="max-height: 300px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 6px; padding: 6px; background: var(--control-bg, #fafafa);">
+                ${rows_html}
+            </div>
+        </div>
+    `;
+
+    var dialog = new frappe.ui.Dialog({
+        title: __("Select Case File to Return — Matter {0}", [matter]),
+        fields: [
+            {
+                fieldtype: "HTML",
+                fieldname: "cases_html",
+                options: dialog_content
+            }
+        ],
+        primary_action_label: __("Return Selected File(s)"),
+        primary_action: function () {
+            var selected = [];
+            dialog.$wrapper.find(".return-case-select-checkbox:checked").each(function () {
+                var c_name = $(this).data("case-name");
+                var match = cases.find(function (c) { return (c.case || "") === c_name; });
+                if (match) {
+                    selected.push(match);
+                }
+            });
+
+            if (!selected.length) {
+                frappe.msgprint({
+                    title: __("No Cases Selected"),
+                    indicator: "orange",
+                    message: __("Please select at least one case file to return, or click Cancel.")
+                });
+                return;
+            }
+
+            dialog._completed = true;
+            dialog.hide();
+            if (on_select) on_select(selected);
+        }
+    });
+
+    function update_counter() {
+        var count = dialog.$wrapper.find(".return-case-select-checkbox:checked").length;
+        dialog.$wrapper.find(".return-case-selected-counter").text(`${count} of ${available_count} selected`);
+        if (count > 0) {
+            dialog.set_primary_action_label(__("Return Selected ({0})", [count]));
+        } else {
+            dialog.set_primary_action_label(__("Return Selected File(s)"));
+        }
+    }
+
+    dialog.on_page_show = function () {
+        var $wrapper = dialog.$wrapper;
+
+        $wrapper.on("click", ".return-case-item-card", function (e) {
+            if ($(e.target).is("input[type='checkbox']")) {
+                update_counter();
+                return;
+            }
+            var $cb = $(this).find(".return-case-select-checkbox");
+            if (!$cb.prop("disabled")) {
+                $cb.prop("checked", !$cb.prop("checked"));
+                update_counter();
+            }
+        });
+
+        $wrapper.on("input", ".return-case-filter-input", function () {
+            var q = ($(this).val() || "").toLowerCase().trim();
+            $wrapper.find(".return-case-item-card").each(function () {
+                var text = $(this).data("search") || "";
+                if (!q || text.indexOf(q) !== -1) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+
+        $wrapper.on("click", ".btn-return-select-all", function () {
+            $wrapper.find(".return-case-item-card:visible .return-case-select-checkbox").prop("checked", true);
+            update_counter();
+        });
+
+        $wrapper.on("click", ".btn-return-clear-all", function () {
+            $wrapper.find(".return-case-select-checkbox").prop("checked", false);
+            update_counter();
+        });
+
+        update_counter();
+    };
+
+    dialog.onhide = function () {
+        if (!dialog._completed && on_cancel) {
+            on_cancel();
+        }
+    };
+
+    dialog.show();
+}
+
+
+// =========================================================
 // SCAN INCOMING BARCODE (SUBMITTED INCOMING SECTION)
 // =========================================================
 
@@ -602,6 +759,31 @@ function process_incoming_scan(frm, code) {
                 frappe.show_alert({
                     message: res.message,
                     indicator: "orange"
+                });
+            } else if (res.status === "multiple_cases") {
+                // Matter has multiple unreturned files -> Prompt user to select which one(s) to return
+                show_return_case_selection_dialog(res.matter, res.cases, function (selected_cases) {
+                    frappe.call({
+                        method: "casecentral.case_central.doctype.file_movement.file_movement.return_missing_files",
+                        args: {
+                            movement_name: frm.doc.name,
+                            files: JSON.stringify(selected_cases)
+                        },
+                        freeze: true,
+                        freeze_message: __("Returning selected case file(s)..."),
+                        callback: function (resp) {
+                            if (resp.message) {
+                                var ret_res = resp.message;
+                                frappe.show_alert({
+                                    message: ret_res.status === "Received"
+                                        ? __("All missing files returned! Movement marked as Received.")
+                                        : __("Returned {0} case file(s) for Matter <b>{1}</b>.", [selected_cases.length, frappe.utils.escape_html(res.matter)]),
+                                    indicator: ret_res.status === "Received" ? "green" : "blue"
+                                });
+                                frm.reload_doc();
+                            }
+                        }
+                    });
                 });
             } else if (res.status === "success") {
                 frappe.show_alert({
@@ -686,6 +868,8 @@ function show_return_missing_modal(frm, missing_files) {
             barcode: item.barcode || "",
             matter: item.matter || "",
             case: item.case || "",
+            case_title: item.case_title || "",
+            status: item.status || "",
             scanned: false
         };
     });
@@ -757,9 +941,63 @@ function show_return_missing_modal(frm, missing_files) {
         if (!code) return;
         code = code.trim();
 
+        // 1. Check if scanned code matches a Matter in missing items
+        var matter_matches = items_state.filter(function (item) {
+            return (item.matter || "").trim().toLowerCase() === code.toLowerCase();
+        });
+
+        if (matter_matches.length > 0) {
+            var unscanned = matter_matches.filter(function (item) { return !item.scanned; });
+            if (unscanned.length === 0) {
+                frappe.show_alert({
+                    message: __("All files for Matter <b>{0}</b> are already marked for return.", [code]),
+                    indicator: "orange"
+                });
+                dialog.set_value("quick_scan", "");
+                return;
+            }
+
+            if (unscanned.length === 1) {
+                unscanned[0].scanned = true;
+                update_table_view();
+                frappe.show_alert({
+                    message: __("Scanned & verified file for Matter <b>{0}</b>.", [code]),
+                    indicator: "green"
+                });
+                dialog.set_value("quick_scan", "");
+                setTimeout(function () {
+                    dialog.fields_dict.quick_scan?.$input?.focus();
+                }, 100);
+                return;
+            }
+
+            // Multiple unreturned files for this matter -> prompt selection dialog!
+            show_return_case_selection_dialog(matter_matches[0].matter, unscanned, function (selected_cases) {
+                selected_cases.forEach(function (sel) {
+                    var target = items_state.find(function (item) {
+                        return item.matter === sel.matter && item.case === sel.case;
+                    });
+                    if (target) {
+                        target.scanned = true;
+                    }
+                });
+                update_table_view();
+                frappe.show_alert({
+                    message: __("Verified {0} file(s) for Matter <b>{1}</b>.", [selected_cases.length, code]),
+                    indicator: "green"
+                });
+                dialog.set_value("quick_scan", "");
+                setTimeout(function () {
+                    dialog.fields_dict.quick_scan?.$input?.focus();
+                }, 100);
+            });
+            return;
+        }
+
+        // 2. Direct match by barcode or case
         var matched_count = 0;
         items_state.forEach(function (item) {
-            if (item.barcode === code || item.case === code || item.matter === code) {
+            if (item.barcode === code || item.case === code) {
                 item.scanned = true;
                 matched_count++;
             }
@@ -781,14 +1019,55 @@ function show_return_missing_modal(frm, missing_files) {
                 args: { value: code },
                 callback: function (r) {
                     var data = r.message;
-                    var api_matched = 0;
+                    if (!data || data.type === "not_found") {
+                        frappe.show_alert({
+                            message: __("Code <b>{0}</b> is not in the missing files list for this movement.", [code]),
+                            indicator: "orange"
+                        });
+                        dialog.set_value("quick_scan", "");
+                        setTimeout(function () {
+                            dialog.fields_dict.quick_scan?.$input?.focus();
+                        }, 100);
+                        return;
+                    }
 
-                    if (data && data.type !== "not_found") {
+                    if (data.type === "matter") {
+                        var m_unscanned = items_state.filter(function (item) {
+                            return item.matter === data.matter && !item.scanned;
+                        });
+                        if (m_unscanned.length === 0) {
+                            frappe.show_alert({
+                                message: __("All files for Matter <b>{0}</b> are already marked for return.", [data.matter]),
+                                indicator: "orange"
+                            });
+                        } else if (m_unscanned.length === 1) {
+                            m_unscanned[0].scanned = true;
+                            update_table_view();
+                            frappe.show_alert({
+                                message: __("Scanned & verified file for Matter <b>{0}</b>.", [data.matter]),
+                                indicator: "green"
+                            });
+                        } else {
+                            show_return_case_selection_dialog(data.matter, m_unscanned, function (selected_cases) {
+                                selected_cases.forEach(function (sel) {
+                                    var target = items_state.find(function (item) {
+                                        return item.matter === sel.matter && item.case === sel.case;
+                                    });
+                                    if (target) {
+                                        target.scanned = true;
+                                    }
+                                });
+                                update_table_view();
+                                frappe.show_alert({
+                                    message: __("Marked {0} file(s) for Matter <b>{1}</b> as returned.", [selected_cases.length, data.matter]),
+                                    indicator: "green"
+                                });
+                            });
+                        }
+                    } else {
+                        var api_matched = 0;
                         items_state.forEach(function (item) {
-                            if (data.type === "matter" && item.matter === data.matter) {
-                                item.scanned = true;
-                                api_matched++;
-                            } else if (data.type === "case" && item.case === data.case_name) {
+                            if (data.type === "case" && item.case === data.case_name) {
                                 item.scanned = true;
                                 api_matched++;
                             } else if (data.barcode && item.barcode === data.barcode) {
@@ -796,20 +1075,21 @@ function show_return_missing_modal(frm, missing_files) {
                                 api_matched++;
                             }
                         });
+
+                        if (api_matched > 0) {
+                            update_table_view();
+                            frappe.show_alert({
+                                message: __("Scanned & verified: <b>{0}</b> ({1} item(s)).", [code, api_matched]),
+                                indicator: "green"
+                            });
+                        } else {
+                            frappe.show_alert({
+                                message: __("Code <b>{0}</b> is not in the missing files list for this movement.", [code]),
+                                indicator: "orange"
+                            });
+                        }
                     }
 
-                    if (api_matched > 0) {
-                        update_table_view();
-                        frappe.show_alert({
-                            message: __("Scanned & verified: <b>{0}</b> ({1} item(s)).", [code, api_matched]),
-                            indicator: "green"
-                        });
-                    } else {
-                        frappe.show_alert({
-                            message: __("Code <b>{0}</b> is not in the missing files list for this movement.", [code]),
-                            indicator: "orange"
-                        });
-                    }
                     dialog.set_value("quick_scan", "");
                     setTimeout(function () {
                         dialog.fields_dict.quick_scan?.$input?.focus();

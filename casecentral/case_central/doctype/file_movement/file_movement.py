@@ -341,10 +341,17 @@ def calculate_missing_files_from_doc(doc):
     missing = []
     for out_row in outgoing:
         if not is_item_returned(out_row, incoming):
+            case_title = ""
+            case_status = ""
+            if out_row.case:
+                case_title = frappe.db.get_value("Case", out_row.case, "case_title") or ""
+                case_status = frappe.db.get_value("Case", out_row.case, "status") or ""
             missing.append({
                 "barcode": out_row.barcode or "",
                 "matter": out_row.matter or "",
-                "case": out_row.case or ""
+                "case": out_row.case or "",
+                "case_title": case_title,
+                "status": case_status
             })
     return missing
 
@@ -419,88 +426,112 @@ def scan_incoming_file(movement_name, value):
         frappe.throw("Movement must be submitted before receiving files.")
 
     outgoing = doc.get("outgoing_files") or []
+    incoming = doc.get("incoming_files") or []
     items_to_add = []
 
-    # 1. Check direct matches in outgoing_files by barcode, case, or matter
-    direct_bc = [r for r in outgoing if (r.barcode or "").strip() == value]
-    direct_case = [r for r in outgoing if (r.case or "").strip() == value]
-    direct_matter = [r for r in outgoing if (r.matter or "").strip() == value]
-
-    if direct_bc:
-        for r in direct_bc:
-            items_to_add.append({
-                "matter": r.matter or "",
-                "case": r.case or "",
-                "barcode": r.barcode or value
-            })
-    elif direct_case:
-        for r in direct_case:
-            items_to_add.append({
-                "matter": r.matter or "",
-                "case": r.case,
-                "barcode": r.barcode or ""
-            })
-    elif direct_matter:
-        for r in direct_matter:
-            items_to_add.append({
-                "matter": r.matter,
-                "case": r.case or "",
-                "barcode": r.barcode or ""
-            })
+    # 1. Check if value matches Matter (directly in outgoing_files or globally)
+    matter_val = None
+    if any((r.matter or "").strip() == value for r in outgoing):
+        matter_val = value
     else:
-        # 2. Fallback to global resolver
         info = get_scan_information(value)
-        if not info or info.get("type") == "not_found":
+        if info and info.get("type") == "matter":
+            if any((r.matter or "").strip() == info.get("matter") for r in outgoing):
+                matter_val = info.get("matter")
+
+    if matter_val:
+        matching_out = [r for r in outgoing if (r.matter or "").strip() == matter_val]
+        unreturned = [r for r in matching_out if not is_item_returned(r, incoming)]
+        if not unreturned:
             return {
-                "status": "error",
-                "message": f"Scanned value '<b>{value}</b>' does not match any existing Matter, Case, or Barcode."
+                "status": "warning",
+                "message": f"All files for Matter <b>{matter_val}</b> have already been returned."
             }
 
-        if info["type"] == "matter":
-            matter_val = info["matter"]
-            matching_out = [r for r in outgoing if r.matter == matter_val]
-            if not matching_out:
+        if len(unreturned) > 1:
+            cases_payload = []
+            for r in unreturned:
+                case_title = ""
+                case_status = ""
+                if r.case:
+                    case_title = frappe.db.get_value("Case", r.case, "case_title") or ""
+                    case_status = frappe.db.get_value("Case", r.case, "status") or ""
+                cases_payload.append({
+                    "case": r.case or "",
+                    "matter": r.matter or matter_val,
+                    "barcode": r.barcode or "",
+                    "case_title": case_title,
+                    "status": case_status
+                })
+            return {
+                "status": "multiple_cases",
+                "matter": matter_val,
+                "cases": cases_payload,
+                "message": f"Matter <b>{matter_val}</b> has {len(unreturned)} unreturned files. Select which case file is being returned."
+            }
+        else:
+            items_to_add.append({
+                "matter": unreturned[0].matter,
+                "case": unreturned[0].case or "",
+                "barcode": unreturned[0].barcode or ""
+            })
+    else:
+        # 2. Check direct matches in outgoing_files by barcode or case
+        direct_bc = [r for r in outgoing if (r.barcode or "").strip() == value]
+        direct_case = [r for r in outgoing if (r.case or "").strip() == value]
+
+        if direct_bc:
+            for r in direct_bc:
+                items_to_add.append({
+                    "matter": r.matter or "",
+                    "case": r.case or "",
+                    "barcode": r.barcode or value
+                })
+        elif direct_case:
+            for r in direct_case:
+                items_to_add.append({
+                    "matter": r.matter or "",
+                    "case": r.case,
+                    "barcode": r.barcode or ""
+                })
+        else:
+            # 3. Fallback to global resolver
+            info = get_scan_information(value)
+            if not info or info.get("type") == "not_found":
                 return {
                     "status": "error",
-                    "message": f"Matter '<b>{matter_val}</b>' is not part of Outgoing Files in this movement."
+                    "message": f"Scanned value '<b>{value}</b>' does not match any existing Matter, Case, or Barcode."
                 }
-            for out_r in matching_out:
+
+            if info["type"] == "case":
+                case_val = info["case_name"]
+                matching_out = [r for r in outgoing if r.case == case_val]
+                if not matching_out:
+                    return {
+                        "status": "error",
+                        "message": f"Case '<b>{case_val}</b>' is not part of Outgoing Files in this movement."
+                    }
                 items_to_add.append({
-                    "matter": out_r.matter,
-                    "case": out_r.case or "",
-                    "barcode": out_r.barcode or ""
+                    "matter": matching_out[0].matter,
+                    "case": case_val,
+                    "barcode": matching_out[0].barcode or info.get("barcode") or ""
                 })
 
-        elif info["type"] == "case":
-            case_val = info["case_name"]
-            matching_out = [r for r in outgoing if r.case == case_val]
-            if not matching_out:
-                return {
-                    "status": "error",
-                    "message": f"Case '<b>{case_val}</b>' is not part of Outgoing Files in this movement."
-                }
-            items_to_add.append({
-                "matter": matching_out[0].matter,
-                "case": case_val,
-                "barcode": matching_out[0].barcode or info.get("barcode") or ""
-            })
-
-        elif info["type"] == "case_file":
-            barcode_val = info["barcode"]
-            matching_out = [r for r in outgoing if r.barcode == barcode_val]
-            if not matching_out:
-                return {
-                    "status": "error",
-                    "message": f"Barcode '<b>{barcode_val}</b>' is not part of Outgoing Files in this movement."
-                }
-            items_to_add.append({
-                "matter": matching_out[0].matter,
-                "case": matching_out[0].case or "",
-                "barcode": barcode_val
-            })
+            elif info["type"] == "case_file":
+                barcode_val = info["barcode"]
+                matching_out = [r for r in outgoing if r.barcode == barcode_val]
+                if not matching_out:
+                    return {
+                        "status": "error",
+                        "message": f"Barcode '<b>{barcode_val}</b>' is not part of Outgoing Files in this movement."
+                    }
+                items_to_add.append({
+                    "matter": matching_out[0].matter,
+                    "case": matching_out[0].case or "",
+                    "barcode": barcode_val
+                })
 
     # Filter out items already in incoming_files
-    incoming = doc.get("incoming_files") or []
     new_items = []
     already_scanned = 0
 
