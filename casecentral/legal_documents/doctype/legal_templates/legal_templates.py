@@ -11,7 +11,19 @@ from frappe.utils import get_files_path
 from frappe.utils.file_manager import save_file
 
 class LegalTemplates(Document):
-	pass
+	def on_update(self):
+		if self.template_file and self.template_file.endswith(".docx"):
+			try:
+				from casecentral.legal_documents.doctype.legal_templates.template_studio import highlight_all_jinja_tags_in_docx
+				is_private = 1 if "private" in (self.template_file or "") else 0
+				fname = self.template_file.split("/")[-1]
+				fpath = get_files_path(fname, is_private=is_private)
+				if os.path.exists(fpath):
+					doc = Documentx(fpath)
+					highlight_all_jinja_tags_in_docx(doc)
+					doc.save(fpath)
+			except Exception:
+				pass
 
 @frappe.whitelist()
 def generate_new_doctype(legal_template_name):
@@ -90,6 +102,9 @@ def generate_new_doctype(legal_template_name):
 
 @frappe.whitelist()
 def generate_document(doctype, docname, legal_template_name):
+	if not frappe.db.exists(doctype, docname):
+		frappe.throw(frappe._("Please save the {0} record before generating the document.").format(doctype))
+
 	# Get fields names & values
 	erp_doc = frappe.get_doc(doctype, docname)
 	
