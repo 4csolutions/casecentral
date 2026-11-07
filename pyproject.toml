@@ -9,7 +9,9 @@ readme = "README.md"
 dynamic = ["version"]
 dependencies = [
     "docxtpl",
+    "docxcompose",
     "html-for-docx",
+    "mammoth",
 ]
 
 [build-system]
