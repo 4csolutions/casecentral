@@ -812,11 +812,11 @@ function render_template_studio_dialog(frm, doc_html, initial_variables, initial
 							<div>
 								<strong style="color: #1e293b; font-size: 13.5px;"><i class="fa fa-plug" style="color: #6366f1;"></i> Frappe Flow Client AI</strong>
 								<div style="font-size: 11.5px; color: #64748b; margin-top: 2px;">
-									${flow_installed ? 'Installed & synced with Flow Provider & Flow Model DocTypes.' : 'App not detected; using direct site defaults.'}
+									${flow_installed ? 'Installed & synced with Flow Provider & Flow Model DocTypes.' : 'App not detected; please install Frappe Flow.'}
 								</div>
 							</div>
 							<span class="badge ${flow_installed ? 'badge-success' : 'badge-warning'}">
-								${flow_installed ? 'Flow AI Active' : 'Fallback Engine'}
+								${flow_installed ? 'Flow AI Active' : 'Flow App Missing'}
 							</span>
 						</div>
 
@@ -839,7 +839,7 @@ function render_template_studio_dialog(frm, doc_html, initial_variables, initial
 
 					<div style="font-size: 12px; color: #475569; margin-bottom: 10px;">
 						Enter or update an API Key below (e.g. <strong>Google Gemini</strong> starting with <code>AIza...</code> or <strong>Groq</strong> starting with <code>gsk_...</code>).
-						It will be saved directly into Frappe Flow credentials and site defaults.
+						It will be saved securely into Frappe Flow Provider credentials.
 					</div>
 				`;
 
@@ -1001,8 +1001,8 @@ function open_prompt_drafting_dialog(frm) {
 				model_options = engines.flow_models.map(m => m.name);
 				default_model = model_options[0];
 			} else {
-				model_options = ['gemini/gemini-3.5-flash', 'groq/llama-3.3-70b-versatile', 'openai/gpt-4o-mini'];
-				default_model = 'gemini/gemini-3.5-flash';
+				model_options = ['gemini/gemini-2.5-flash', 'groq/llama-3.3-70b-versatile', 'openai/gpt-4o-mini'];
+				default_model = 'gemini/gemini-2.5-flash';
 			}
 
 			let has_saved_key = engines.has_active_key;

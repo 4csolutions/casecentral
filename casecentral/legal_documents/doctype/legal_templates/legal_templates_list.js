@@ -49,8 +49,8 @@ function open_prompt_drafting_dialog(frm) {
 				model_options = engines.flow_models.map(m => m.name);
 				default_model = model_options[0];
 			} else {
-				model_options = ['gemini/gemini-3.5-flash', 'groq/llama-3.3-70b-versatile', 'openai/gpt-4o-mini'];
-				default_model = 'gemini/gemini-3.5-flash';
+				model_options = ['gemini/gemini-2.5-flash', 'groq/llama-3.3-70b-versatile', 'openai/gpt-4o-mini'];
+				default_model = 'gemini/gemini-2.5-flash';
 			}
 
 			let has_saved_key = engines.has_active_key;

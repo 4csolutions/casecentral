@@ -42,6 +42,9 @@ def _get_template_file_path(legal_template_name):
 @frappe.whitelist()
 def get_document_preview(legal_template_name):
 	"""Converts the uploaded .docx file into clean HTML for Desk preview and returns raw text."""
+	if not frappe.has_permission("Legal Templates", "read"):
+		frappe.throw(frappe._("Not permitted"), frappe.PermissionError)
+
 	_, real_path = _get_template_file_path(legal_template_name)
 
 	with open(real_path, "rb") as docx_file:
@@ -100,8 +103,6 @@ def get_available_ai_engines():
 	has_direct_key = bool(
 		frappe.conf.get("gemini_api_key")
 		or frappe.conf.get("groq_api_key")
-		or frappe.db.get_default("gemini_api_key")
-		or frappe.db.get_default("groq_api_key")
 	)
 
 	has_active_key = has_flow_key or has_direct_key
@@ -171,9 +172,9 @@ def _call_flow_ai(raw_text, custom_prompt=None, flow_model_name=None, api_key_ov
 				api_key = prov_doc.get_password("api_key", raise_exception=False)
 				provider = prov_doc.provider or prov_doc.name
 
-	# 3. Resolve from site defaults if set
+	# 3. Resolve from site configuration if set
 	if not api_key:
-		site_key = frappe.db.get_default("gemini_api_key") or frappe.db.get_default("groq_api_key")
+		site_key = frappe.conf.get("gemini_api_key") or frappe.conf.get("groq_api_key")
 		if site_key:
 			api_key = site_key
 			provider = "groq" if site_key.startswith("gsk_") else "gemini"
@@ -191,9 +192,7 @@ def _call_flow_ai(raw_text, custom_prompt=None, flow_model_name=None, api_key_ov
 			model_id = "openai/gpt-4o-mini"
 		else:
 			provider = "gemini"
-			model_id = "gemini/gemini-3.5-flash"
-	elif "1.5" in model_id or "2.5" in model_id:
-		model_id = "gemini/gemini-3.5-flash"
+			model_id = "gemini/gemini-2.5-flash"
 
 	prompt = custom_prompt if custom_prompt else _get_legal_prompt(raw_text)
 
@@ -333,17 +332,14 @@ def _call_flow_provider_api(raw_text, api_key, provider=None, model_id=None, cus
 
 	# 3. Google Gemini Provider (Default)
 	else:
-		requested_model = "gemini-3.5-flash"
+		requested_model = "gemini-2.5-flash"
 		if model_id and "/" in model_id:
 			requested_model = model_id.split("/")[-1]
 		elif model_id:
 			requested_model = model_id
 
-		if "1.5" in requested_model or "2.5" in requested_model:
-			requested_model = "gemini-3.5-flash"
-
 		candidates = [requested_model]
-		for fallback_m in ["gemini-3.5-flash", "gemini-3.6-flash", "gemini-flash-latest", "gemini-3.8-flash"]:
+		for fallback_m in ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-flash-latest"]:
 			if fallback_m not in candidates:
 				candidates.append(fallback_m)
 
@@ -1067,6 +1063,9 @@ def detect_variables(legal_template_name, api_key=None, provider="auto", flow_mo
 	Mandatory Flow AI API call - does not silently fall back to offline NLP.
 	Also extracts and preserves any pre-existing Jinja variables in already-generated templates.
 	"""
+	if not frappe.has_permission("Legal Templates", "read"):
+		frappe.throw(frappe._("Not permitted"), frappe.PermissionError)
+
 	legal_template_doc, real_path = _get_template_file_path(legal_template_name)
 	preview_data = get_document_preview(legal_template_name)
 	raw_text = preview_data["text"]
@@ -2203,6 +2202,9 @@ def generate_template_from_prompt(prompt, template_name=None, naming_series=None
 	creates a formatted .docx template with Jinja tags, attaches it to a Legal Templates document,
 	and returns document preview & detected variables for editing in AI Template Studio.
 	"""
+	if not frappe.has_permission("Legal Templates", "write"):
+		frappe.throw(frappe._("Not permitted"), frappe.PermissionError)
+
 	if not prompt or not prompt.strip():
 		frappe.throw(frappe._("Please enter instructions or description for the template you wish to draft."))
 
@@ -2562,7 +2564,7 @@ def extract_legal_entities_nlp(real_path=None, text=""):
 def highlight_jinja_in_paragraph(p, highlight_color=WD_COLOR_INDEX.YELLOW):
 	"""
 	Finds all Jinja tags {{ variable_name }} in a paragraph and highlights ONLY the tags
-	with native Word highlight (yellow), leaving surrounding text with its original formatting.
+	with native Word highlight (yellow), preserving all surrounding runs and formatting.
 	"""
 	text = p.text
 	if "{{" not in text or "}}" not in text:
@@ -2572,48 +2574,61 @@ def highlight_jinja_in_paragraph(p, highlight_color=WD_COLOR_INDEX.YELLOW):
 	if not pattern.search(text):
 		return
 
-	# Capture default formatting from first run if available
-	default_font_name = "Calibri"
-	default_font_size = None
-	default_bold = False
-	default_italic = False
-	default_color = None
+	# If a Jinja tag is split across multiple XML runs, normalize the paragraph first
+	has_tag_inside_runs = any(pattern.search(r.text) for r in p.runs if "{{" in r.text and "}}" in r.text)
+	if not has_tag_inside_runs and pattern.search(text):
+		r0 = p.runs[0] if p.runs else None
+		def_name = r0.font.name if r0 else "Calibri"
+		def_size = r0.font.size if r0 else None
+		def_color = r0.font.color.rgb if (r0 and r0.font.color) else None
+		def_bold = r0.bold if r0 else False
+		def_italic = r0.italic if r0 else False
+		p.text = text
+		if p.runs:
+			p.runs[0].font.name = def_name
+			p.runs[0].font.size = def_size
+			if def_color:
+				p.runs[0].font.color.rgb = def_color
+			p.runs[0].bold = def_bold
+			p.runs[0].italic = def_italic
 
-	if p.runs:
-		r0 = p.runs[0]
-		default_font_name = r0.font.name or "Calibri"
-		default_font_size = r0.font.size
-		default_bold = r0.bold or False
-		default_italic = r0.italic or False
-		default_color = r0.font.color.rgb if r0.font.color else None
+	runs = list(p.runs)
+	for run in runs:
+		r_text = run.text
+		if "{{" in r_text and "}}" in r_text and pattern.search(r_text):
+			tokens = []
+			last_end = 0
+			for m in pattern.finditer(r_text):
+				start, end = m.span()
+				if start > last_end:
+					tokens.append((r_text[last_end:start], False))
+				tokens.append((r_text[start:end], True))
+				last_end = end
+			if last_end < len(r_text):
+				tokens.append((r_text[last_end:], False))
 
-	tokens = []
-	last_end = 0
-	for m in pattern.finditer(text):
-		start, end = m.span()
-		if start > last_end:
-			tokens.append((text[last_end:start], False))
-		tokens.append((text[start:end], True))
-		last_end = end
-	if last_end < len(text):
-		tokens.append((text[last_end:], False))
+			if not tokens:
+				continue
 
-	p.text = ""
+			first_text, first_is_j = tokens[0]
+			run.text = first_text
+			if first_is_j:
+				run.font.highlight_color = highlight_color
 
-	for chunk, is_jinja in tokens:
-		if not chunk:
-			continue
-		r = p.add_run(chunk)
-		r.font.name = default_font_name
-		if default_font_size:
-			r.font.size = default_font_size
-		if default_color:
-			r.font.color.rgb = default_color
-		r.bold = default_bold
-		r.italic = default_italic
-
-		if is_jinja:
-			r.font.highlight_color = highlight_color
+			current_r_element = run._r
+			for chunk_text, is_j in tokens[1:]:
+				new_run = p.add_run(chunk_text)
+				new_run.font.name = run.font.name
+				new_run.font.size = run.font.size
+				if run.font.color and run.font.color.rgb:
+					new_run.font.color.rgb = run.font.color.rgb
+				new_run.bold = run.bold
+				new_run.italic = run.italic
+				new_run.underline = run.underline
+				if is_j:
+					new_run.font.highlight_color = highlight_color
+				current_r_element.addnext(new_run._r)
+				current_r_element = new_run._r
 
 
 def highlight_all_jinja_tags_in_docx(doc_or_path, output_path=None, highlight_color=WD_COLOR_INDEX.YELLOW):
@@ -2756,6 +2771,9 @@ def save_template_content(legal_template_name, edited_html):
 	"""
 	Saves edited preview HTML content from Template Studio directly back into the template's .docx file.
 	"""
+	if not frappe.has_permission("Legal Templates", "write"):
+		frappe.throw(frappe._("Not permitted"), frappe.PermissionError)
+
 	if not edited_html or not edited_html.strip():
 		frappe.throw(frappe._("Cannot save empty document content."))
 
@@ -2795,6 +2813,9 @@ def finalize_template_and_doctype(legal_template_name, approved_variables, edite
 	5. Automatically creates the Related DocType with exact field types (Date, Currency, Small Text, Data).
 	6. Links the DocType to the Legal Template record.
 	"""
+	if not frappe.has_permission("Legal Templates", "write") or not frappe.has_permission("DocType", "write"):
+		frappe.throw(frappe._("Not permitted"), frappe.PermissionError)
+
 	if isinstance(approved_variables, str):
 		approved_variables = json.loads(approved_variables)
 
@@ -3176,6 +3197,9 @@ def download_jinja_template(legal_template_name):
 	Generates/fetches the Word .docx file with all {{ variables }} highlighted in yellow
 	and streams it to the browser as a downloadable Word attachment.
 	"""
+	if not frappe.has_permission("Legal Templates", "read"):
+		frappe.throw(frappe._("Not permitted"), frappe.PermissionError)
+
 	legal_template_doc, real_path = _get_template_file_path(legal_template_name)
 
 	# Load and ensure all Jinja tags are highlighted in Word yellow
@@ -3196,48 +3220,23 @@ def download_jinja_template(legal_template_name):
 	frappe.response["display_content_as"] = "attachment"
 
 
-@frappe.whitelist(allow_guest=True)
-def download_sample_agreement(file_type="pdf"):
-	"""Forces the browser to download the sample agreement with explicit PDF or Word headers."""
-	if file_type == "docx":
-		file_path = "/home/abdullah/Sample_Rental_Agreement.docx"
-		filename = "Sample_Rental_Agreement.docx"
-	else:
-		file_path = "/home/abdullah/Sample_Rental_Agreement.pdf"
-		filename = "Sample_Rental_Agreement.pdf"
-
-	if not os.path.exists(file_path):
-		frappe.throw(frappe._("Sample file not found at {0}").format(file_path))
-
-	with open(file_path, "rb") as f:
-		content = f.read()
-
-	frappe.response["filecontent"] = content
-	frappe.response["filename"] = filename
-	frappe.response["type"] = "download"
-	frappe.response["display_content_as"] = "attachment"
-
-
 @frappe.whitelist()
 def save_ai_key(api_key, provider=None):
 	"""
-	Saves user-provided API key into Flow Provider & Flow Model (if Flow is installed),
-	and into site defaults as a resilient fallback.
+	Saves user-provided API key into Flow Provider & Flow Model (Flow Provider.api_key).
 	"""
 	if not frappe.has_permission("Legal Templates", "write"):
 		frappe.throw(frappe._("Not permitted"), frappe.PermissionError)
 
 	clean_key = (api_key or "").strip()
 	if not clean_key:
-		frappe.db.set_default("gemini_api_key", "")
-		frappe.db.set_default("groq_api_key", "")
 		if frappe.db.exists("DocType", "Flow Provider"):
 			for p in frappe.get_all("Flow Provider", fields=["name"]):
 				p_doc = frappe.get_doc("Flow Provider", p.name)
 				p_doc.api_key = ""
 				p_doc.save(ignore_permissions=True)
 		frappe.db.commit()
-		return {"status": "success", "message": "AI API Key cleared."}
+		return {"status": "success", "message": "AI API Key cleared from Flow Provider."}
 
 	# Detect provider if not given
 	if not provider:
@@ -3250,7 +3249,7 @@ def save_ai_key(api_key, provider=None):
 		else:
 			provider = "gemini"
 
-	# 1. Update Frappe Flow Provider & Model if Flow is installed
+	# Update Frappe Flow Provider & Model
 	if frappe.db.exists("DocType", "Flow Provider"):
 		try:
 			if frappe.db.exists("Flow Provider", provider):
@@ -3269,7 +3268,7 @@ def save_ai_key(api_key, provider=None):
 
 			# Ensure corresponding Flow Model exists
 			default_models = {
-				"gemini": ("Gemini 3.5 Flash", "gemini/gemini-3.5-flash"),
+				"gemini": ("Gemini 2.5 Flash", "gemini/gemini-2.5-flash"),
 				"groq": ("Groq Llama 3.3 70B", "groq/llama-3.3-70b-versatile"),
 				"openai": ("GPT-4o Mini", "openai/gpt-4o-mini"),
 			}
@@ -3291,19 +3290,15 @@ def save_ai_key(api_key, provider=None):
 					})
 					m_doc.insert(ignore_permissions=True)
 		except Exception as e:
-			frappe.log_error(f"Failed to sync with Flow Provider: {str(e)}")
-
-	# 2. Resilient fallback to site defaults
-	if provider == "groq" or clean_key.startswith("gsk_"):
-		frappe.db.set_default("groq_api_key", clean_key)
+			frappe.log_error(title="Failed to sync with Flow Provider", message=str(e))
 	else:
-		frappe.db.set_default("gemini_api_key", clean_key)
+		frappe.throw(frappe._("Flow Provider DocType not found. Please install the Flow app to configure AI providers."))
 
 	frappe.db.commit()
 	return {
 		"status": "success",
 		"provider": provider,
-		"message": f"Successfully configured API key for {provider.title()} in Flow AI and site defaults.",
+		"message": f"Successfully configured API key for {provider.title()} in Flow Provider.",
 	}
 
 

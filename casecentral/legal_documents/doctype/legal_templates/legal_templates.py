@@ -22,8 +22,8 @@ class LegalTemplates(Document):
 					doc = Documentx(fpath)
 					highlight_all_jinja_tags_in_docx(doc)
 					doc.save(fpath)
-			except Exception:
-				pass
+			except Exception as e:
+				frappe.log_error(title="Failed to highlight Jinja tags in template", message=str(e))
 
 @frappe.whitelist()
 def generate_new_doctype(legal_template_name):
