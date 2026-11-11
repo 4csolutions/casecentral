@@ -147,7 +147,7 @@ def recalculate_matter_status_from_movements(matter_name):
     # Find unreturned movements containing this matter in outgoing_files
     unreturned = frappe.db.sql("""
         SELECT bfi.name, bfi.`case`, bfi.barcode, fm.name as movement_name
-        FROM `tabBarcode File Item` bfi
+        FROM `tabFile Movement Item` bfi
         INNER JOIN `tabFile Movement` fm ON fm.name = bfi.parent
         WHERE fm.docstatus = 1 
           AND fm.status != 'Received'
@@ -163,7 +163,7 @@ def recalculate_matter_status_from_movements(matter_name):
     for out_row in unreturned:
         # Check if this outgoing item has been added into incoming_files of this movement
         inc = frappe.db.sql("""
-            SELECT name FROM `tabBarcode File Item`
+            SELECT name FROM `tabFile Movement Item`
             WHERE parent = %s 
               AND parentfield = 'incoming_files'
               AND (

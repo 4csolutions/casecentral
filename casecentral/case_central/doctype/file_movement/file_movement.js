@@ -99,7 +99,7 @@ function setup_giver_receiver_filter(frm) {
 // CHILD TABLE: OUTGOING FILES
 // =========================================================
 
-frappe.ui.form.on("Barcode File Item", {
+frappe.ui.form.on("File Movement Item", {
     matter: function (frm, cdt, cdn) {
         var row = frappe.get_doc(cdt, cdn);
         if (!row.matter) return;

@@ -105,7 +105,7 @@
    "fieldname": "outgoing_files",
    "fieldtype": "Table",
    "label": "Outgoing Files",
-   "options": "Barcode File Item",
+   "options": "File Movement Item",
    "read_only_depends_on": "eval:doc.docstatus == 1",
    "reqd": 1
   },
@@ -130,7 +130,7 @@
    "fieldname": "incoming_files",
    "fieldtype": "Table",
    "label": "Incoming Files",
-   "options": "Barcode File Item"
+   "options": "File Movement Item"
   },
   {
    "collapsible": 1,

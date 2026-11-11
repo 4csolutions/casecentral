@@ -52,7 +52,7 @@
  "modified": "2026-10-06 14:00:00.000000",
  "modified_by": "Administrator",
  "module": "Case Central",
- "name": "Barcode File Item",
+ "name": "File Movement Item",
  "owner": "Administrator",
  "permissions": [],
  "row_format": "Dynamic",
