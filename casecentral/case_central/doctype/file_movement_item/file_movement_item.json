@@ -9,8 +9,7 @@
  "field_order": [
   "matter",
   "case",
-  "barcode",
-  "returned"
+  "barcode"
  ],
  "fields": [
   {
@@ -35,14 +34,6 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Barcode"
-  },
-  {
-   "default": "0",
-   "fieldname": "returned",
-   "fieldtype": "Check",
-   "hidden": 1,
-   "label": "Returned",
-   "read_only": 1
   }
  ],
  "grid_page_length": 50,
