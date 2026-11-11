@@ -9,3 +9,4 @@ class FileMovementItem(Document):
 	matter: str | None = None
 	case: str | None = None
 	barcode: str | None = None
+	returned: int | None = 0
