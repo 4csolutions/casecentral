@@ -6,4 +6,6 @@ from frappe.model.document import Document
 
 
 class FileMovementItem(Document):
-	pass
+	matter: str | None = None
+	case: str | None = None
+	barcode: str | None = None

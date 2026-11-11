@@ -40,23 +40,29 @@ class FileMovement(Document):
 
     def validate_rows(self):
         for idx, row in enumerate(self.get("outgoing_files") or [], start=1):
-            if row.matter:
-                if not frappe.db.exists("Matter", row.matter):
-                    frappe.throw(f"Matter ID '{row.matter}' in row {idx} does not exist.")
-                if not row.case:
-                    case_name = frappe.db.get_value("Case", {"matter": row.matter}, "name")
+            row_matter = row.get("matter")
+            row_case = row.get("case")
+            row_barcode = row.get("barcode")
+
+            if row_matter:
+                if not frappe.db.exists("Matter", row_matter):
+                    frappe.throw(f"Matter ID '{row_matter}' in row {idx} does not exist.")
+                if not row_case:
+                    case_name = frappe.db.get_value("Case", {"matter": row_matter}, "name")
                     if case_name:
                         row.case = case_name
+                        row_case = case_name
 
-            if row.case:
-                if not frappe.db.exists("Case", row.case):
-                    frappe.throw(f"Case '{row.case}' in row {idx} does not exist.")
-                if not row.matter:
-                    case_matter = frappe.db.get_value("Case", row.case, "matter")
+            if row_case:
+                if not frappe.db.exists("Case", row_case):
+                    frappe.throw(f"Case '{row_case}' in row {idx} does not exist.")
+                if not row_matter:
+                    case_matter = frappe.db.get_value("Case", row_case, "matter")
                     if case_matter:
                         row.matter = case_matter
+                        row_matter = case_matter
 
-            if not row.matter and not row.case and not row.barcode:
+            if not row_matter and not row_case and not row_barcode:
                 frappe.throw(f"Row {idx} in Outgoing Files must have a Matter ID, Case, or Barcode.")
 
     def validate_duplicate_barcodes(self):
@@ -64,13 +70,13 @@ class FileMovement(Document):
         seen_barcodes = set()
         seen_cases = set()
         for idx, row in enumerate(self.get("outgoing_files") or [], start=1):
-            barcode = (row.barcode or "").strip()
+            barcode = (row.get("barcode") or "").strip()
             if barcode:
                 if barcode in seen_barcodes:
                     frappe.throw(f"Duplicate barcode '{barcode}' in Outgoing Files row {idx}.")
                 seen_barcodes.add(barcode)
 
-            case_name = (row.case or "").strip()
+            case_name = (row.get("case") or "").strip()
             if case_name:
                 if case_name in seen_cases:
                     frappe.throw(f"Duplicate Case '{case_name}' in Outgoing Files row {idx}.")
@@ -80,13 +86,13 @@ class FileMovement(Document):
         seen_inc_barcodes = set()
         seen_inc_cases = set()
         for idx, row in enumerate(self.get("incoming_files") or [], start=1):
-            barcode = (row.barcode or "").strip()
+            barcode = (row.get("barcode") or "").strip()
             if barcode:
                 if barcode in seen_inc_barcodes:
                     frappe.throw(f"Duplicate barcode '{barcode}' in Incoming Files row {idx}.")
                 seen_inc_barcodes.add(barcode)
 
-            case_name = (row.case or "").strip()
+            case_name = (row.get("case") or "").strip()
             if case_name:
                 if case_name in seen_inc_cases:
                     frappe.throw(f"Duplicate Case '{case_name}' in Incoming Files row {idx}.")
@@ -121,16 +127,18 @@ class FileMovement(Document):
     def update_outgoing_linked_statuses(self):
         matters = set()
         for row in self.get("outgoing_files") or []:
-            if row.matter:
-                matters.add(row.matter)
+            matter = row.get("matter")
+            if matter:
+                matters.add(matter)
         for matter_name in matters:
             recalculate_matter_status_from_movements(matter_name)
 
     def restore_outgoing_linked_statuses(self):
         matters = set()
         for row in self.get("outgoing_files") or []:
-            if row.matter:
-                matters.add(row.matter)
+            matter = row.get("matter")
+            if matter:
+                matters.add(matter)
         for matter_name in matters:
             recalculate_matter_status_from_movements(matter_name)
 
@@ -343,13 +351,14 @@ def calculate_missing_files_from_doc(doc):
         if not is_item_returned(out_row, incoming):
             case_title = ""
             case_status = ""
-            if out_row.case:
-                case_title = frappe.db.get_value("Case", out_row.case, "case_title") or ""
-                case_status = frappe.db.get_value("Case", out_row.case, "status") or ""
+            out_case = out_row.get("case")
+            if out_case:
+                case_title = frappe.db.get_value("Case", out_case, "case_title") or ""
+                case_status = frappe.db.get_value("Case", out_case, "status") or ""
             missing.append({
-                "barcode": out_row.barcode or "",
-                "matter": out_row.matter or "",
-                "case": out_row.case or "",
+                "barcode": out_row.get("barcode") or "",
+                "matter": out_row.get("matter") or "",
+                "case": out_case or "",
                 "case_title": case_title,
                 "status": case_status
             })
@@ -453,13 +462,14 @@ def scan_incoming_file(movement_name, value):
             for r in unreturned:
                 case_title = ""
                 case_status = ""
-                if r.case:
-                    case_title = frappe.db.get_value("Case", r.case, "case_title") or ""
-                    case_status = frappe.db.get_value("Case", r.case, "status") or ""
+                r_case = r.get("case")
+                if r_case:
+                    case_title = frappe.db.get_value("Case", r_case, "case_title") or ""
+                    case_status = frappe.db.get_value("Case", r_case, "status") or ""
                 cases_payload.append({
-                    "case": r.case or "",
-                    "matter": r.matter or matter_val,
-                    "barcode": r.barcode or "",
+                    "case": r_case or "",
+                    "matter": r.get("matter") or matter_val,
+                    "barcode": r.get("barcode") or "",
                     "case_title": case_title,
                     "status": case_status
                 })
@@ -471,28 +481,28 @@ def scan_incoming_file(movement_name, value):
             }
         else:
             items_to_add.append({
-                "matter": unreturned[0].matter,
-                "case": unreturned[0].case or "",
-                "barcode": unreturned[0].barcode or ""
+                "matter": unreturned[0].get("matter"),
+                "case": unreturned[0].get("case") or "",
+                "barcode": unreturned[0].get("barcode") or ""
             })
     else:
         # 2. Check direct matches in outgoing_files by barcode or case
-        direct_bc = [r for r in outgoing if (r.barcode or "").strip() == value]
-        direct_case = [r for r in outgoing if (r.case or "").strip() == value]
+        direct_bc = [r for r in outgoing if (r.get("barcode") or "").strip() == value]
+        direct_case = [r for r in outgoing if (r.get("case") or "").strip() == value]
 
         if direct_bc:
             for r in direct_bc:
                 items_to_add.append({
-                    "matter": r.matter or "",
-                    "case": r.case or "",
-                    "barcode": r.barcode or value
+                    "matter": r.get("matter") or "",
+                    "case": r.get("case") or "",
+                    "barcode": r.get("barcode") or value
                 })
         elif direct_case:
             for r in direct_case:
                 items_to_add.append({
-                    "matter": r.matter or "",
-                    "case": r.case,
-                    "barcode": r.barcode or ""
+                    "matter": r.get("matter") or "",
+                    "case": r.get("case") or "",
+                    "barcode": r.get("barcode") or ""
                 })
         else:
             # 3. Fallback to global resolver
@@ -505,29 +515,29 @@ def scan_incoming_file(movement_name, value):
 
             if info["type"] == "case":
                 case_val = info["case_name"]
-                matching_out = [r for r in outgoing if r.case == case_val]
+                matching_out = [r for r in outgoing if r.get("case") == case_val]
                 if not matching_out:
                     return {
                         "status": "error",
                         "message": f"Case '<b>{case_val}</b>' is not part of Outgoing Files in this movement."
                     }
                 items_to_add.append({
-                    "matter": matching_out[0].matter,
+                    "matter": matching_out[0].get("matter") or "",
                     "case": case_val,
-                    "barcode": matching_out[0].barcode or info.get("barcode") or ""
+                    "barcode": matching_out[0].get("barcode") or info.get("barcode") or ""
                 })
 
             elif info["type"] == "case_file":
                 barcode_val = info["barcode"]
-                matching_out = [r for r in outgoing if r.barcode == barcode_val]
+                matching_out = [r for r in outgoing if r.get("barcode") == barcode_val]
                 if not matching_out:
                     return {
                         "status": "error",
                         "message": f"Barcode '<b>{barcode_val}</b>' is not part of Outgoing Files in this movement."
                     }
                 items_to_add.append({
-                    "matter": matching_out[0].matter,
-                    "case": matching_out[0].case or "",
+                    "matter": matching_out[0].get("matter") or "",
+                    "case": matching_out[0].get("case") or "",
                     "barcode": barcode_val
                 })
 
@@ -656,18 +666,21 @@ def return_missing_files(
         # Match against outgoing files to get full record
         matched_out = None
         for out_r in outgoing:
-            if (t_case and out_r.case == t_case) or \
-               (t_barcode and out_r.barcode == t_barcode) or \
-               (t_matter and out_r.matter == t_matter and not t_case and not out_r.case):
+            out_c = out_r.get("case") or ""
+            out_b = out_r.get("barcode") or ""
+            out_m = out_r.get("matter") or ""
+            if (t_case and out_c == t_case) or \
+               (t_barcode and out_b == t_barcode) or \
+               (t_matter and out_m == t_matter and not t_case and not out_c):
                 matched_out = out_r
                 break
 
         if matched_out:
             if not is_item_returned(matched_out, incoming):
                 new_row = doc.append("incoming_files", {
-                    "barcode": matched_out.barcode or "",
-                    "matter": matched_out.matter or "",
-                    "case": matched_out.case or ""
+                    "barcode": matched_out.get("barcode") or "",
+                    "matter": matched_out.get("matter") or "",
+                    "case": matched_out.get("case") or ""
                 })
                 new_row.parent = doc.name
                 new_row.parenttype = "File Movement"
