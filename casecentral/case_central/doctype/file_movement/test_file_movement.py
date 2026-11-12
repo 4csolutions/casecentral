@@ -5,6 +5,7 @@ import frappe
 from frappe.tests.utils import FrappeTestCase
 from casecentral.case_central.doctype.file_movement.file_movement import (
     create_incoming,
+    cancel_incoming,
     scan_incoming_file,
     get_missing_files,
     return_missing_files,
@@ -273,6 +274,70 @@ class TestFileMovement(FrappeTestCase):
         self.assertEqual(len(doc.incoming_files), 2)
         self.assertEqual(frappe.db.get_value("Matter", self.matter_1, "status"), "Open")
         self.assertEqual(frappe.db.get_value("Matter", self.matter_2, "status"), "Open")
+
+    def test_cancel_incoming_preserves_traces(self):
+        """Cancelling incoming preserves the whole FM and traces, sets status to Incoming Cancelled."""
+        doc = frappe.new_doc("File Movement")
+        doc.giver = self.giver
+        doc.receiver = self.receiver
+        doc.append("outgoing_files", {
+            "barcode": "TEST-BC-CAN-01",
+            "matter": self.matter_1,
+            "case": self.case_1
+        })
+        doc.insert(ignore_permissions=True)
+        doc.submit()
+
+        self.assertEqual(doc.status, "Taken Away")
+        self.assertEqual(frappe.db.get_value("Matter", self.matter_1, "status"), "Working")
+
+        # Create incoming
+        create_incoming(doc.name)
+        doc.reload()
+        self.assertEqual(doc.status, "Incoming Created")
+
+        # Cancel incoming (not the whole FM)
+        res_can = cancel_incoming(doc.name)
+        self.assertEqual(res_can["status"], "Incoming Cancelled")
+
+        doc.reload()
+        self.assertEqual(doc.docstatus, 1, "Docstatus must remain 1 (submitted), NOT cancelled/deleted")
+        self.assertEqual(doc.status, "Incoming Cancelled")
+        self.assertEqual(len(doc.outgoing_files), 1, "Outgoing files traces must be preserved")
+        self.assertEqual(frappe.db.get_value("Matter", self.matter_1, "status"), "Working")
+
+        # Reopen incoming
+        res_reopen = create_incoming(doc.name)
+        self.assertEqual(res_reopen["status"], "Incoming Created")
+        doc.reload()
+        self.assertEqual(doc.status, "Incoming Created")
+
+    def test_on_cancel_whole_fm_and_delete_protection(self):
+        """Cancelling the whole FM sets status to Cancelled, restores Matter, and blocks deletion."""
+        doc = frappe.new_doc("File Movement")
+        doc.giver = self.giver
+        doc.receiver = self.receiver
+        doc.append("outgoing_files", {
+            "barcode": "TEST-BC-CAN-02",
+            "matter": self.matter_2,
+            "case": self.case_2
+        })
+        doc.insert(ignore_permissions=True)
+        doc.submit()
+        self.assertEqual(frappe.db.get_value("Matter", self.matter_2, "status"), "Working")
+
+        # Attempt to delete submitted doc must fail
+        self.assertRaises(frappe.ValidationError, doc.delete)
+
+        # Cancel the FM
+        doc.cancel()
+        doc.reload()
+        self.assertEqual(doc.docstatus, 2)
+        self.assertEqual(doc.status, "Cancelled")
+        self.assertEqual(frappe.db.get_value("Matter", self.matter_2, "status"), "Open")
+
+        # Attempt to delete cancelled doc must fail (traces preserved)
+        self.assertRaises(frappe.ValidationError, doc.delete)
 
 
 def run_test_suite():

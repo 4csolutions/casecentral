@@ -100,6 +100,9 @@ class FileMovement(Document):
                 seen_inc_cases.add(case_name)
 
     def update_missing_files_and_status(self):
+        if self.status in ["Cancelled", "Incoming Cancelled"]:
+            return
+
         if not self.has_incoming and not self.get("incoming_files"):
             self.status = "Taken Away" if self.docstatus == 1 else "Draft"
             self.set("missing_file_items", [])
@@ -128,7 +131,13 @@ class FileMovement(Document):
         self.update_outgoing_linked_statuses()
 
     def on_cancel(self):
+        self.status = "Cancelled"
+        self.db_set("status", "Cancelled")
         self.restore_outgoing_linked_statuses()
+
+    def on_trash(self):
+        if self.docstatus != 0:
+            frappe.throw("Cannot delete submitted or cancelled File Movement. Audit traces must be preserved.")
 
     def update_outgoing_linked_statuses(self):
         matters = set()
@@ -164,7 +173,7 @@ def recalculate_matter_status_from_movements(matter_name):
         FROM `tabFile Movement Item` bfi
         INNER JOIN `tabFile Movement` fm ON fm.name = bfi.parent
         WHERE fm.docstatus = 1 
-          AND fm.status != 'Received'
+          AND fm.status NOT IN ('Received', 'Cancelled')
           AND bfi.parentfield = 'outgoing_files'
           AND bfi.matter = %s
     """, (matter_name,), as_dict=True)
@@ -382,22 +391,64 @@ def create_incoming(movement_name):
     if not doc.incoming_date:
         doc.incoming_date = frappe.utils.now_datetime()
 
-    doc.status = "Incoming Created"
-    doc.set("missing_file_items", [])
+    missing = calculate_missing_files_from_doc(doc)
+    if doc.get("incoming_files"):
+        doc.status = "Received" if len(missing) == 0 else "Missing Files"
+        doc.set_missing_file_table(missing)
+    else:
+        doc.status = "Incoming Created"
+        doc.set("missing_file_items", [])
 
     frappe.db.set_value("File Movement", doc.name, {
         "has_incoming": 1,
         "incoming_date": doc.incoming_date,
-        "status": "Incoming Created"
+        "status": doc.status
     })
 
     frappe.db.delete("Missing File Items", {"parent": doc.name})
+    for row in doc.missing_file_items:
+        row.parent = doc.name
+        row.parenttype = "File Movement"
+        row.parentfield = "missing_file_items"
+        row.db_insert()
 
     return {
         "name": doc.name,
         "has_incoming": 1,
-        "status": "Incoming Created",
-        "missing_count": 0
+        "status": doc.status,
+        "missing_count": len(missing) if doc.get("incoming_files") else 0
+    }
+
+
+@frappe.whitelist()
+def cancel_incoming(movement_name):
+    """
+    Cancels the incoming workflow on this File Movement without deleting or cancelling the whole document:
+    - Sets status to 'Incoming Cancelled'
+    - Preserves all outgoing, incoming, and missing file traces intact
+    - Updates DB and recalculates linked matter statuses
+    """
+    movement_name = str(movement_name or "").strip()
+    if not movement_name or not frappe.db.exists("File Movement", movement_name):
+        frappe.throw("File Movement not found.")
+
+    doc = frappe.get_doc("File Movement", movement_name)
+    if doc.docstatus != 1:
+        frappe.throw("File Movement must be submitted before cancelling incoming.")
+
+    if not doc.has_incoming and doc.status != "Incoming Created":
+        frappe.throw("Incoming workflow has not been created for this movement.")
+
+    doc.status = "Incoming Cancelled"
+    frappe.db.set_value("File Movement", doc.name, "status", "Incoming Cancelled")
+
+    doc.update_outgoing_linked_statuses()
+
+    return {
+        "name": doc.name,
+        "has_incoming": doc.has_incoming,
+        "status": "Incoming Cancelled",
+        "message": "Incoming workflow has been cancelled. All audit traces have been preserved."
     }
 
 
@@ -422,6 +473,9 @@ def scan_incoming_file(movement_name, value):
     doc = frappe.get_doc("File Movement", movement_name)
     if doc.docstatus != 1:
         frappe.throw("Movement must be submitted before receiving files.")
+
+    if doc.status in ["Incoming Cancelled", "Cancelled"]:
+        frappe.throw(f"Cannot scan files into a movement with status '{doc.status}'.")
 
     outgoing = doc.get("outgoing_files") or []
     incoming = doc.get("incoming_files") or []

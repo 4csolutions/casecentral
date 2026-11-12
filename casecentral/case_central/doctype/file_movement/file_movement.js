@@ -20,17 +20,24 @@ frappe.ui.form.on("File Movement", {
         setup_giver_receiver_filter(frm);
 
         frm.remove_custom_button("Create Incoming");
+        frm.remove_custom_button("Re-open Incoming");
+        frm.remove_custom_button("Cancel Incoming");
         frm.remove_custom_button("Return Missing Files");
 
         // Single Document Lifecycle:
-        // 1. When Outgoing is submitted and Incoming has NOT yet been activated
-        if (frm.doc.docstatus === 1 && !frm.doc.has_incoming && frm.doc.status !== "Received") {
-            add_create_incoming_button(frm);
+        // 1. When Outgoing is submitted and Incoming has NOT yet been activated, OR incoming was cancelled
+        if (frm.doc.docstatus === 1 && (!frm.doc.has_incoming || frm.doc.status === "Incoming Cancelled") && frm.doc.status !== "Received" && frm.doc.status !== "Cancelled") {
+            var btn_label = frm.doc.status === "Incoming Cancelled" ? __("Re-open Incoming") : __("Create Incoming");
+            add_create_incoming_button(frm, btn_label);
         }
 
-        // 2. When Incoming is active and some files are missing
-        if (frm.doc.docstatus === 1 && frm.doc.has_incoming && frm.doc.status === "Missing Files") {
-            add_return_missing_button(frm);
+        // 2. When Incoming is active (Incoming Created or Missing Files)
+        if (frm.doc.docstatus === 1 && frm.doc.has_incoming && (frm.doc.status === "Incoming Created" || frm.doc.status === "Missing Files")) {
+            add_cancel_incoming_button(frm);
+
+            if (frm.doc.status === "Missing Files") {
+                add_return_missing_button(frm);
+            }
         }
     },
 
@@ -207,7 +214,7 @@ function show_single_scan_error(msg) {
 function setup_scan_barcode_input(frm) {
     if (!frm.fields_dict.scan_barcode) return;
 
-    var is_incoming = Boolean(frm.doc.has_incoming);
+    var is_incoming = Boolean(frm.doc.has_incoming && frm.doc.status !== "Incoming Cancelled");
     var label = is_incoming ? __("Scan Incoming") : __("Scan Outgoing");
     var placeholder = is_incoming
         ? __("Scan Barcode / Matter ID / Case to Receive into Incoming Files...")
@@ -801,13 +808,18 @@ function process_incoming_scan(frm, code) {
 
 
 // =========================================================
-// ACTION: CREATE INCOMING (STANDALONE PRIMARY BUTTON)
+// ACTION: CREATE / RE-OPEN INCOMING
 // =========================================================
 
-function add_create_incoming_button(frm) {
-    var btn = frm.add_custom_button(__("Create Incoming"), function () {
+function add_create_incoming_button(frm, label) {
+    label = label || __("Create Incoming");
+    var btn = frm.add_custom_button(label, function () {
+        var confirm_msg = label === __("Re-open Incoming")
+            ? __("Do you want to re-open the Incoming Files workflow for this movement?")
+            : __("Do you want to initialize the Incoming Files workflow for this movement?");
+
         frappe.confirm(
-            __("Do you want to initialize the Incoming Files workflow for this movement?"),
+            confirm_msg,
             function () {
                 frappe.call({
                     method: "casecentral.case_central.doctype.file_movement.file_movement.create_incoming",
@@ -832,6 +844,42 @@ function add_create_incoming_button(frm) {
 
     if (btn) {
         btn.addClass("btn-primary");
+    }
+}
+
+
+// =========================================================
+// ACTION: CANCEL INCOMING (CANCELS INCOMING ONLY, PRESERVES TRACES)
+// =========================================================
+
+function add_cancel_incoming_button(frm) {
+    var btn = frm.add_custom_button(__("Cancel Incoming"), function () {
+        frappe.confirm(
+            __("Are you sure you want to cancel the Incoming workflow for this File Movement? The status will update to 'Incoming Cancelled' and all audit traces will be preserved."),
+            function () {
+                frappe.call({
+                    method: "casecentral.case_central.doctype.file_movement.file_movement.cancel_incoming",
+                    args: {
+                        movement_name: frm.doc.name
+                    },
+                    freeze: true,
+                    freeze_message: __("Cancelling Incoming workflow..."),
+                    callback: function (r) {
+                        if (r.message) {
+                            frappe.show_alert({
+                                message: __("Incoming workflow cancelled. All traces have been preserved."),
+                                indicator: "orange"
+                            });
+                            frm.reload_doc();
+                        }
+                    }
+                });
+            }
+        );
+    });
+
+    if (btn) {
+        btn.addClass("btn-danger");
     }
 }
 
