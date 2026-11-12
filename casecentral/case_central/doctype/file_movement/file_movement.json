@@ -14,8 +14,9 @@
   "incoming_date",
   "status",
   "amended_from",
-  "section_break_outgoing_files",
+  "section_break_scanner",
   "scan_barcode",
+  "section_break_outgoing_files",
   "outgoing_files",
   "section_break_incoming_files",
   "incoming_files",
@@ -88,9 +89,8 @@
    "search_index": 1
   },
   {
-   "fieldname": "section_break_outgoing_files",
-   "fieldtype": "Section Break",
-   "label": "Outgoing Files"
+   "fieldname": "section_break_scanner",
+   "fieldtype": "Section Break"
   },
   {
    "allow_on_submit": 1,
@@ -99,6 +99,11 @@
    "label": "Scan Outgoing",
    "options": "Barcode",
    "read_only_depends_on": "eval:doc.status == 'Received' || (doc.docstatus == 1 && !doc.has_incoming)"
+  },
+  {
+   "fieldname": "section_break_outgoing_files",
+   "fieldtype": "Section Break",
+   "label": "Outgoing Files"
   },
   {
    "allow_on_submit": 0,

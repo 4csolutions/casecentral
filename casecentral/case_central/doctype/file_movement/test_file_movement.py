@@ -170,6 +170,7 @@ class TestFileMovement(FrappeTestCase):
         res = get_scan_information("NON-EXISTENT-MATTER-999")
         self.assertIsNotNone(res)
         self.assertEqual(res["type"], "not_found")
+        self.assertIn("No such Matter ID or Case exists", res["message"])
 
     def test_outgoing_with_files_and_autoname(self):
         """Outgoing movement creates FM-.#####, sets status to Taken Away and Matter to Working."""
