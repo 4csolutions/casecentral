@@ -10,6 +10,10 @@ frappe.listview_settings["File Movement"] = {
             return [__("Missing Files"), "red", "status,=,Missing Files"];
         } else if (doc.status === "Received") {
             return [__("Received"), "green", "status,=,Received"];
+        } else if (doc.status === "Incoming Cancelled") {
+            return [__("Incoming Cancelled"), "darkgrey", "status,=,Incoming Cancelled"];
+        } else if (doc.status === "Cancelled" || doc.docstatus === 2) {
+            return [__("Cancelled"), "red", "status,=,Cancelled"];
         } else if (doc.status === "Draft" || doc.docstatus === 0) {
             return [__("Draft"), "red", "status,=,Draft"];
         }
