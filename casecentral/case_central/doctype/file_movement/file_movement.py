@@ -1,3 +1,4 @@
+
 # Copyright (c) 2026, 4C Solutions and Contributors
 # See license.txt
 
@@ -235,22 +236,11 @@ def get_scan_information(value):
             "barcode": value
         }
 
-    # 4. Check if Case_Files record
-    if frappe.db.exists("Case_Files", value) or frappe.db.exists("Case_Files", {"case_number": value}):
-        cf_name = value if frappe.db.exists("Case_Files", value) else frappe.db.get_value("Case_Files", {"case_number": value}, "name")
-        return {
-            "type": "case_file",
-            "case_file": cf_name,
-            "barcode": value,
-            "matter": "",
-            "case": ""
-        }
-
     # If it does not match anything in the system
     return {
         "type": "not_found",
         "value": value,
-        "message": f"Scanned value '{value}' does not match any existing Matter ID, Case, or Barcode."
+        "message": f"No such Matter ID or Case exists: '{value}'"
     }
 
 
@@ -509,7 +499,7 @@ def scan_incoming_file(movement_name, value):
             if not info or info.get("type") == "not_found":
                 return {
                     "status": "error",
-                    "message": f"Scanned value '<b>{value}</b>' does not match any existing Matter, Case, or Barcode."
+                    "message": f"No such Matter ID or Case exists: '{value}'"
                 }
 
             if info["type"] == "case":
@@ -524,20 +514,6 @@ def scan_incoming_file(movement_name, value):
                     "matter": matching_out[0].get("matter") or "",
                     "case": case_val,
                     "barcode": matching_out[0].get("barcode") or info.get("barcode") or ""
-                })
-
-            elif info["type"] == "case_file":
-                barcode_val = info["barcode"]
-                matching_out = [r for r in outgoing if r.get("barcode") == barcode_val]
-                if not matching_out:
-                    return {
-                        "status": "error",
-                        "message": f"Barcode '<b>{barcode_val}</b>' is not part of Outgoing Files in this movement."
-                    }
-                items_to_add.append({
-                    "matter": matching_out[0].get("matter") or "",
-                    "case": matching_out[0].get("case") or "",
-                    "barcode": barcode_val
                 })
 
     # Filter out items already in incoming_files

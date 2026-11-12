@@ -4,6 +4,13 @@
 frappe.ui.form.on("File Movement", {
 
     onload: function (frm) {
+        frappe.dom.set_style(`
+            [data-fieldname="scan_barcode"] .control-label,
+            [data-fieldname="scan_barcode"] label {
+                font-weight: 700 !important;
+                font-size: 13px !important;
+            }
+        `);
         setup_scan_barcode_input(frm);
         setup_giver_receiver_filter(frm);
     },
@@ -187,6 +194,16 @@ frappe.ui.form.on("File Movement Item", {
 // SCAN BARCODE (UNIFIED OUTGOING & INCOMING SCANNER)
 // =========================================================
 
+function show_single_scan_error(msg) {
+    frappe.hide_msgprint(true);
+    frappe.msgprint({
+        title: __("Invalid Scan"),
+        indicator: "red",
+        message: msg,
+        clear: true
+    });
+}
+
 function setup_scan_barcode_input(frm) {
     if (!frm.fields_dict.scan_barcode) return;
 
@@ -199,6 +216,14 @@ function setup_scan_barcode_input(frm) {
     frm.set_df_property("scan_barcode", "label", label);
 
     var field = frm.fields_dict.scan_barcode;
+    if (field.$wrapper) {
+        field.$wrapper.find(".control-label, label").css({
+            "font-weight": "700",
+            "font-size": "13px",
+            "color": "var(--text-color)"
+        });
+    }
+
     if (field.$input) {
         field.$input.attr("placeholder", placeholder);
         field.$input.off("keydown.fm_scan").on("keydown.fm_scan", function (e) {
@@ -230,11 +255,8 @@ function process_outgoing_scan(frm, code) {
         callback: function (r) {
             var data = r.message;
             if (!data || data.type === "not_found") {
-                frappe.msgprint({
-                    title: __("Not Found"),
-                    indicator: "red",
-                    message: (data && data.message) || __("Scanned value '<b>{0}</b>' does not exist in Case Central.", [code])
-                });
+                var err_msg = (data && data.message) || __("No such Matter ID or Case exists: '<b>{0}</b>'", [frappe.utils.escape_html(code)]);
+                show_single_scan_error(err_msg);
                 return;
             }
 
@@ -734,11 +756,8 @@ function process_incoming_scan(frm, code) {
             var res = r.message;
 
             if (res.status === "error") {
-                frappe.msgprint({
-                    title: __("Not Found in Outgoing Files"),
-                    indicator: "red",
-                    message: res.message
-                });
+                show_single_scan_error(res.message);
+                return;
             } else if (res.status === "warning") {
                 frappe.show_alert({
                     message: res.message,
