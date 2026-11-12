@@ -106,7 +106,7 @@ class FileMovement(Document):
             return
 
         if not self.get("incoming_files"):
-            self.status = ""
+            self.status = "Incoming Created"
             self.set("missing_file_items", [])
             return
 
@@ -382,13 +382,13 @@ def create_incoming(movement_name):
     if not doc.incoming_date:
         doc.incoming_date = frappe.utils.now_datetime()
 
-    doc.status = ""
+    doc.status = "Incoming Created"
     doc.set("missing_file_items", [])
 
     frappe.db.set_value("File Movement", doc.name, {
         "has_incoming": 1,
         "incoming_date": doc.incoming_date,
-        "status": ""
+        "status": "Incoming Created"
     })
 
     frappe.db.delete("Missing File Items", {"parent": doc.name})
@@ -396,7 +396,7 @@ def create_incoming(movement_name):
     return {
         "name": doc.name,
         "has_incoming": 1,
-        "status": "",
+        "status": "Incoming Created",
         "missing_count": 0
     }
 
