@@ -4,14 +4,12 @@
 frappe.ui.form.on("File Movement", {
 
     onload: function (frm) {
-        setup_scan_outgoing_barcode_input(frm);
-        setup_scan_incoming_barcode_input(frm);
+        setup_scan_barcode_input(frm);
         setup_giver_receiver_filter(frm);
     },
 
     refresh: function (frm) {
-        setup_scan_outgoing_barcode_input(frm);
-        setup_scan_incoming_barcode_input(frm);
+        setup_scan_barcode_input(frm);
         setup_giver_receiver_filter(frm);
 
         frm.remove_custom_button("Create Incoming");
@@ -51,18 +49,15 @@ frappe.ui.form.on("File Movement", {
         }
     },
 
-    scan_outgoing_barcode: function (frm) {
-        var val = (frm.doc.scan_outgoing_barcode || "").trim();
+    scan_barcode: function (frm) {
+        var val = (frm.doc.scan_barcode || "").trim();
         if (!val) return;
-        frm.set_value("scan_outgoing_barcode", "");
-        process_outgoing_scan(frm, val);
-    },
-
-    scan_incoming_barcode: function (frm) {
-        var val = (frm.doc.scan_incoming_barcode || "").trim();
-        if (!val) return;
-        frm.set_value("scan_incoming_barcode", "");
-        process_incoming_scan(frm, val);
+        frm.set_value("scan_barcode", "");
+        if (frm.doc.has_incoming) {
+            process_incoming_scan(frm, val);
+        } else {
+            process_outgoing_scan(frm, val);
+        }
     }
 });
 
@@ -189,23 +184,35 @@ frappe.ui.form.on("File Movement Item", {
 
 
 // =========================================================
-// SCAN OUTGOING BARCODE (DRAFT OUTGOING SECTION)
+// SCAN BARCODE (UNIFIED OUTGOING & INCOMING SCANNER)
 // =========================================================
 
-function setup_scan_outgoing_barcode_input(frm) {
-    if (!frm.fields_dict.scan_outgoing_barcode) return;
+function setup_scan_barcode_input(frm) {
+    if (!frm.fields_dict.scan_barcode) return;
 
-    var field = frm.fields_dict.scan_outgoing_barcode;
+    var is_incoming = Boolean(frm.doc.has_incoming);
+    var label = is_incoming ? __("Scan Incoming") : __("Scan Outgoing");
+    var placeholder = is_incoming
+        ? __("Scan Barcode / Matter ID / Case to Receive into Incoming Files...")
+        : __("Scan Barcode / Matter ID / Case to Add to Outgoing Files...");
+
+    frm.set_df_property("scan_barcode", "label", label);
+
+    var field = frm.fields_dict.scan_barcode;
     if (field.$input) {
-        field.$input.attr("placeholder", __("Scan Barcode / Matter ID / Case to Add to Outgoing Files..."));
-        field.$input.off("keydown.fm_out_scan").on("keydown.fm_out_scan", function (e) {
+        field.$input.attr("placeholder", placeholder);
+        field.$input.off("keydown.fm_scan").on("keydown.fm_scan", function (e) {
             if (e.which === 13) {
                 e.preventDefault();
                 var val = $(this).val().trim();
                 if (val) {
                     $(this).val("");
-                    frm.set_value("scan_outgoing_barcode", "");
-                    process_outgoing_scan(frm, val);
+                    frm.set_value("scan_barcode", "");
+                    if (frm.doc.has_incoming) {
+                        process_incoming_scan(frm, val);
+                    } else {
+                        process_outgoing_scan(frm, val);
+                    }
                 }
             }
         });
@@ -710,29 +717,6 @@ function show_return_case_selection_dialog(matter, cases, on_select, on_cancel) 
 }
 
 
-// =========================================================
-// SCAN INCOMING BARCODE (SUBMITTED INCOMING SECTION)
-// =========================================================
-
-function setup_scan_incoming_barcode_input(frm) {
-    if (!frm.fields_dict.scan_incoming_barcode) return;
-
-    var field = frm.fields_dict.scan_incoming_barcode;
-    if (field.$input) {
-        field.$input.attr("placeholder", __("Scan Barcode / Matter ID / Case to Receive into Incoming Files..."));
-        field.$input.off("keydown.fm_inc_scan").on("keydown.fm_inc_scan", function (e) {
-            if (e.which === 13) {
-                e.preventDefault();
-                var val = $(this).val().trim();
-                if (val) {
-                    $(this).val("");
-                    frm.set_value("scan_incoming_barcode", "");
-                    process_incoming_scan(frm, val);
-                }
-            }
-        });
-    }
-}
 
 function process_incoming_scan(frm, code) {
     if (!code) return;

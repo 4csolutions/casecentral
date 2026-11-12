@@ -100,7 +100,12 @@ class FileMovement(Document):
 
     def update_missing_files_and_status(self):
         if not self.has_incoming and not self.get("incoming_files"):
-            self.status = "Open"
+            self.status = "Taken Away" if self.docstatus == 1 else "Draft"
+            self.set("missing_file_items", [])
+            return
+
+        if not self.get("incoming_files"):
+            self.status = ""
             self.set("missing_file_items", [])
             return
 
@@ -117,8 +122,8 @@ class FileMovement(Document):
             row.case = item.get("case") or ""
 
     def on_submit(self):
-        self.status = "Open"
-        self.db_set("status", "Open")
+        self.status = "Taken Away"
+        self.db_set("status", "Taken Away")
         self.update_outgoing_linked_statuses()
 
     def on_cancel(self):
@@ -387,28 +392,22 @@ def create_incoming(movement_name):
     if not doc.incoming_date:
         doc.incoming_date = frappe.utils.now_datetime()
 
-    missing = calculate_missing_files_from_doc(doc)
-    doc.set_missing_file_table(missing)
-    doc.status = "Missing Files" if missing else "Received"
+    doc.status = ""
+    doc.set("missing_file_items", [])
 
     frappe.db.set_value("File Movement", doc.name, {
         "has_incoming": 1,
         "incoming_date": doc.incoming_date,
-        "status": doc.status
+        "status": ""
     })
 
     frappe.db.delete("Missing File Items", {"parent": doc.name})
-    for row in doc.missing_file_items:
-        row.parent = doc.name
-        row.parenttype = "File Movement"
-        row.parentfield = "missing_file_items"
-        row.db_insert()
 
     return {
         "name": doc.name,
         "has_incoming": 1,
-        "status": doc.status,
-        "missing_count": len(missing)
+        "status": "",
+        "missing_count": 0
     }
 
 

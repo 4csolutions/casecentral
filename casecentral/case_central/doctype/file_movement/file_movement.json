@@ -15,10 +15,9 @@
   "status",
   "amended_from",
   "section_break_outgoing_files",
-  "scan_outgoing_barcode",
+  "scan_barcode",
   "outgoing_files",
   "section_break_incoming_files",
-  "scan_incoming_barcode",
   "incoming_files",
   "section_break_missing_files",
   "missing_file_items"
@@ -69,13 +68,13 @@
   },
   {
    "allow_on_submit": 1,
-   "default": "Open",
+   "default": "Draft",
    "fieldname": "status",
    "fieldtype": "Select",
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Status",
-   "options": "Open\nMissing Files\nReceived",
+   "options": "\nDraft\nTaken Away\nMissing Files\nReceived",
    "read_only": 1
   },
   {
@@ -94,11 +93,12 @@
    "label": "Outgoing Files"
   },
   {
-   "fieldname": "scan_outgoing_barcode",
+   "allow_on_submit": 1,
+   "fieldname": "scan_barcode",
    "fieldtype": "Data",
-   "label": "Scan Outgoing Barcode",
+   "label": "Scan Outgoing",
    "options": "Barcode",
-   "read_only_depends_on": "eval:doc.docstatus == 1"
+   "read_only_depends_on": "eval:doc.status == 'Received' || (doc.docstatus == 1 && !doc.has_incoming)"
   },
   {
    "allow_on_submit": 0,
@@ -115,14 +115,6 @@
    "fieldname": "section_break_incoming_files",
    "fieldtype": "Section Break",
    "label": "Incoming Files"
-  },
-  {
-   "allow_on_submit": 1,
-   "depends_on": "eval:doc.has_incoming || (doc.incoming_files && doc.incoming_files.length > 0)",
-   "fieldname": "scan_incoming_barcode",
-   "fieldtype": "Data",
-   "label": "Scan Incoming Barcode",
-   "options": "Barcode"
   },
   {
    "allow_on_submit": 1,
