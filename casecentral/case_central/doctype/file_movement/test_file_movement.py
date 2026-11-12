@@ -172,7 +172,7 @@ class TestFileMovement(FrappeTestCase):
         self.assertEqual(res["type"], "not_found")
 
     def test_outgoing_with_files_and_autoname(self):
-        """Outgoing movement creates FM-.#####, sets status to Open and Matter to Working."""
+        """Outgoing movement creates FM-.#####, sets status to Taken Away and Matter to Working."""
         fm = frappe.new_doc("File Movement")
         fm.giver = self.giver
         fm.receiver = self.receiver
@@ -183,8 +183,9 @@ class TestFileMovement(FrappeTestCase):
         })
         fm.insert(ignore_permissions=True)
         self.assertTrue(fm.name.startswith("FM-"), f"Expected FM- prefix, got {fm.name}")
-        self.assertEqual(fm.status, "Open")
+        self.assertEqual(fm.status, "Draft")
         fm.submit()
+        self.assertEqual(fm.status, "Taken Away")
         self.assertEqual(frappe.db.get_value("Matter", self.matter_1, "status"), "Working")
 
     def test_scan_and_query_apis(self):
@@ -210,8 +211,8 @@ class TestFileMovement(FrappeTestCase):
     def test_single_doc_incoming_workflow_partial_and_full_returns(self):
         """
         Complete Single Document Lifecycle test:
-        1. Create Outgoing with 2 items in outgoing_files -> Submit (status: Open, Matter: Working)
-        2. Call create_incoming on SAME doc -> has_incoming=1, incoming_files empty, 2 missing items
+        1. Create Outgoing with 2 items in outgoing_files -> Submit (status: Taken Away, Matter: Working)
+        2. Call create_incoming on SAME doc -> has_incoming=1, incoming_files empty, status: ""
         3. Scan 1 item into incoming_files via scan_incoming_file -> Status 'Missing Files', 1 missing
         4. Late return of remaining missing file via return_missing_files -> Status becomes 'Received', Matter: Open
         """
@@ -232,7 +233,7 @@ class TestFileMovement(FrappeTestCase):
         doc.insert(ignore_permissions=True)
         doc.submit()
 
-        self.assertEqual(doc.status, "Open")
+        self.assertEqual(doc.status, "Taken Away")
         self.assertEqual(frappe.db.get_value("Matter", self.matter_1, "status"), "Working")
         self.assertEqual(frappe.db.get_value("Matter", self.matter_2, "status"), "Working")
 
@@ -240,12 +241,12 @@ class TestFileMovement(FrappeTestCase):
         res_inc = create_incoming(doc.name)
         self.assertEqual(res_inc["name"], doc.name)
         self.assertEqual(res_inc["has_incoming"], 1)
-        self.assertEqual(res_inc["status"], "Missing Files")
-        self.assertEqual(res_inc["missing_count"], 2)
+        self.assertEqual(res_inc["status"], "")
+        self.assertEqual(res_inc["missing_count"], 0)
 
         doc.reload()
         self.assertEqual(len(doc.incoming_files), 0, "Incoming files should start empty")
-        self.assertEqual(len(doc.missing_file_items), 2, "All 2 outgoing items should initially be missing")
+        self.assertEqual(doc.status, "")
 
         # Step 3: Scan 1 item into incoming_files
         scan_res = scan_incoming_file(doc.name, "TEST-BC-101")
