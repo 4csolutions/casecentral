@@ -242,12 +242,12 @@ class TestFileMovement(FrappeTestCase):
         res_inc = create_incoming(doc.name)
         self.assertEqual(res_inc["name"], doc.name)
         self.assertEqual(res_inc["has_incoming"], 1)
-        self.assertEqual(res_inc["status"], "")
+        self.assertEqual(res_inc["status"], "Incoming Created")
         self.assertEqual(res_inc["missing_count"], 0)
 
         doc.reload()
         self.assertEqual(len(doc.incoming_files), 0, "Incoming files should start empty")
-        self.assertEqual(doc.status, "")
+        self.assertEqual(doc.status, "Incoming Created")
 
         # Step 3: Scan 1 item into incoming_files
         scan_res = scan_incoming_file(doc.name, "TEST-BC-101")

@@ -4,6 +4,8 @@ frappe.listview_settings["File Movement"] = {
     get_indicator: function (doc) {
         if (doc.status === "Taken Away") {
             return [__("Taken Away"), "orange", "status,=,Taken Away"];
+        } else if (doc.status === "Incoming Created") {
+            return [__("Incoming Created"), "blue", "status,=,Incoming Created"];
         } else if (doc.status === "Missing Files") {
             return [__("Missing Files"), "red", "status,=,Missing Files"];
         } else if (doc.status === "Received") {
