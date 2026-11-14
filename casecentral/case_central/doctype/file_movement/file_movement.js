@@ -4,13 +4,6 @@
 frappe.ui.form.on("File Movement", {
 
     onload: function (frm) {
-        frappe.dom.set_style(`
-            [data-fieldname="scan_barcode"] .control-label,
-            [data-fieldname="scan_barcode"] label {
-                font-weight: 700 !important;
-                font-size: 13px !important;
-            }
-        `);
         setup_scan_barcode_input(frm);
         setup_giver_receiver_filter(frm);
     },
@@ -336,29 +329,6 @@ function process_outgoing_scan(frm, code) {
                     message: __("Added Case <b>{0}</b> to Outgoing Files.", [data.case_name]),
                     indicator: "green"
                 });
-
-            } else if (data.type === "case_file") {
-                var exists = (frm.doc.outgoing_files || []).some(function (item) {
-                    return item.barcode === data.barcode;
-                });
-                if (exists) {
-                    frappe.show_alert({
-                        message: __("Barcode <b>{0}</b> is already in Outgoing Files.", [data.barcode]),
-                        indicator: "orange"
-                    });
-                    return;
-                }
-
-                var row = frm.add_child("outgoing_files");
-                row.matter = data.matter || "";
-                row.case = data.case || "";
-                row.barcode = data.barcode;
-                frm.refresh_field("outgoing_files");
-
-                frappe.show_alert({
-                    message: __("Added Barcode <b>{0}</b> to Outgoing Files.", [data.barcode]),
-                    indicator: "green"
-                });
             }
         }
     });
@@ -402,8 +372,8 @@ function show_case_selection_dialog(frm, matter, cases, target_row, on_cancel) {
         var status_badge = c.status ? `<span class="badge badge-secondary" style="font-size: 11px;">${frappe.utils.escape_html(c.status)}</span>` : "";
         var disabled_attr = is_added ? "disabled" : "";
         var row_style = is_added
-            ? "display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; margin-bottom: 6px; border: 1px solid var(--border-color); border-radius: 6px; opacity: 0.6; background: var(--bg-light-gray, #f9f9f9);"
-            : "display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; margin-bottom: 6px; border: 1px solid var(--border-color); border-radius: 6px; cursor: pointer; background: var(--card-bg, #fff); transition: background 0.15s ease;";
+            ? "display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; margin-bottom: 6px; border: 1px solid var(--border-color); border-radius: 6px; opacity: 0.6; background: var(--subtle-accent-bg, var(--control-bg));"
+            : "display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; margin-bottom: 6px; border: 1px solid var(--border-color); border-radius: 6px; cursor: pointer; background: var(--card-bg, var(--fg-color)); transition: background 0.15s ease;";
         var already_added_note = is_added ? `<span class="badge badge-warning" style="margin-left: 6px; font-size: 10px;">${__("Already in Outgoing Files")}</span>` : "";
         var title_html = c.case_title ? `<div class="text-muted" style="font-size: 12px; margin-top: 3px;">${frappe.utils.escape_html(c.case_title)}</div>` : "";
         var search_meta = ((c.name || "") + " " + (c.barcode || "") + " " + (c.case_title || "") + " " + (c.status || "")).toLowerCase();
@@ -445,7 +415,7 @@ function show_case_selection_dialog(frm, matter, cases, target_row, on_cancel) {
                 <input type="text" class="form-control form-control-sm case-filter-input" placeholder="${__("Type to filter cases by ID, barcode, title, or status...")}">
             </div>
 
-            <div class="case-list-scrollable" style="max-height: 320px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 6px; padding: 6px; background: var(--control-bg, #fafafa);">
+            <div class="case-list-scrollable" style="max-height: 320px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 6px; padding: 6px; background: var(--control-bg, var(--subtle-accent-bg));">
                 ${rows_html}
             </div>
         </div>
@@ -610,7 +580,7 @@ function show_return_case_selection_dialog(matter, cases, on_select, on_cancel) 
         var search_meta = ((c.case || "") + " " + (c.barcode || "") + " " + (c.case_title || "") + " " + (c.status || "")).toLowerCase();
 
         rows_html += `
-            <div class="return-case-item-card" data-case-name="${frappe.utils.escape_html(c.case || '')}" data-search="${frappe.utils.escape_html(search_meta)}" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; margin-bottom: 6px; border: 1px solid var(--border-color); border-radius: 6px; cursor: pointer; background: var(--card-bg, #fff); transition: background 0.15s ease;">
+            <div class="return-case-item-card" data-case-name="${frappe.utils.escape_html(c.case || '')}" data-search="${frappe.utils.escape_html(search_meta)}" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; margin-bottom: 6px; border: 1px solid var(--border-color); border-radius: 6px; cursor: pointer; background: var(--card-bg, var(--fg-color)); transition: background 0.15s ease;">
                 <div style="display: flex; align-items: flex-start; gap: 12px; flex: 1;">
                     <input type="checkbox" class="return-case-select-checkbox" data-case-name="${frappe.utils.escape_html(c.case || '')}" style="margin-top: 3px; cursor: pointer; transform: scale(1.15);">
                     <div style="flex: 1;">
@@ -645,7 +615,7 @@ function show_return_case_selection_dialog(matter, cases, on_select, on_cancel) 
                 <input type="text" class="form-control form-control-sm return-case-filter-input" placeholder="${__("Type to filter cases by ID, barcode, title, or status...")}">
             </div>
 
-            <div class="case-list-scrollable" style="max-height: 300px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 6px; padding: 6px; background: var(--control-bg, #fafafa);">
+            <div class="case-list-scrollable" style="max-height: 300px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 6px; padding: 6px; background: var(--control-bg, var(--subtle-accent-bg));">
                 ${rows_html}
             </div>
         </div>
@@ -1183,36 +1153,36 @@ function render_missing_table_html(items) {
     var total_count = items.length;
 
     var rows_html = items.map(function (item, idx) {
-        var row_bg = item.scanned ? "background-color: #f0fdf4;" : "";
+        var row_bg = item.scanned ? "background-color: var(--bg-green-50, rgba(34, 197, 94, 0.08));" : "";
         var badge_html = item.scanned
-            ? '<span class="badge" style="background-color: #dcfce7; color: #15803d; font-weight: 600; padding: 4px 8px; border-radius: 4px;"><i class="fa fa-check" style="margin-right: 4px;"></i>' + __("Scanned to Return") + '</span>'
-            : '<span class="badge" style="background-color: #fef3c7; color: #b45309; font-weight: 500; padding: 4px 8px; border-radius: 4px;">' + __("Pending Scan") + '</span>';
+            ? '<span class="badge" style="background-color: var(--bg-green-100, rgba(34, 197, 94, 0.18)); color: var(--text-green-700, #15803d); font-weight: 600; padding: 4px 8px; border-radius: 4px;"><i class="fa fa-check" style="margin-right: 4px;"></i>' + __("Scanned to Return") + '</span>'
+            : '<span class="badge" style="background-color: var(--bg-yellow-100, rgba(234, 179, 8, 0.18)); color: var(--text-yellow-700, #b45309); font-weight: 500; padding: 4px 8px; border-radius: 4px;">' + __("Pending Scan") + '</span>';
 
         return '<tr style="' + row_bg + '">' +
-            '<td style="text-align: center; color: #64748b; font-weight: 500;">' + (idx + 1) + '</td>' +
-            '<td style="font-weight: 600; color: #1e293b;">' + (item.matter || "-") + '</td>' +
-            '<td>' + (item.case || "-") + '</td>' +
-            '<td><code>' + (item.barcode || "-") + '</code></td>' +
+            '<td style="text-align: center; color: var(--text-muted); font-weight: 500;">' + (idx + 1) + '</td>' +
+            '<td style="font-weight: 600; color: var(--text-color);">' + frappe.utils.escape_html(item.matter || "-") + '</td>' +
+            '<td style="color: var(--text-color);">' + frappe.utils.escape_html(item.case || "-") + '</td>' +
+            '<td><code>' + frappe.utils.escape_html(item.barcode || "-") + '</code></td>' +
             '<td style="text-align: center;">' + badge_html + '</td>' +
             '</tr>';
     }).join("");
 
     return '<div style="margin-top: 15px;">' +
         '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">' +
-        '<span style="font-size: 13px; font-weight: 600; color: #334155;">' + __("Missing Files List ({0})", [total_count]) + '</span>' +
-        '<span style="font-size: 12px; font-weight: 600; color: ' + (scanned_count > 0 ? '#16a34a' : '#64748b') + ';">' +
+        '<span style="font-size: 13px; font-weight: 600; color: var(--heading-color, var(--text-color));">' + __("Missing Files List ({0})", [total_count]) + '</span>' +
+        '<span style="font-size: 12px; font-weight: 600; color: ' + (scanned_count > 0 ? 'var(--text-green-700, #16a34a)' : 'var(--text-muted)') + ';">' +
         __("{0} of {1} Scanned", [scanned_count, total_count]) +
         '</span>' +
         '</div>' +
-        '<div style="max-height: 240px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 6px;">' +
+        '<div style="max-height: 240px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 6px;">' +
         '<table class="table table-bordered table-condensed" style="margin: 0; font-size: 12px;">' +
-        '<thead style="background-color: #f8fafc; position: sticky; top: 0; z-index: 1;">' +
+        '<thead style="background-color: var(--table-header-bg, var(--control-bg)); position: sticky; top: 0; z-index: 1;">' +
         '<tr>' +
-        '<th style="width: 35px; text-align: center; color: #475569;">#</th>' +
-        '<th style="color: #475569;">' + __("Matter") + '</th>' +
-        '<th style="color: #475569;">' + __("Case") + '</th>' +
-        '<th style="color: #475569;">' + __("Barcode") + '</th>' +
-        '<th style="width: 140px; text-align: center; color: #475569;">' + __("Status") + '</th>' +
+        '<th style="width: 35px; text-align: center; color: var(--text-muted);">#</th>' +
+        '<th style="color: var(--text-muted);">' + __("Matter") + '</th>' +
+        '<th style="color: var(--text-muted);">' + __("Case") + '</th>' +
+        '<th style="color: var(--text-muted);">' + __("Barcode") + '</th>' +
+        '<th style="width: 140px; text-align: center; color: var(--text-muted);">' + __("Status") + '</th>' +
         '</tr>' +
         '</thead>' +
         '<tbody>' +
