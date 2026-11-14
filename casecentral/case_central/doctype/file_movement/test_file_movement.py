@@ -11,13 +11,85 @@ from casecentral.case_central.doctype.file_movement.file_movement import (
     return_missing_files,
     get_scan_information,
     get_cases_for_matter,
+    recalculate_matter_status_from_movements,
 )
 
 
 class TestFileMovement(FrappeTestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.ensure_prerequisite_doctypes()
+
+    @classmethod
+    def ensure_prerequisite_doctypes(cls):
+        """
+        Ensures prerequisite DocTypes exist when running in an isolated test environment
+        where ERPNext is not installed on test_site.
+        """
+        if not frappe.db.exists("DocType", "Employee"):
+            try:
+                emp_doctype = frappe.get_doc({
+                    "doctype": "DocType",
+                    "name": "Employee",
+                    "module": "Case Central",
+                    "custom": 1,
+                    "autoname": "Prompt",
+                    "fields": [
+                        {"fieldname": "employee_name", "fieldtype": "Data", "label": "Employee Name"},
+                        {"fieldname": "first_name", "fieldtype": "Data", "label": "First Name"},
+                        {"fieldname": "status", "fieldtype": "Data", "label": "Status"},
+                    ],
+                    "permissions": [{"role": "System Manager", "read": 1, "write": 1, "create": 1}]
+                })
+                emp_doctype.insert(ignore_permissions=True)
+            except Exception:
+                pass
+
+        if not frappe.db.exists("DocType", "Customer"):
+            try:
+                cust_doctype = frappe.get_doc({
+                    "doctype": "DocType",
+                    "name": "Customer",
+                    "module": "Case Central",
+                    "custom": 1,
+                    "autoname": "Prompt",
+                    "fields": [
+                        {"fieldname": "customer_name", "fieldtype": "Data", "label": "Customer Name"},
+                        {"fieldname": "customer_type", "fieldtype": "Data", "label": "Customer Type"},
+                        {"fieldname": "customer_group", "fieldtype": "Data", "label": "Customer Group"},
+                        {"fieldname": "territory", "fieldtype": "Data", "label": "Territory"},
+                    ],
+                    "permissions": [{"role": "System Manager", "read": 1, "write": 1, "create": 1}]
+                })
+                cust_doctype.insert(ignore_permissions=True)
+            except Exception:
+                pass
+
+        if not frappe.db.exists("DocType", "Company"):
+            try:
+                comp_doctype = frappe.get_doc({
+                    "doctype": "DocType",
+                    "name": "Company",
+                    "module": "Case Central",
+                    "custom": 1,
+                    "autoname": "Prompt",
+                    "fields": [
+                        {"fieldname": "company_name", "fieldtype": "Data", "label": "Company Name"},
+                        {"fieldname": "abbr", "fieldtype": "Data", "label": "Abbr"},
+                        {"fieldname": "default_currency", "fieldtype": "Data", "label": "Default Currency"},
+                        {"fieldname": "country", "fieldtype": "Data", "label": "Country"},
+                    ],
+                    "permissions": [{"role": "System Manager", "read": 1, "write": 1, "create": 1}]
+                })
+                comp_doctype.insert(ignore_permissions=True)
+            except Exception:
+                pass
+
     def setUp(self):
         super().setUp()
+        frappe.set_user("Administrator")
         self.giver = self.get_or_create_employee("TEST-GIVER-01", "Test Giver")
         self.receiver = self.get_or_create_employee("TEST-RECEIVER-01", "Test Receiver")
         self.matter_1 = self.get_or_create_matter("TEST-MATTER-01")
@@ -26,6 +98,7 @@ class TestFileMovement(FrappeTestCase):
         self.case_2 = self.get_or_create_case("CASE-TEST-002", self.matter_2, "Petitioner 2", "Respondent 2")
 
     def tearDown(self):
+        frappe.set_user("Administrator")
         super().tearDown()
 
     def get_or_create_employee(self, emp_id, emp_name):
@@ -214,7 +287,7 @@ class TestFileMovement(FrappeTestCase):
         """
         Complete Single Document Lifecycle test:
         1. Create Outgoing with 2 items in outgoing_files -> Submit (status: Taken Away, Matter: Working)
-        2. Call create_incoming on SAME doc -> has_incoming=1, incoming_files empty, status: ""
+        2. Call create_incoming on SAME doc -> has_incoming=1, incoming_files empty, status: Incoming Created
         3. Scan 1 item into incoming_files via scan_incoming_file -> Status 'Missing Files', 1 missing
         4. Late return of remaining missing file via return_missing_files -> Status becomes 'Received', Matter: Open
         """
@@ -338,6 +411,51 @@ class TestFileMovement(FrappeTestCase):
 
         # Attempt to delete cancelled doc must fail (traces preserved)
         self.assertRaises(frappe.ValidationError, doc.delete)
+
+    def test_whitelisted_endpoint_permissions(self):
+        """Mutating endpoints must enforce doc.check_permission('write') and read endpoints enforce 'read'."""
+        doc = frappe.new_doc("File Movement")
+        doc.giver = self.giver
+        doc.receiver = self.receiver
+        doc.append("outgoing_files", {
+            "barcode": "TEST-PERM-BC-01",
+            "matter": self.matter_1,
+            "case": self.case_1
+        })
+        doc.insert(ignore_permissions=True)
+        doc.submit()
+
+        # Guest user has no read or write permissions on File Movement
+        frappe.set_user("Guest")
+        try:
+            self.assertRaises(frappe.PermissionError, create_incoming, doc.name)
+            self.assertRaises(frappe.PermissionError, cancel_incoming, doc.name)
+            self.assertRaises(frappe.PermissionError, scan_incoming_file, doc.name, "TEST-PERM-BC-01")
+            self.assertRaises(frappe.PermissionError, return_missing_files, doc.name, files=[self.case_1])
+            self.assertRaises(frappe.PermissionError, get_missing_files, doc.name)
+        finally:
+            frappe.set_user("Administrator")
+
+    def test_frappe_qb_matter_status_recalculation(self):
+        """Verify frappe.qb recalculation of matter status across movements."""
+        doc = frappe.new_doc("File Movement")
+        doc.giver = self.giver
+        doc.receiver = self.receiver
+        doc.append("outgoing_files", {
+            "barcode": "TEST-QB-BC-01",
+            "matter": self.matter_1,
+            "case": self.case_1
+        })
+        doc.insert(ignore_permissions=True)
+        doc.submit()
+
+        recalculate_matter_status_from_movements(self.matter_1)
+        self.assertEqual(frappe.db.get_value("Matter", self.matter_1, "status"), "Working")
+
+        # Cancel the movement
+        doc.cancel()
+        recalculate_matter_status_from_movements(self.matter_1)
+        self.assertEqual(frappe.db.get_value("Matter", self.matter_1, "status"), "Open")
 
 
 def run_test_suite():

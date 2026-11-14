@@ -1,4 +1,3 @@
-
 # Copyright (c) 2026, 4C Solutions and Contributors
 # See license.txt
 
@@ -161,42 +160,71 @@ class FileMovement(Document):
 def recalculate_matter_status_from_movements(matter_name):
     """
     Checks whether all cases and files for a Matter have been returned.
-    If there are active unreturned movements (docstatus=1, status!='Received'),
+    If there are active unreturned movements (docstatus=1, status!='Received' and status!='Cancelled'),
     Matter status is set to 'Working'. Once all files are returned, status is 'Open'.
+    Uses Frappe Query Builder (frappe.qb) with batch querying to eliminate N+1 queries.
     """
     if not matter_name or not frappe.db.exists("Matter", matter_name):
         return
 
-    # Find unreturned movements containing this matter in outgoing_files
-    unreturned = frappe.db.sql("""
-        SELECT bfi.name, bfi.`case`, bfi.barcode, fm.name as movement_name
-        FROM `tabFile Movement Item` bfi
-        INNER JOIN `tabFile Movement` fm ON fm.name = bfi.parent
-        WHERE fm.docstatus = 1 
-          AND fm.status NOT IN ('Received', 'Cancelled')
-          AND bfi.parentfield = 'outgoing_files'
-          AND bfi.matter = %s
-    """, (matter_name,), as_dict=True)
+    bfi = frappe.qb.DocType("File Movement Item")
+    fm = frappe.qb.DocType("File Movement")
+
+    unreturned = (
+        frappe.qb.from_(bfi)
+        .inner_join(fm).on(fm.name == bfi.parent)
+        .select(bfi.name, bfi["case"], bfi.barcode, fm.name.as_("movement_name"))
+        .where(
+            (fm.docstatus == 1)
+            & (~fm.status.isin(["Received", "Cancelled"]))
+            & (bfi.parentfield == "outgoing_files")
+            & (bfi.matter == matter_name)
+        )
+    ).run(as_dict=True)
 
     if not unreturned:
         frappe.db.set_value("Matter", matter_name, "status", "Open")
         return
 
+    movement_names = list({row.movement_name for row in unreturned if row.get("movement_name")})
+
+    # Batch query all incoming_files items for these movements in a single frappe.qb call
+    inc_bfi = frappe.qb.DocType("File Movement Item")
+    incoming_items = (
+        frappe.qb.from_(inc_bfi)
+        .select(inc_bfi.parent, inc_bfi["case"], inc_bfi.barcode, inc_bfi.matter)
+        .where(
+            (inc_bfi.parent.isin(movement_names))
+            & (inc_bfi.parentfield == "incoming_files")
+        )
+    ).run(as_dict=True)
+
+    # In-memory matching to evaluate if any outgoing row remains unreturned
     has_unreturned = False
     for out_row in unreturned:
-        # Check if this outgoing item has been added into incoming_files of this movement
-        inc = frappe.db.sql("""
-            SELECT name FROM `tabFile Movement Item`
-            WHERE parent = %s 
-              AND parentfield = 'incoming_files'
-              AND (
-                  (`case` = %s AND %s != '') OR 
-                  (barcode = %s AND %s != '') OR 
-                  (matter = %s)
-              )
-        """, (out_row.movement_name, out_row.get("case") or "", out_row.get("case") or "", out_row.get("barcode") or "", out_row.get("barcode") or "", matter_name))
+        m_name = out_row.movement_name
+        o_case = (out_row.get("case") or "").strip()
+        o_barcode = (out_row.get("barcode") or "").strip()
 
-        if not inc:
+        matched = False
+        for inc_row in incoming_items:
+            if inc_row.get("parent") != m_name:
+                continue
+            i_case = (inc_row.get("case") or "").strip()
+            i_barcode = (inc_row.get("barcode") or "").strip()
+            i_matter = (inc_row.get("matter") or "").strip()
+
+            if o_case and i_case == o_case:
+                matched = True
+                break
+            if o_barcode and i_barcode == o_barcode:
+                matched = True
+                break
+            if not o_case and not o_barcode and i_matter == matter_name:
+                matched = True
+                break
+
+        if not matched:
             has_unreturned = True
             break
 
@@ -373,16 +401,18 @@ def calculate_missing_files_from_doc(doc):
 def create_incoming(movement_name):
     """
     Activates incoming workflow on the SAME File Movement document:
+    - Asserts write permission
     - Sets has_incoming = 1
     - Initializes incoming_date
     - Computes missing files (all outgoing items not in incoming_files)
-    - Updates status and persists missing_file_items
+    - Updates status and persists missing_file_items using standard Document Model save
     """
     movement_name = str(movement_name or "").strip()
     if not movement_name or not frappe.db.exists("File Movement", movement_name):
         frappe.throw("File Movement not found.")
 
     doc = frappe.get_doc("File Movement", movement_name)
+    doc.check_permission("write")
 
     if doc.docstatus != 1:
         frappe.throw("File Movement must be submitted before creating incoming.")
@@ -399,18 +429,9 @@ def create_incoming(movement_name):
         doc.status = "Incoming Created"
         doc.set("missing_file_items", [])
 
-    frappe.db.set_value("File Movement", doc.name, {
-        "has_incoming": 1,
-        "incoming_date": doc.incoming_date,
-        "status": doc.status
-    })
-
-    frappe.db.delete("Missing File Items", {"parent": doc.name})
-    for row in doc.missing_file_items:
-        row.parent = doc.name
-        row.parenttype = "File Movement"
-        row.parentfield = "missing_file_items"
-        row.db_insert()
+    doc.flags.ignore_validate_update_after_submit = True
+    doc.save(ignore_permissions=True)
+    doc.update_outgoing_linked_statuses()
 
     return {
         "name": doc.name,
@@ -424,15 +445,18 @@ def create_incoming(movement_name):
 def cancel_incoming(movement_name):
     """
     Cancels the incoming workflow on this File Movement without deleting or cancelling the whole document:
+    - Asserts write permission
     - Sets status to 'Incoming Cancelled'
     - Preserves all outgoing, incoming, and missing file traces intact
-    - Updates DB and recalculates linked matter statuses
+    - Updates DB and recalculates linked matter statuses using standard Document Model save
     """
     movement_name = str(movement_name or "").strip()
     if not movement_name or not frappe.db.exists("File Movement", movement_name):
         frappe.throw("File Movement not found.")
 
     doc = frappe.get_doc("File Movement", movement_name)
+    doc.check_permission("write")
+
     if doc.docstatus != 1:
         frappe.throw("File Movement must be submitted before cancelling incoming.")
 
@@ -440,7 +464,8 @@ def cancel_incoming(movement_name):
         frappe.throw("Incoming workflow has not been created for this movement.")
 
     doc.status = "Incoming Cancelled"
-    frappe.db.set_value("File Movement", doc.name, "status", "Incoming Cancelled")
+    doc.flags.ignore_validate_update_after_submit = True
+    doc.save(ignore_permissions=True)
 
     doc.update_outgoing_linked_statuses()
 
@@ -456,10 +481,11 @@ def cancel_incoming(movement_name):
 def scan_incoming_file(movement_name, value):
     """
     Scans a barcode, Case ID, or Matter ID into incoming_files for this movement:
+    - Asserts write permission
     - Verifies the item belongs to outgoing_files
     - Appends to incoming_files
     - Recalculates missing files and status (Received / Missing Files)
-    - Updates DB and Matter status in real time
+    - Updates DB and Matter status using standard Document Model save
     """
     movement_name = str(movement_name or "").strip()
     value = str(value or "").strip()
@@ -471,6 +497,8 @@ def scan_incoming_file(movement_name, value):
         frappe.throw("Barcode or ID is required.")
 
     doc = frappe.get_doc("File Movement", movement_name)
+    doc.check_permission("write")
+
     if doc.docstatus != 1:
         frappe.throw("Movement must be submitted before receiving files.")
 
@@ -586,13 +614,9 @@ def scan_incoming_file(movement_name, value):
             "message": f"All matching items for '<b>{value}</b>' are already scanned in Incoming Files."
         }
 
-    # Insert new items into incoming_files
+    # Append new items into incoming_files child table
     for item in new_items:
-        new_row = doc.append("incoming_files", item)
-        new_row.parent = doc.name
-        new_row.parenttype = "File Movement"
-        new_row.parentfield = "incoming_files"
-        new_row.db_insert()
+        doc.append("incoming_files", item)
 
     # Recalculate remaining missing
     remaining_missing = calculate_missing_files_from_doc(doc)
@@ -602,21 +626,8 @@ def scan_incoming_file(movement_name, value):
     if not doc.incoming_date:
         doc.incoming_date = frappe.utils.now_datetime()
 
-    frappe.db.set_value("File Movement", doc.name, {
-        "status": doc.status,
-        "has_incoming": 1,
-        "incoming_date": doc.incoming_date
-    })
-
-    # Update missing file items in DB
-    frappe.db.delete("Missing File Items", {"parent": doc.name})
-    for row in doc.missing_file_items:
-        row.parent = doc.name
-        row.parenttype = "File Movement"
-        row.parentfield = "missing_file_items"
-        row.db_insert()
-
-    # Update matter statuses
+    doc.flags.ignore_validate_update_after_submit = True
+    doc.save(ignore_permissions=True)
     doc.update_outgoing_linked_statuses()
 
     return {
@@ -635,6 +646,7 @@ def get_missing_files(movement_name):
         return []
 
     doc = frappe.get_doc("File Movement", movement_name)
+    doc.check_permission("read")
     return calculate_missing_files_from_doc(doc)
 
 
@@ -647,13 +659,18 @@ def return_missing_files(
     selected_cases=None
 ):
     """
-    Returns missing files directly into incoming_files of this single document.
+    Returns missing files directly into incoming_files of this single document:
+    - Asserts write permission
+    - Appends returned files to incoming_files
+    - Updates status and persists child tables via Document Model save
     """
     movement_name = str(movement_name or "").strip()
     if not movement_name:
         frappe.throw("Movement name is required.")
 
     doc = frappe.get_doc("File Movement", movement_name)
+    doc.check_permission("write")
+
     if doc.docstatus != 1:
         frappe.throw("Movement must be submitted first.")
 
@@ -706,15 +723,11 @@ def return_missing_files(
 
         if matched_out:
             if not is_item_returned(matched_out, incoming):
-                new_row = doc.append("incoming_files", {
+                doc.append("incoming_files", {
                     "barcode": matched_out.get("barcode") or "",
                     "matter": matched_out.get("matter") or "",
                     "case": matched_out.get("case") or ""
                 })
-                new_row.parent = doc.name
-                new_row.parenttype = "File Movement"
-                new_row.parentfield = "incoming_files"
-                new_row.db_insert()
                 added_count += 1
         else:
             # Direct insert if not strictly matched
@@ -727,11 +740,7 @@ def return_missing_files(
 
             entry = {"barcode": t_barcode, "matter": t_matter, "case": t_case}
             if not is_item_returned(entry, incoming):
-                new_row = doc.append("incoming_files", entry)
-                new_row.parent = doc.name
-                new_row.parenttype = "File Movement"
-                new_row.parentfield = "incoming_files"
-                new_row.db_insert()
+                doc.append("incoming_files", entry)
                 added_count += 1
 
     remaining_missing = calculate_missing_files_from_doc(doc)
@@ -739,18 +748,8 @@ def return_missing_files(
     doc.status = "Received" if len(remaining_missing) == 0 else "Missing Files"
     doc.has_incoming = 1
 
-    frappe.db.set_value("File Movement", doc.name, {
-        "status": doc.status,
-        "has_incoming": 1
-    })
-
-    frappe.db.delete("Missing File Items", {"parent": doc.name})
-    for row in doc.missing_file_items:
-        row.parent = doc.name
-        row.parenttype = "File Movement"
-        row.parentfield = "missing_file_items"
-        row.db_insert()
-
+    doc.flags.ignore_validate_update_after_submit = True
+    doc.save(ignore_permissions=True)
     doc.update_outgoing_linked_statuses()
 
     return {
