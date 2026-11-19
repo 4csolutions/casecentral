@@ -11,6 +11,7 @@ dependencies = [
     "docxtpl",
     "docxcompose",
     "html-for-docx",
+    "mammoth",
 ]
 
 [build-system]
