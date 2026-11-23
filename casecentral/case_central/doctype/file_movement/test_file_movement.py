@@ -316,12 +316,12 @@ class TestFileMovement(FrappeTestCase):
         res_inc = create_incoming(doc.name)
         self.assertEqual(res_inc["name"], doc.name)
         self.assertEqual(res_inc["has_incoming"], 1)
-        self.assertEqual(res_inc["status"], "Incoming Created")
+        self.assertEqual(res_inc["status"], "Taken Away / Incoming Created")
         self.assertEqual(res_inc["missing_count"], 0)
 
         doc.reload()
         self.assertEqual(len(doc.incoming_files), 0, "Incoming files should start empty")
-        self.assertEqual(doc.status, "Incoming Created")
+        self.assertEqual(doc.status, "Taken Away / Incoming Created")
 
         # Step 3: Scan 1 item into incoming_files
         scan_res = scan_incoming_file(doc.name, "TEST-BC-101")
@@ -349,7 +349,7 @@ class TestFileMovement(FrappeTestCase):
         self.assertEqual(frappe.db.get_value("Matter", self.matter_2, "status"), "Open")
 
     def test_cancel_incoming_preserves_traces(self):
-        """Cancelling incoming preserves the whole FM and traces, sets status to Incoming Cancelled."""
+        """Cancelling incoming resets status to 'Taken Away', has_incoming to 0, and allows re-creating incoming."""
         doc = frappe.new_doc("File Movement")
         doc.giver = self.giver
         doc.receiver = self.receiver
@@ -367,23 +367,85 @@ class TestFileMovement(FrappeTestCase):
         # Create incoming
         create_incoming(doc.name)
         doc.reload()
-        self.assertEqual(doc.status, "Incoming Created")
+        self.assertEqual(doc.status, "Taken Away / Incoming Created")
+        self.assertEqual(doc.has_incoming, 1)
 
         # Cancel incoming (not the whole FM)
         res_can = cancel_incoming(doc.name)
-        self.assertEqual(res_can["status"], "Incoming Cancelled")
+        self.assertEqual(res_can["status"], "Taken Away")
+        self.assertEqual(res_can["has_incoming"], 0)
 
         doc.reload()
         self.assertEqual(doc.docstatus, 1, "Docstatus must remain 1 (submitted), NOT cancelled/deleted")
-        self.assertEqual(doc.status, "Incoming Cancelled")
+        self.assertEqual(doc.status, "Taken Away")
+        self.assertEqual(doc.has_incoming, 0)
         self.assertEqual(len(doc.outgoing_files), 1, "Outgoing files traces must be preserved")
         self.assertEqual(frappe.db.get_value("Matter", self.matter_1, "status"), "Working")
 
-        # Reopen incoming
+        # Reopen/Re-create incoming
         res_reopen = create_incoming(doc.name)
-        self.assertEqual(res_reopen["status"], "Incoming Created")
+        self.assertEqual(res_reopen["status"], "Taken Away / Incoming Created")
+        self.assertEqual(res_reopen["has_incoming"], 1)
         doc.reload()
-        self.assertEqual(doc.status, "Incoming Created")
+        self.assertEqual(doc.status, "Taken Away / Incoming Created")
+
+    def test_delete_incoming_file_resets_status_to_taken_away(self):
+        """
+        When user returns 1 file from multiple files, status is 'Missing Files'.
+        When user deletes the returned file from incoming_files, status reverts to 'Taken Away / Incoming Created'.
+        Cancelling incoming resets has_incoming=0 and allows creating incoming again.
+        """
+        doc = frappe.new_doc("File Movement")
+        doc.giver = self.giver
+        doc.receiver = self.receiver
+        doc.append("outgoing_files", {
+            "barcode": "TEST-BC-DEL-01",
+            "matter": self.matter_1,
+            "case": self.case_1
+        })
+        doc.append("outgoing_files", {
+            "barcode": "TEST-BC-DEL-02",
+            "matter": self.matter_2,
+            "case": self.case_2
+        })
+        doc.insert(ignore_permissions=True)
+        doc.submit()
+
+        self.assertEqual(doc.status, "Taken Away")
+
+        # 1. Create incoming
+        create_incoming(doc.name)
+        doc.reload()
+        self.assertEqual(doc.has_incoming, 1)
+        self.assertEqual(doc.status, "Taken Away / Incoming Created")
+
+        # 2. Return 1 file -> status becomes 'Missing Files'
+        scan_incoming_file(doc.name, "TEST-BC-DEL-01")
+        doc.reload()
+        self.assertEqual(doc.status, "Missing Files")
+        self.assertEqual(len(doc.incoming_files), 1)
+        self.assertEqual(len(doc.missing_file_items), 1)
+
+        # 3. User deletes returned file from incoming_files and saves document (Update)
+        doc.incoming_files = []
+        doc.save(ignore_permissions=True)
+        doc.reload()
+        self.assertEqual(doc.status, "Taken Away / Incoming Created", "Status must be Taken Away / Incoming Created when incoming files is empty while has_incoming is active")
+        self.assertEqual(len(doc.missing_file_items), 0)
+        self.assertEqual(doc.has_incoming, 1)
+
+        # 4. Mandatory step: cancel incoming
+        res_can = cancel_incoming(doc.name)
+        self.assertEqual(res_can["status"], "Taken Away")
+        self.assertEqual(res_can["has_incoming"], 0)
+        doc.reload()
+        self.assertEqual(doc.status, "Taken Away")
+        self.assertEqual(doc.has_incoming, 0)
+
+        # 5. Re-create incoming
+        res_inc = create_incoming(doc.name)
+        self.assertEqual(res_inc["has_incoming"], 1)
+        self.assertEqual(res_inc["status"], "Taken Away / Incoming Created")
 
     def test_on_cancel_whole_fm_and_delete_protection(self):
         """Cancelling the whole FM sets status to Cancelled, restores Matter, and blocks deletion."""
@@ -409,8 +471,10 @@ class TestFileMovement(FrappeTestCase):
         self.assertEqual(doc.status, "Cancelled")
         self.assertEqual(frappe.db.get_value("Matter", self.matter_2, "status"), "Open")
 
-        # Attempt to delete cancelled doc must fail (traces preserved)
-        self.assertRaises(frappe.ValidationError, doc.delete)
+        # Cancelled doc can be deleted if user desires
+        fm_name = doc.name
+        doc.delete()
+        self.assertFalse(frappe.db.exists("File Movement", fm_name))
 
     def test_whitelisted_endpoint_permissions(self):
         """Mutating endpoints must enforce doc.check_permission('write') and read endpoints enforce 'read'."""
@@ -456,6 +520,117 @@ class TestFileMovement(FrappeTestCase):
         doc.cancel()
         recalculate_matter_status_from_movements(self.matter_1)
         self.assertEqual(frappe.db.get_value("Matter", self.matter_1, "status"), "Open")
+
+    def test_taken_away_file_cannot_be_re_dispatched(self):
+        """
+        Files that are currently taken away in an active File Movement
+        cannot be added or dispatched in another File Movement until returned.
+        """
+        # 1. Create first movement and submit it
+        fm1 = frappe.new_doc("File Movement")
+        fm1.giver = self.giver
+        fm1.receiver = self.receiver
+        fm1.append("outgoing_files", {
+            "barcode": "TEST-TAKEN-BC-01",
+            "matter": self.matter_1,
+            "case": self.case_1
+        })
+        fm1.insert(ignore_permissions=True)
+        fm1.submit()
+        self.assertEqual(fm1.status, "Taken Away")
+
+        # 2. Check get_scan_information returns taken_away: True
+        info_case = get_scan_information(self.case_1)
+        self.assertTrue(info_case.get("taken_away"))
+        self.assertEqual(info_case.get("taken_away_info", {}).get("movement"), fm1.name)
+
+        info_bc = get_scan_information("TEST-TAKEN-BC-01")
+        self.assertTrue(info_bc.get("taken_away"))
+        self.assertEqual(info_bc.get("taken_away_info", {}).get("movement"), fm1.name)
+
+        # 3. Create second movement attempting to dispatch the same case -> must raise ValidationError
+        fm2 = frappe.new_doc("File Movement")
+        fm2.giver = self.giver
+        fm2.receiver = self.receiver
+        fm2.append("outgoing_files", {
+            "barcode": "TEST-TAKEN-BC-01",
+            "matter": self.matter_1,
+            "case": self.case_1
+        })
+        self.assertRaises(frappe.ValidationError, fm2.insert)
+
+        # 4. Once fm1 receives the file, it can be re-dispatched
+        create_incoming(fm1.name)
+        scan_incoming_file(fm1.name, "TEST-TAKEN-BC-01")
+        fm1.reload()
+        self.assertEqual(fm1.status, "Received")
+
+        # Now get_scan_information should report not taken away
+        info_returned = get_scan_information(self.case_1)
+        self.assertFalse(info_returned.get("taken_away"))
+
+        # And inserting fm2 now succeeds
+        fm2.insert(ignore_permissions=True)
+        self.assertTrue(fm2.name.startswith("FM-"))
+
+    def test_prevent_duplicate_incoming_files(self):
+        """Prevent duplicate files in incoming_files via manual save, scan_incoming_file, and return_missing_files."""
+        fm = frappe.new_doc("File Movement")
+        fm.giver = self.giver
+        fm.receiver = self.receiver
+        fm.append("outgoing_files", {
+            "barcode": "TEST-DUP-01",
+            "matter": self.matter_1,
+            "case": self.case_1
+        })
+        fm.append("outgoing_files", {
+            "barcode": "TEST-DUP-02",
+            "matter": self.matter_2,
+            "case": self.case_2
+        })
+        fm.insert(ignore_permissions=True)
+        fm.submit()
+
+        create_incoming(fm.name)
+        fm.reload()
+
+        # 1. Manually adding duplicate barcode/case in incoming_files must raise ValidationError on save
+        fm.append("incoming_files", {
+            "barcode": "TEST-DUP-01",
+            "matter": self.matter_1,
+            "case": self.case_1
+        })
+        fm.append("incoming_files", {
+            "barcode": "TEST-DUP-01",
+            "matter": self.matter_1,
+            "case": self.case_1
+        })
+        self.assertRaises(frappe.ValidationError, fm.save)
+
+        # Reload clean state to test API deduplication
+        fm.reload()
+        self.assertEqual(len(fm.incoming_files), 0)
+
+        # 2. scan_incoming_file: scan same file twice -> only 1 row added, second scan returns warning
+        res1 = scan_incoming_file(fm.name, "TEST-DUP-01")
+        self.assertEqual(res1.get("status"), "success")
+        fm.reload()
+        self.assertEqual(len(fm.incoming_files), 1)
+
+        res2 = scan_incoming_file(fm.name, "TEST-DUP-01")
+        self.assertEqual(res2.get("status"), "warning")
+        self.assertIn("already scanned", res2.get("message", ""))
+        fm.reload()
+        self.assertEqual(len(fm.incoming_files), 1)
+
+        # 3. return_missing_files with duplicate items or already returned file -> no duplicates created
+        return_missing_files(fm.name, files=[{"case": self.case_2}, {"case": self.case_2}])
+        fm.reload()
+        # Should have 2 incoming files: case_1 and case_2 (no duplicate case_2)
+        self.assertEqual(len(fm.incoming_files), 2)
+        cases_in_incoming = [r.case for r in fm.incoming_files]
+        self.assertEqual(sorted(cases_in_incoming), sorted([self.case_1, self.case_2]))
+        self.assertEqual(fm.status, "Received")
 
 
 def run_test_suite():

@@ -17,7 +17,8 @@
    "fieldname": "barcode",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Barcode"
+   "label": "Barcode",
+   "allow_on_submit": 1
   },
   {
    "columns": 4,
@@ -25,7 +26,8 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Matter",
-   "options": "Matter"
+   "options": "Matter",
+   "allow_on_submit": 1
   },
   {
    "columns": 4,
@@ -33,7 +35,8 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Case",
-   "options": "Case"
+   "options": "Case",
+   "allow_on_submit": 1
   }
  ],
  "grid_page_length": 50,
