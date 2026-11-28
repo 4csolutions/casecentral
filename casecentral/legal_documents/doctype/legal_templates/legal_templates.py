@@ -5,7 +5,7 @@ import frappe
 import os, io
 
 from frappe.model.document import Document
-from docxtpl import DocxTemplate
+from docform import DocxTemplate
 from frappe.utils import get_files_path
 from frappe.utils.file_manager import save_file
 
@@ -26,7 +26,7 @@ def generate_new_doctype(legal_template_name):
 	file_name = template_file.split("/")[-1]
 	file_path = get_files_path(file_name, is_private=is_private)
 
-	# Load the template file using python-docxtpl
+	# Load the template file using docform
 	doc = DocxTemplate(os.path.realpath(file_path))
 
 	# Extract variables from the template file
@@ -164,7 +164,7 @@ def generate_document(doctype, docname, legal_template_name):
 	file_name = template_file.split("/")[-1]
 	file_path = get_files_path(file_name, is_private=is_private)
 
-	# Load template using docxtpl
+	# Load template using docform
 	doc = DocxTemplate(os.path.realpath(file_path))
 
 	# Render document
